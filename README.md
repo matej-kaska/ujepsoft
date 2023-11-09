@@ -25,7 +25,7 @@
 - Používat arrow funkce `const funkce = () => {}`
 - Používat SVGs všude, kde je to možné
 - Axios používat pomocí `import axios from "utils/axios"`
-- Pro přidání knihovny `npm i xxx` v `eduklub/frontend`, smazat container `eduklub` > `client`, smazat image `eduklub-client`, smazat volume `eduklub_node_modules`
+- Pro přidání knihovny `npm i xxx` v `eduklub/frontend`, smazat container `eduklub` > `client`, smazat image `ujepsoft-client`, smazat volume `ujepsoft_node_modules`
 
 ### backend-old je Django, na kterým se můžeš učit
 
