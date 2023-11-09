@@ -5,6 +5,11 @@
 - ``docker compose up``
 - url -> ``localhost:8080``
 
+## Admin rozhraní
+- ``localhost:8080/admin``
+- username: ``ujep@ujep.cz``
+- password: ``ujep@ujep.cz``
+
 ## Figma
 [Odkaz](https://www.figma.com/file/lvROE5Fqhf1coV0eAV8Yrh/UJEB-Soft?type=design&node-id=0-1&mode=design&t=MtY7qnJbEXPnkw6I-0)
 
