@@ -1,0 +1,170 @@
+[
+  {
+    "model": "eduklub.grade",
+    "pk": 1,
+    "fields": {
+      "name": "1. třída",
+      "grade_type": 1
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 2,
+    "fields": {
+      "name": "2. třída",
+      "grade_type": 1
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 3,
+    "fields": {
+      "name": "3. třída",
+      "grade_type": 1
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 4,
+    "fields": {
+      "name": "4. třída",
+      "grade_type": 1
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 5,
+    "fields": {
+      "name": "5. třída",
+      "grade_type": 1
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 6,
+    "fields": {
+      "name": "6. třída",
+      "grade_type": 2
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 7,
+    "fields": {
+      "name": "7. třída",
+      "grade_type": 2
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 8,
+    "fields": {
+      "name": "8. třída",
+      "grade_type": 2
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 9,
+    "fields": {
+      "name": "9. třída",
+      "grade_type": 2
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 10,
+    "fields": {
+      "name": "Prima",
+      "grade_type": 3
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 11,
+    "fields": {
+      "name": "Sekunda",
+      "grade_type": 3
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 12,
+    "fields": {
+      "name": "Tercie",
+      "grade_type": 3
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 13,
+    "fields": {
+      "name": "Kvarta",
+      "grade_type": 3
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 14,
+    "fields": {
+      "name": "Kvinta",
+      "grade_type": 4
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 15,
+    "fields": {
+      "name": "Sexta",
+      "grade_type": 4
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 16,
+    "fields": {
+      "name": "Septima",
+      "grade_type": 4
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 17,
+    "fields": {
+      "name": "Oktáva",
+      "grade_type": 4
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 18,
+    "fields": {
+      "name": "1. ročník",
+      "grade_type": 5
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 19,
+    "fields": {
+      "name": "2. ročník",
+      "grade_type": 5
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 20,
+    "fields": {
+      "name": "3. ročník",
+      "grade_type": 5
+    }
+  },
+  {
+    "model": "eduklub.grade",
+    "pk": 21,
+    "fields": {
+      "name": "4. ročník",
+      "grade_type": 5
+    }
+  }
+]

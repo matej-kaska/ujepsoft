@@ -1,0 +1,87 @@
+version: '3'
+
+services:
+  ## Postgres
+  postgresql:
+    image: 'bitnami/postgresql:15'
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=ujepsoft
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+      - 'postgresql_initdb:/docker-entrypoint-initdb.d'
+      - 'postgresql_pre_initdb:/docker-entrypoint-preinitdb.d'
+    ports:
+      - '127.0.0.1:5432:5432'
+
+  ## Redis
+  redis:
+    image: 'bitnami/redis:latest'
+    restart: always
+    command: redis-server --loglevel warning --requirepass t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf
+    volumes: 
+      - redis:/data
+    ports:
+      - '6379:6379'
+
+  ## Backend
+  backend:
+    build: backend
+    container_name: ujepsoft-backend
+    volumes:
+      - ./backend:/backend
+    environment:
+      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16
+      - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8080
+      - DJANGO_MEDIA_URL=http://localhost:8080/backend/media/
+      - DJANGO_STATIC_URL=http://localhost:8080/backend/static/
+      - DJANGO_DB_NAME=ujepsoft
+      - DJANGO_DB_USER=postgres
+      - DJANGO_DB_PASSWORD=postgres
+      - DJANGO_DB_HOST=postgresql
+      - DJANGO_DB_PORT=5432
+      - DJANGO_REDIS_LOCATION=redis://redis:6379/1
+      - REDIS_PASSWORD=t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf
+
+  ## Frontend
+  frontend:
+    build: frontend
+    container_name: ujepsoft-frontend
+    volumes:
+      - ./frontend:/app
+      - node_modules:/app/node_modules
+    # Just for the dev server ws
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+      - redis
+    environment:
+      - NODE_ENV=development
+
+  ## NGINX
+  edge:
+    image: bitnami/nginx:latest
+    container_name: ujepsoft-edge
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./edge/ujepsoft.conf:/opt/bitnami/nginx/conf/server_blocks/ujepsoft.conf:ro
+      - ./backend/media:/app/media
+      - ./backend/staticfiles:/app/static
+    depends_on:
+      - frontend
+      - backend  
+
+volumes:
+  node_modules:
+    driver: local
+  postgresql_data:
+    driver: local
+  postgresql_initdb:
+    driver: local
+  postgresql_pre_initdb:
+    driver: local
+  redis:
+    driver: local

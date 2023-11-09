@@ -1,0 +1,25 @@
+.dropdown-popover {
+
+    .disabled {
+        cursor: not-allowed;
+        color: #999;
+    }
+
+    button {
+        padding-inline: 8px;
+        padding-block: 4px;
+        border-radius: 4px;
+        border: 1px solid black;
+
+        &:hover {
+            border-color: black;
+        }
+    }
+
+    .panel{
+        margin-top: 2px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.1);
+    }
+}

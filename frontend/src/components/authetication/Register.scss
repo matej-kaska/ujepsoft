@@ -1,0 +1,52 @@
+.register {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 300px;
+    width: 30vw;
+    max-width: 500px;
+    user-select: none;
+
+    h1 {
+        margin-left: 2px;
+        margin-bottom: 24px;
+    }
+
+    label {
+        text-transform: uppercase;
+        margin-left: 2px;
+    }
+
+    input {
+        height: 36px;
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #CCCCCC;
+        padding-left: 12px;
+        margin-top: 6px;
+
+        &:focus-visible {
+            border-color: gray;
+            outline: 0px;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 10px;
+        justify-content: space-between;
+        width: 100%;
+
+        button {
+            &:hover {
+                border-color: inherit;
+            }
+            &:focus {
+                outline: 0;
+            }
+        }
+    }
+}

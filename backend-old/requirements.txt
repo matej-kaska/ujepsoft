@@ -1,0 +1,9 @@
+Django==4.2.4
+asgiref==3.7.2
+sqlparse==0.4.4
+django-active-link==0.1.8
+gunicorn==20.1.0
+psycopg2-binary==2.9.6
+Pillow==10.0.0
+djangorestframework==3.14.0
+redis==5.0.1

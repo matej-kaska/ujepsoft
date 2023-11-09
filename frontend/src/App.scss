@@ -1,0 +1,31 @@
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Disabled */
+.disabled {
+  cursor: not-allowed;
+}
+
+body {
+  /* Scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #AFAFAF #EFEFEF;
+  &::-webkit-scrollbar {
+      width: 8px;
+      background-color: #EFEFEF;
+      height: 8px;
+      border-radius: 5px;
+  }
+  &::-webkit-scrollbar-track {
+      border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+      background: #AFAFAF;
+      border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+      background: #909090;
+  }
+}
