@@ -32,3 +32,4 @@
 - Material Icon Theme
 - Auto Close Tag
 - Auto Rename Tag
+- Django
