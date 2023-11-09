@@ -1,9 +1,9 @@
 # UJEP soft
 ## Zapnutí dockeru
-> ``git clone https://github.com/matej-kaska/ujepsoft.git``
-> ``cd ujepsoft``
-> ``docker compose up``
-> url -> ``localhost:8080``
+- ``git clone https://github.com/matej-kaska/ujepsoft.git``
+- ``cd ujepsoft``
+- ``docker compose up``
+- url -> ``localhost:8080``
 
 ## Figma
 [Odkaz](https://www.figma.com/file/lvROE5Fqhf1coV0eAV8Yrh/UJEB-Soft?type=design&node-id=0-1&mode=design&t=MtY7qnJbEXPnkw6I-0)
