@@ -17,7 +17,8 @@ services:
 
   ## Redis
   redis:
-    image: 'bitnami/redis:latest'
+    build: redis
+    container_name: ujepsoft-redis
     restart: always
     command: redis-server --loglevel warning --requirepass t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf --dir /data
     volumes: 
