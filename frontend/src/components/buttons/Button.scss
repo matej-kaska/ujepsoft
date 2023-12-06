@@ -1,0 +1,39 @@
+.button {
+  display: flex;
+
+  // Color variants
+  &.primary {
+    background-color: #70587C;
+    color: white;
+    &:hover {
+      background-color: darken(#70587C, 10%);
+    }
+  }
+
+  &.secondary {
+    background-color: #C8B8DB;
+    color: black;
+    &:hover {
+      background-color: darken(#C8B8DB, 10%);
+    }
+  }
+
+  // Size variants
+  &.small {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+  }
+
+  &.medium {
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 16px;
+  }
+
+  &.large {
+    font-size: 1.2rem;
+    padding: 11px 22px;
+    border-radius: 24px;
+  }
+}

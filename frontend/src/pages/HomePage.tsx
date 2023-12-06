@@ -5,6 +5,7 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Button from "components/buttons/Button";
 import axios from "utils/axios";
 import { useState } from "react";
+import Navbar from "components/navbar/Navbar";
 
 const HomePage = () => {
   const [connection, setConnection] = useState<string>("Click for check connection to backend...");
@@ -41,6 +42,7 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      <Navbar/>
       <p>HOMEPAGE</p>
       <p>{connection}</p>
       <Button onClick={checkConnection}>Check</Button>
