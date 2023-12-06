@@ -4,13 +4,15 @@
     flex-direction: column;
     align-items: flex-start;
     min-width: 300px;
-    width: 30vw;
+    width: clamp(350px, 40vw, 450px);
     max-width: 500px;
     user-select: none;
 
     h1 {
         margin-left: 2px;
-        margin-bottom: 24px;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        font-weight: 500;
     }
 
     label {
@@ -37,7 +39,7 @@
         flex-direction: row;
         white-space: nowrap;
         justify-content: space-between;
-        margin-bottom: -2px;
+        align-items: center;
         width: 100%;
 
         .remember-me {
@@ -45,7 +47,7 @@
                 width: 13px;
                 height: 13px;
                 margin-right: 6px;
-                accent-color: #388883;
+                accent-color: $color-primary;
                 cursor: pointer;
             }
     

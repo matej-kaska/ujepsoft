@@ -1,6 +1,5 @@
 import { Fragment, PropsWithChildren } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import "./Tooltip.scss";
 
 type TooltipProps = PropsWithChildren<any> & {
   text?: string;

@@ -3,18 +3,18 @@
 
   // Color variants
   &.primary {
-    background-color: #70587C;
+    background-color: $color-primary;
     color: white;
     &:hover {
-      background-color: darken(#70587C, 10%);
+      background-color: darken($color-primary, 10%);
     }
   }
 
   &.secondary {
-    background-color: #a294b1;
+    background-color: $color-secondary;
     color: white;
     &:hover {
-      background-color: darken(#a294b1, 10%);
+      background-color: darken($color-secondary, 10%);
     }
   }
 

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useWindowSize from '../../utils/useWindowSize';
 import { useModal } from '../../contexts/ModalProvider';
-import './UniversalModal.scss'
 
 const UniversalModal = (props: any) => {
   const { closeModal } = useModal();

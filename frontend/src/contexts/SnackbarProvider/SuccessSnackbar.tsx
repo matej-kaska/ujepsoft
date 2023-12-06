@@ -1,5 +1,3 @@
-import "./Snackbar.scss";
-
 type SuccessSnackbarProps = {
   message: string;
   fade: string;

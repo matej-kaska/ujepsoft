@@ -1,6 +1,5 @@
 import { Fragment, ReactNode } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import "./DropdownPopover.scss";
 
 type DropdownPopoverProps = {
   buttonChildren: ReactNode;

@@ -1,4 +1,3 @@
-import "./HomePage.scss";
 import { ReactComponent as CloseIcon } from 'images/close.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';

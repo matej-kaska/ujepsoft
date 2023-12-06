@@ -1,5 +1,3 @@
-import "./LoadingScreen.scss"
-
 type LoadingScreenProps = {
   upper?: boolean;
   modal?: boolean;

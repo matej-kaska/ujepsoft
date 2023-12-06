@@ -1,4 +1,3 @@
-import './Register.scss';
 import { useModal } from '../../contexts/ModalProvider';
 import Login from './Login';
 import * as yup from 'yup';

@@ -1,5 +1,3 @@
-import "./Snackbar.scss";
-
 type ErrorSnackbarProps = {
   message: string;
   fade: string;

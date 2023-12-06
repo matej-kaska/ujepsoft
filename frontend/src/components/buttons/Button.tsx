@@ -1,5 +1,3 @@
-import "./Button.scss";
-
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
   color?: "primary" | "secondary";

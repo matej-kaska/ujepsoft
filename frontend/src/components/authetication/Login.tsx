@@ -1,5 +1,4 @@
 import { useModal } from '../../contexts/ModalProvider';
-import './Login.scss'
 import Register from './Register';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -11,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '../../redux/authSlice';
 import { useState } from 'react';
 import { emailSchema, passwordSchema } from '../../utils/validationSchemas';
-// TODO: import PasswordReset from 'components/password-reset/PasswordReset';
+import Button from 'components/buttons/Button';
 
 type Form = {
   email: string;
@@ -85,8 +84,8 @@ const Login = () => {
 
   return (
     <form className='login' onSubmit={handleSubmit(handleLogin)}>
-      <h1 className='font-24-b'>Přihlásit se</h1>
-      <label className='font-14'>E-mail:</label>
+      <h1>Přihlásit se</h1>
+      <label>E-mail:</label>
       <input className={`${errors.email ? "border-red-600" : ""}`} type="email" placeholder='Zadejte e-mail...' {...register("email")}/>
       <p className={`${errors.email ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.email?.message}!</p>
       <label className='font-14'>Heslo:</label>
@@ -99,8 +98,8 @@ const Login = () => {
         <span className='password-reset-label p-green-h'>Zapomenuté heslo</span>
       </div>
       <div className='buttons'>
-        <button className='register-button s-green-bg-h p-green' type="button" onClick={handleRegister}>Zaregistrovat se</button>
-        <button className='login-button p-green-bg-h l-green' type="submit">Přihlásit se</button>
+        <Button color='secondary' type="button" onClick={handleRegister}>Zaregistrovat se</Button>
+        <Button type="submit">Přihlásit se</Button>
       </div>
     </form>
   )

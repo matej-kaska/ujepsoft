@@ -1,4 +1,3 @@
-import "./ArrowButton.scss";
 import { ReactComponent as ArrowIcon } from '../../images/arrow-icon.svg';
 import { Link } from "react-router-dom";
 

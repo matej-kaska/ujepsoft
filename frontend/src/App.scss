@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "_variables";
+@import 'components/**/*.scss';
+@import 'pages/**/*.scss';
+@import 'contexts/**/*.scss';
 
 #root {
   width: 100%;
@@ -35,3 +39,6 @@ body {
       background: #909090;
   }
 }
+
+$color-primary: #70587C;
+$color-secondary: #91859f;
