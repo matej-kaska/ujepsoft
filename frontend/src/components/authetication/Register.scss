@@ -1,52 +1,76 @@
 .register {
-    display: flex;
-    justify-content: left;
-    flex-direction: column;
-    align-items: flex-start;
-    min-width: 300px;
-    width: 30vw;
-    max-width: 500px;
-    user-select: none;
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+  align-items: flex-start;
+  width: clamp(400px, 40vw, 500px);
+  max-width: 500px;
+  user-select: none;
 
-    h1 {
-        margin-left: 2px;
-        margin-bottom: 24px;
+  h1 {
+    margin-left: 2px;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  label {
+    text-transform: uppercase;
+    margin-left: 2px;
+  }
+
+  input {
+    height: 36px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    padding-left: 12px;
+    margin-top: 6px;
+
+    &:focus-visible {
+      border-color: gray;
+      outline: 0px;
+    }
+  }
+
+  .gdpr-wrapper-check {
+    input {
+      width: 13px;
+      height: 13px;
+      margin-right: 6px;
+      accent-color: $color-primary;
+      cursor: pointer;
     }
 
     label {
-        text-transform: uppercase;
-        margin-left: 2px;
-    }
+      cursor: pointer;
+      
+      a {
+        color: unset;
+        text-decoration: underline;
 
-    input {
-        height: 36px;
-        width: 100%;
-        border-radius: 5px;
-        border: 1px solid #CCCCCC;
-        padding-left: 12px;
-        margin-top: 6px;
-
-        &:focus-visible {
-            border-color: gray;
-            outline: 0px;
+        &:hover {
+          color: #388883;
         }
-    }
+      }
+  }
+}
 
-    .buttons {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-top: 10px;
-        justify-content: space-between;
-        width: 100%;
+.buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 2px;
+  justify-content: space-between;
+  width: 100%;
 
-        button {
-            &:hover {
-                border-color: inherit;
-            }
-            &:focus {
-                outline: 0;
-            }
-        }
+    button {
+      &:hover {
+        border-color: inherit;
+      }
+      &:focus {
+        outline: 0;
+      }
     }
+  }
 }

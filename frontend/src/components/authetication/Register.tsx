@@ -7,16 +7,20 @@ import axios from "../../utils/axios";
 import { useState } from 'react';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
 import { emailSchema, passwordSchema, confirmPasswordSchema } from '../../utils/validationSchemas';
+import Button from 'components/buttons/Button';
+import { Link } from 'react-router-dom';
 
 type Form = {
   email: string;
   password: string;
   confirmPwd: string;
+  gdpr: boolean;
   apiError?: any;
 }
 
 const Register = () => {
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
+  const [isApiError, setIsApiError] = useState<boolean>(false);
   const { showModal } = useModal();
   const { openErrorSnackbar } = useSnackbar();
 
@@ -69,20 +73,25 @@ const Register = () => {
 
   return (
     <form className='register' onSubmit={handleSubmit(handleRegister)}>
-      <h1 className='font-24-b'>Zaregistrovat se</h1>
-      <label className='font-14'>E-mail:</label>
+      <h1>Zaregistrovat se</h1>
+      <label>E-mail:</label>
       <input className={`${errors.email ? "border-red-600" : ""}`} type="email" placeholder='Zadejte e-mail...' {...register("email")}/>
       <p className={`${errors.email ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.email?.message}!</p>
-      <label className='font-14'>Heslo:</label>
+      <label>Heslo:</label>
       <input type="password" className={`${errors.password ? "border-red-600" : ""}`} placeholder='Zadejte heslo...' {...register("password")}/>
       <p className={`${errors.password ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.password?.message}!</p>
-      <label className='font-14'>Heslo znovu:</label>
+      <label>Heslo znovu:</label>
       <input type="password" className={`${errors.confirmPwd ? "border-red-600" : ""}`} placeholder='Zadejte heslo znovu...' {...register("confirmPwd")}/>
       <p className={`${errors.confirmPwd ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.confirmPwd?.message}!</p>
+      <div className='gdpr-wrapper-check'>
+        <input id='gdpr' type="checkbox" {...register("gdpr")}/><label className='font-14' htmlFor='gdpr'>Souhlasím se <Link to={"/gdpr"} target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</Link></label>
+        <p className={`${errors.gdpr ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.gdpr?.message}!</p>
+      </div>
       {isSuccessfullySubmitted && (<p className="ml-0.5 text-sm text-green-600 successfullySubmitted">Registrace proběhla v pořádku.</p>)}
+      {isApiError && (<p className="ml-0.5 text-sm text-red-600 successfullySubmitted">Někde nastala chyba zkuste to znovu!</p>)}
       <div className='buttons'>
-        <button className='login-button s-green-bg-h p-green' type="button" onClick={handleLogin}>Přihlásit se</button>
-        <button className='register-button p-green-bg-h l-green' type="submit">Zaregistrovat se</button>
+        <Button color="secondary" type="button" onClick={handleLogin}>Přihlásit se</Button>
+        <Button type="submit">Zaregistrovat se</Button>
       </div>
     </form>
   )
