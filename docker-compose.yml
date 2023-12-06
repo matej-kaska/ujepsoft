@@ -3,15 +3,15 @@ version: '3'
 services:
   ## Postgres
   postgresql:
-    image: 'bitnami/postgresql:15'
+    image: 'char0n/postgresql-czech-fulltext'
     environment:
       - POSTGRESQL_USERNAME=postgres
       - POSTGRESQL_PASSWORD=postgres
       - POSTGRESQL_DATABASE=ujepsoft
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ujepsoft
     volumes:
-      - 'postgresql_data:/bitnami/postgresql'
-      - 'postgresql_initdb:/docker-entrypoint-initdb.d'
-      - 'postgresql_pre_initdb:/docker-entrypoint-preinitdb.d'
+      - 'postgresql_data:/var/lib/postgresql/data'
     ports:
       - '127.0.0.1:5432:5432'
 
