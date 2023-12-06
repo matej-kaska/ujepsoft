@@ -3,7 +3,7 @@ import "./Navbar.scss";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const loggedIn = false;
+  const loggedIn = true;
 
   return (
     <nav className="navbar">
@@ -21,7 +21,10 @@ const Navbar = () => {
         </ul>
         <div className="user-wrapper">
           {loggedIn ? 
-            <span>Jste přihlášen jako {loggedIn}</span>
+            <>
+              <span>Jste přihlášen jako {loggedIn}</span>
+              <Button onClick={() => {}} color="secondary">Odhlásit se</Button>
+            </>
           :
             <Button onClick={() => {}}>Přihlásit se</Button>
           }
