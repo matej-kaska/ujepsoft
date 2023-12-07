@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", 'django-insecure-o!t-tj#9&_%9cranyr7xn^a91douw@)!!l5_t@6bv-_yqscw+8')
+SECRET_KEY = os.environ.get("DJANGO_SECRET", 'django-insecure-o!t-tj#9&_%9cranyr65a^a91douw@)!!l5_t@6bv-_yqacw+8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_PRODUCTION", "False") == "False"
@@ -166,3 +166,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email settings
+EMAIL_HOST = os.environ.get("DJANGO_EMAIL_HOST", None)
+EMAIL_PORT = os.environ.get("DJANGO_EMAIL_PORT", None)
+EMAIL_USE_TLS = os.environ.get("DJANGO_EMAIL_USE_TLS", "").lower() == "true"
+EMAIL_HOST_USER = os.environ.get("DJANGO_EMAIL_HOST_USER", None)
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_HOST_PASSWORD", None)

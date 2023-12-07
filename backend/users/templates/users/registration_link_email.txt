@@ -1,0 +1,11 @@
+Uživateli {{ email }},
+
+zde je Váš odkaz pro registraci na platformu UJEP Soft, po kliknutí na odkaz se Váš účet aktivuje.
+
+Pokud odkaz nelze otevřít, zkopírujte si následující adresu do Vašeho prohlížeče:
+{{ link }}
+
+Tento e-mail byl vygenerován automaticky, prosím neodpovídejte na něj. Pokud jste o tento e-mail nežádali, ignorujte ho.
+
+S pozdravem,
+Tým UJEP Soft

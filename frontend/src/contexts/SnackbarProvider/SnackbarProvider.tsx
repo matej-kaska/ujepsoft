@@ -6,8 +6,8 @@ import { closeSnackbar as closeReduxSnackbar } from '../../redux/snackbarSlice';
 import { RootState } from 'redux/store';
 
 type SnackbarContextType = {
-  openSnackbar: (msg: string) => void;
-  openErrorSnackbar: (msg: string) => void;
+  openSnackbar: (msg: string, error?: boolean, long?: boolean) => void;
+  openErrorSnackbar: (msg: string, error?: boolean, long?: boolean) => void;
   closeSnackbar: () => void;
 }
 
@@ -21,8 +21,13 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [firstLoad, setFirstLoad] = useState<boolean>(true);
 
   useEffect(() => {
+    if (firstLoad) {
+      setFirstLoad(false);
+      return;
+    }
     if (reduxSnackbarState.open) {
       if (reduxSnackbarState.error) {
         openErrorSnackbar(reduxSnackbarState.message);
@@ -34,7 +39,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [reduxSnackbarState]);
 
-  const openSnackbar = (msg: string, error?: boolean) => {
+  const openSnackbar = (msg: string, error?: boolean, long?: boolean) => {
     if (error) setError(true);
     else setError(false);
     setMessage(msg);
@@ -44,24 +49,32 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
     if (timer) clearTimeout(timer);
 
     setTimer(setTimeout(() => {
-      closeSnackbar();
+      closeSnackbar(long);
     }, 4000));
   };
 
-  const openErrorSnackbar = (msg: string) => {
-    openSnackbar(msg, true);
+  const openErrorSnackbar = (msg: string, long?: boolean) => {
+    openSnackbar(msg, true, long);
   };
 
-  const closeSnackbar = () => {
+  const closeSnackbar = (long?: boolean) => {
     setFade("fade-out");
-
-    setTimeout(() => {
-      setOpen(false);
-      setMessage("");
-      setError(false);
-      setFade("fade-in");
-      dispatch(closeReduxSnackbar());
-    }, 300);
+    if (long) {
+      setTimeout(() => {
+        setOpen(false);
+        setMessage("");
+        setError(false);
+        dispatch(closeReduxSnackbar());
+      }, 30000);
+    } else {
+      setTimeout(() => {
+        setOpen(false);
+        setMessage("");
+        setError(false);
+        dispatch(closeReduxSnackbar());
+      }, 300);
+    }
+    setTimeout(() => {setFade("fade-in")}, 500)
   };
 
   return (

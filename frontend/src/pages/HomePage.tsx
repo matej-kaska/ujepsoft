@@ -3,13 +3,35 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Button from "components/buttons/Button";
 import axios from "utils/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "components/navbar/Navbar";
+import { useSearchParams } from 'react-router-dom';
+import { useModal } from 'contexts/ModalProvider';
+import Login from 'components/authetication/Login';
+import ChangePassword from 'components/password-reset/ChangePassword';
 
 const HomePage = () => {
+  const [searchParams] = useSearchParams();
+  const { showModal } = useModal();
+  const [loaded, setLoaded] = useState<boolean>(false);
+
+
   const [connection, setConnection] = useState<string>("Click for check connection to backend...");
   const [connectionRedis, setConnectionRedis] = useState<string>("Click for check connection to Redis...");
   const [connectionSQL, setConnectionSQL] = useState<string>("Click for check connection to SQL...");
+
+  useEffect(() => {
+    setLoaded(true);
+  }, [])
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const token: string | null = searchParams?.get("token");
+    const registration: string | null = searchParams?.get("registration");
+    if (token) showModal(<ChangePassword token={token}/>);
+    if (!registration) return;
+    showModal(<Login token={registration}/>);
+  }, [loaded])
 
   const checkConnection = async () => {
     try {

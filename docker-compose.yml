@@ -20,7 +20,7 @@ services:
     build: redis
     container_name: ujepsoft-redis
     restart: always
-    command: redis-server --loglevel warning --requirepass t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf --dir /data
+    command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --dir /data
     volumes: 
       - redis:/data
     ports:
@@ -43,7 +43,15 @@ services:
       - DJANGO_DB_HOST=postgresql
       - DJANGO_DB_PORT=5432
       - DJANGO_REDIS_LOCATION=redis://redis:6379/1
-      - REDIS_PASSWORD=t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - DJANGO_BASE_URL=http://localhost:8080/
+      - DJANGO_EMAIL_HOST=smtp.office365.com
+      - DJANGO_EMAIL_PORT=587
+      - DJANGO_EMAIL_USE_TLS=true
+      - DJANGO_EMAIL_HOST_USER=ujepsoft@hotmail.com
+      - DJANGO_EMAIL_HOST_PASSWORD=${DJANGO_EMAIL_HOST_PASSWORD}
+      - DJANGO_EMAIL_FROM=ujepsoft@hotmail.com
+      - DJANGO_SECRET=${DJANGO_SECRET}
 
   ## Frontend
   frontend:

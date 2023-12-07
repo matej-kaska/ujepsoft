@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import axios from "../../utils/axios";
 import { useState } from 'react';
 import { useSnackbar } from '../../contexts/SnackbarProvider';
-import { emailSchema, passwordSchema, confirmPasswordSchema } from '../../utils/validationSchemas';
+import { emailSchema, passwordSchema, confirmPasswordSchema, gdprSchema } from '../../utils/validationSchemas';
 import Button from 'components/buttons/Button';
 import { Link } from 'react-router-dom';
 
@@ -20,14 +20,14 @@ type Form = {
 
 const Register = () => {
   const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
-  const [isApiError, setIsApiError] = useState<boolean>(false);
   const { showModal } = useModal();
-  const { openErrorSnackbar } = useSnackbar();
+  const { openErrorSnackbar, openSnackbar } = useSnackbar();
 
   const formSchema = yup.object().shape({
     email: emailSchema,
     password: passwordSchema,
-    confirmPwd: confirmPasswordSchema
+    confirmPwd: confirmPasswordSchema,
+    gdpr: gdprSchema
   });
 
   const {setError, register, handleSubmit, formState: { errors } } = useForm<Form>({ 
@@ -35,10 +35,18 @@ const Register = () => {
   });
 
   const handleLogin = () => {
-    showModal(<Login/>)
+    showModal(<Login/>);
   };
 
   const handleRegister = (data: Form) => {
+    if (!(data.email.endsWith("@ujep.cz") || data.email.endsWith("@gmail.com"))) {
+      setError("email", {
+        type: "server",
+        message: 'Tento e-mail nemá doménu @ujep.cz',
+      });
+      openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz!")
+      return;
+    }
     axios.post("/api/users/register",{
       email: data.email,
       password: data.password,
@@ -46,9 +54,7 @@ const Register = () => {
     })
     .then(() => {
       setIsSuccessfullySubmitted(true);
-      setTimeout(() => {
-        showModal(<Login/>)
-      }, 750);
+      openSnackbar("Zkontrolujte svůj e-mail pro potvrzení.");
     }).catch(err => {
       if (!err.response.data.en) {
         setError("apiError", {
@@ -61,12 +67,18 @@ const Register = () => {
           type: "server",
           message: 'Tento e-mail je již používán',
         });
+      } else if (err.response.data.en.includes("Invalid email")) {
+        setError("email", {
+          type: "server",
+          message: 'Tento e-mail nemá doménu @ujep.cz',
+        });
+        openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz!")
       } else {
         setError('apiError', {
           type: "server",
           message: 'Někde nastala chyba zkuste to znovu',
         });
-        openErrorSnackbar("Někde nastala chyba zkuste to znovu!")
+        openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
       }
     })
   }
@@ -84,11 +96,11 @@ const Register = () => {
       <input type="password" className={`${errors.confirmPwd ? "border-red-600" : ""}`} placeholder='Zadejte heslo znovu...' {...register("confirmPwd")}/>
       <p className={`${errors.confirmPwd ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.confirmPwd?.message}!</p>
       <div className='gdpr-wrapper-check'>
-        <input id='gdpr' type="checkbox" {...register("gdpr")}/><label className='font-14' htmlFor='gdpr'>Souhlasím se <Link to={"/gdpr"} target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</Link></label>
-        <p className={`${errors.gdpr ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.gdpr?.message}!</p>
+        <input id='gdpr' type="checkbox" {...register("gdpr")}/><label htmlFor='gdpr'>Souhlasím se <Link to={"/gdpr"} target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</Link></label>
+        {!isSuccessfullySubmitted && <p className={`${errors.gdpr ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.gdpr?.message}!</p>}
       </div>
-      {isSuccessfullySubmitted && (<p className="ml-0.5 text-sm text-green-600 successfullySubmitted">Registrace proběhla v pořádku.</p>)}
-      {isApiError && (<p className="ml-0.5 text-sm text-red-600 successfullySubmitted">Někde nastala chyba zkuste to znovu!</p>)}
+      {isSuccessfullySubmitted && (<p className="ml-0.5 font-medium text-sm text-green-600">Zkontrolujte svůj e-mail pro potvrzení.</p>)}
+      {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
       <div className='buttons'>
         <Button color="secondary" type="button" onClick={handleLogin}>Přihlásit se</Button>
         <Button type="submit">Zaregistrovat se</Button>

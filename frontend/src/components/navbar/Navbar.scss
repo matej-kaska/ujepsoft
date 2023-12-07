@@ -9,6 +9,7 @@
     align-items: center;
     flex-direction: row;
     width: 100%;
+    min-width: 42rem;
     padding: 3rem;
 
     a {
@@ -80,7 +81,12 @@
       flex-direction: row;
       
       span {
-        margin-right: 0.5rem;
+        margin-inline: 0.5rem;
+      }
+
+      button {
+        max-height: 2.2rem;
+        text-wrap: nowrap;
       }
     }
   }

@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework import generics
 
-from api.serializers.users import UserSerializer
+from users.serializers.serializers import UserSerializer
 from users.models import User
 
 class RedisTestViewSet(APIView):

@@ -2,10 +2,22 @@ import Button from "components/buttons/Button";
 import { Link } from "react-router-dom";
 import { useModal } from "contexts/ModalProvider";
 import Login from "components/authetication/Login";
+import { useSelector } from "react-redux";
+import { store } from "redux/store";
+import { removeUser } from "redux/authSlice";
+import axios from "utils/axios";
+import { useSnackbar } from "contexts/SnackbarProvider";
 
 const Navbar = () => {
   const { showModal } = useModal();
-  const loggedIn = false;
+  const { openSnackbar } = useSnackbar();
+  const userInfo = useSelector((state: any) => state.auth.userInfo);
+
+  const handleLogout = () => {
+    store.dispatch(removeUser());
+    axios.defaults.headers.common['Authorization'] = '';
+    openSnackbar("Byl jste úspěšně odhlášen!");
+  };
 
   return (
     <nav className="navbar">
@@ -22,10 +34,10 @@ const Navbar = () => {
           <li><Link to={"/guides"}>Návody</Link></li>
         </ul>
         <div className="user-wrapper">
-          {loggedIn ? 
+          {userInfo.id ? 
             <>
-              <span>Jste přihlášen jako {loggedIn}</span>
-              <Button onClick={() => console.log("logout")} color="secondary">Odhlásit se</Button>
+              <span>Jste přihlášen jako {userInfo.email}</span>
+              <Button onClick={handleLogout} color="secondary">Odhlásit se</Button>
             </>
           :
             <Button onClick={() => showModal(<Login/>)}>Přihlásit se</Button>

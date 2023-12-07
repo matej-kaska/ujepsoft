@@ -15,8 +15,11 @@
   }
 
   label {
-    text-transform: uppercase;
     margin-left: 2px;
+  }
+
+  p {
+    margin-bottom: -2px;
   }
 
   input {
@@ -34,6 +37,8 @@
   }
 
   .gdpr-wrapper-check {
+    margin-left: 1px;
+
     input {
       width: 13px;
       height: 13px;
@@ -50,11 +55,15 @@
         text-decoration: underline;
 
         &:hover {
-          color: #388883;
+          color: $color-primary;
         }
       }
+    }
+    
+    p {
+      margin-left: 0 !important;
+    }
   }
-}
 
 .buttons {
   display: flex;
