@@ -179,6 +179,12 @@ class RegisterValidatedView(APIView):
                 "en": "Token expired",
                 "cz": "Tento odkaz již vypršel"
                 }, status=400)
+        
+        if User.objects.filter(email=token.email).exists():
+            return Response({
+                "en": "E-mail already taken",
+                "cz": "Tento e-mail je již zabraný"
+                }, status=400)
 
         # Create user
         user = User(
