@@ -9,11 +9,27 @@ import { useSearchParams } from 'react-router-dom';
 import { useModal } from 'contexts/ModalProvider';
 import Login from 'components/authetication/Login';
 import ChangePassword from 'components/password-reset/ChangePassword';
+import { Offer } from 'types/offer';
+import UnitOffer from 'components/offer-unit/UnitOffer';
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
   const { showModal } = useModal();
   const [loaded, setLoaded] = useState<boolean>(false);
+
+  const dummyOffer: Offer = {
+    id: 1,
+    title: "Dummy Offer",
+    description: "This is a dummy offer",
+    author: 1,
+    author_email: "test@test.com",
+    keywords: ["dummy", "offer"]
+  }
+  const [offers, setOffers] = useState<Offer[]>([]);
+
+  useEffect(() => {
+    setOffers(new Array(10).fill(dummyOffer));
+  }, [])
 
 
   const [connection, setConnection] = useState<string>("Click for check connection to backend...");
@@ -64,6 +80,11 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <Navbar/>
+      <section className='offer-container'>
+        {offers.map((offer: Offer, index: number) => (
+          <UnitOffer offer={offer} key={index}/>
+        ))}
+      </section>
       <p>HOMEPAGE</p>
       <p>{connection}</p>
       <Button onClick={checkConnection}>Check</Button>
