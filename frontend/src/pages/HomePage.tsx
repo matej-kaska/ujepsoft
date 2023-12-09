@@ -11,11 +11,14 @@ import Login from 'components/authetication/Login';
 import ChangePassword from 'components/password-reset/ChangePassword';
 import { Offer } from 'types/offer';
 import UnitOffer from 'components/unit-offer/UnitOffer';
+import { useSelector } from 'react-redux';
+import NewOffer from 'components/new-offer/NewOffer';
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
   const { showModal } = useModal();
   const [loaded, setLoaded] = useState<boolean>(false);
+  const userInfo = useSelector((state: any) => state.auth.userInfo);
 
   const dummyOffer: Offer = {
     id: 1,
@@ -88,6 +91,9 @@ const HomePage = () => {
             Studenti mohou na tyto nabídky reagovat a zapojit se do vývoje, posíláním svých nápadů na uvedený e-mail. 
             Skvělá příležitost pro praktické zkušenosti a spolupráci mezi studenty a personálem.
           </p>
+          {userInfo && userInfo.id &&
+            <Button onClick={() => showModal(<NewOffer/>)}>+ Přidat nabídku</Button>
+          }
         </header>
         <section className='offer-container'>
           {offers.map((offer: Offer, index: number) => (

@@ -12,6 +12,7 @@ const UniversalModal = (props: any) => {
       const activeElement = document.activeElement;
       if (activeElement && activeElement.tagName === 'INPUT') return;
       if (activeElement && activeElement.tagName === 'TEXTAREA') return;
+      if (activeElement && activeElement.className.includes('DraftEditor')) return;
       const saveButton = document.querySelector<HTMLButtonElement>("#saveButton");
       if (saveButton) saveButton.click();
 

@@ -20,4 +20,24 @@ export const confirmPasswordSchema = yup.string()
 
 export const gdprSchema = yup.boolean()
   .required()
-  .oneOf([true], "Musíte souhlasit se zpracováním osobních údajů")
+  .oneOf([true], "Musíte souhlasit se zpracováním osobních údajů");
+
+export const offerNameSchema = yup.string()
+  .required("Toto pole je povinné")
+  .min(6, "Název nabídky musí být minimálně 6 znaků dlouhý")
+  .max(100, "Název nabídky nesmí být delší než 100 znaků");
+
+export const offerKeywordsSchema = yup.array(
+    yup.string()
+      .required("Toto pole je povinné")
+      .max(63, "Klíčové slovo nesmí být delší než 63 znaků")
+      .min(1, "Klíčové slovo musí být minimálně 1 znak dlouhé")
+    )
+    .required("Toto pole je povinné")
+    .min(1, "Musíte zadat alespoň jedno klíčové slovo")
+    .max(20, "Nesmíte zadat více než 20 klíčových slov");
+
+export const descriptionSchema = yup.string()
+  .required("Toto pole je povinné")
+  .min(32, "Popis nabídky musí být minimálně raw 32 znaků dlouhý")
+  .max(8192, "Název nabídky nesmí být delší než raw 8192 znaků");
