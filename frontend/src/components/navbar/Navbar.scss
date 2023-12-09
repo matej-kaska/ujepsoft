@@ -46,8 +46,8 @@
     align-items: center;
     flex-direction: row;
     padding-inline: 2rem;
-    border-block: 1px solid rgb(222, 226, 230);
-    background-color: rgb(248, 249, 250);
+    border-block: 1px solid $color-darkgray;
+    background-color: $color-lightgray;
 
     ul {
       display: flex;

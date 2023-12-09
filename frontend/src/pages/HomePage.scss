@@ -3,10 +3,33 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  
-  .offer-container {
+
+  header,.offer-container {
     padding-inline: 3rem;
     width: 85vw;
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    h1 {
+      text-align: center;
+      margin-block: 1rem;
+      font-size: 40px;
+    }
+
+    p {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .offer-container {
+
     margin-block: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

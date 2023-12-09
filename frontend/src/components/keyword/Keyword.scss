@@ -1,0 +1,15 @@
+.keyword {
+  background-color: $color-lightpurple;
+  border-radius: 6px;
+  align-items: center;
+  padding-inline: 0.5rem;
+  padding-block: 2px;
+  max-height: 1.5rem;
+  color: white;
+  cursor: default;
+  user-select: none;
+
+  &:hover {
+    background-color: darken($color-lightpurple, 10%);
+  }
+}

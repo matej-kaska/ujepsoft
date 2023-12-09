@@ -1,5 +1,5 @@
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   color?: "primary" | "secondary";
   size?: "medium" | "large" | "small";
   icon?: React.ReactNode;
@@ -21,7 +21,7 @@ const Button = ({
   return (
     <button className={`button ${color} ${size} ${className}`} {...props}>
       {icon && iconPosition === "left" && <span className="button-icon mr-2">{icon}</span>}
-      {children}
+      {children && children}
       {icon && iconPosition === "right" && <span className="button-icon ml-2">{icon}</span>}
     </button>
   );

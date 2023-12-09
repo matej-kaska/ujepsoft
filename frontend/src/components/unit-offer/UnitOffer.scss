@@ -1,27 +1,27 @@
 .unit-offer {
-  height: 12rem;
-  border: solid 1px black;
+  max-height: 16.25rem;
+  border: solid 1px $color-darkgray;
+  border-radius: 28px;
   max-width: unset;
-  padding-block: 0.5rem;
-  padding-inline: 1rem;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: 0px 4px 8px rgb(230, 244, 241);
+  gap: 0.25rem;
 
   .unit-title {
     text-align: center;
     user-select: none;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 18px;
+    max-height: 2.75rem;
 
     a {
-      all: unset;
-      span {
-        &:hover {
-          text-decoration: underline;
-          cursor: pointer;
-        }
+      &:hover {
+        text-decoration: underline;
+        cursor: pointer;
       }
     }
   }
@@ -38,18 +38,34 @@
   .unit-keywords {
     display: flex;
     flex-wrap: wrap;
-    gap: 0px;
-    min-height: 56px;
-    max-height: 56px;
+    gap: 4px;
+    margin-block: 0.25rem;
     overflow: hidden;
+    max-height: 3.25rem;
   }
 
   .unit-description {
     display: -webkit-box;
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
+    padding-inline: 0.25rem;
     min-height: 56px;
     max-height: 56px;
     overflow: hidden;
+  }
+
+  .unit-footer {
+    width: 100%;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      padding: 6px 12px;
+      span {
+        margin-left: 6px !important;
+      }
+    }
   }
 }

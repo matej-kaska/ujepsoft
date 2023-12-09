@@ -10,7 +10,7 @@ import { useModal } from 'contexts/ModalProvider';
 import Login from 'components/authetication/Login';
 import ChangePassword from 'components/password-reset/ChangePassword';
 import { Offer } from 'types/offer';
-import UnitOffer from 'components/offer-unit/UnitOffer';
+import UnitOffer from 'components/unit-offer/UnitOffer';
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
@@ -19,11 +19,11 @@ const HomePage = () => {
 
   const dummyOffer: Offer = {
     id: 1,
-    title: "Dummy Offer",
-    description: "This is a dummy offer",
+    title: "Dummy Offer Dummy Offer Dummy Offer Dummy Offer Dummy Offer",
+    description: "This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer",
     author: 1,
     author_email: "test@test.com",
-    keywords: ["dummy", "offer"]
+    keywords: ["dummy", "offer", "dummy", "dummy", "offer", "dummy", "dummy", "offer", "dummy", "dummy", "offer", "dummy"]
   }
   const [offers, setOffers] = useState<Offer[]>([]);
 
@@ -78,23 +78,33 @@ const HomePage = () => {
   }
 
   return (
-    <div className="homepage">
+    <>
       <Navbar/>
-      <section className='offer-container'>
-        {offers.map((offer: Offer, index: number) => (
-          <UnitOffer offer={offer} key={index}/>
-        ))}
-      </section>
-      <p>HOMEPAGE</p>
-      <p>{connection}</p>
-      <Button onClick={checkConnection}>Check</Button>
-      <p>{connectionRedis}</p>
-      <Button onClick={checkConnectionRedis}>Check</Button>
-      <p>{connectionSQL}</p>
-      <Button onClick={checkConnectionSQL}>Check</Button>
-      <CloseIcon />
-      <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3" />
-    </div>
+      <div className="homepage">
+        <header>
+          <h1>Nabídky pro Vývoj Softwaru na UJEP</h1>
+          <p>
+            Personál UJEP má možnost navrhovat softwarové projekty, které potřebují vyvinout. 
+            Studenti mohou na tyto nabídky reagovat a zapojit se do vývoje, posíláním svých nápadů na uvedený e-mail. 
+            Skvělá příležitost pro praktické zkušenosti a spolupráci mezi studenty a personálem.
+          </p>
+        </header>
+        <section className='offer-container'>
+          {offers.map((offer: Offer, index: number) => (
+            <UnitOffer offer={offer} key={index}/>
+          ))}
+        </section>
+        <p>HOMEPAGE</p>
+        <p>{connection}</p>
+        <Button onClick={checkConnection}>Check</Button>
+        <p>{connectionRedis}</p>
+        <Button onClick={checkConnectionRedis}>Check</Button>
+        <p>{connectionSQL}</p>
+        <Button onClick={checkConnectionSQL}>Check</Button>
+        <CloseIcon />
+        <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3" />
+      </div>
+    </>
   )
 };
 
