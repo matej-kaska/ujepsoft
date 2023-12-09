@@ -27,6 +27,7 @@ const NewOffer = () => {
   const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
   const [validate, setValidate] = useState<boolean>(false);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
+  const [files, setFiles] = useState<File[]>([]);
   const { closeModal } = useModal();
   const { openSnackbar, openErrorSnackbar } = useSnackbar();
 
@@ -70,9 +71,49 @@ const NewOffer = () => {
     });
   }
 
+  const onFileCloseButtonClick = (index: number) => {
+    setFiles((prev: File[]) => {
+      return prev.filter((_file: File, fileIndex: number) => fileIndex !== index)
+    });
+  }
+
+  const validateSize = (file: File) => {
+    if (file.size > 134217728) {openErrorSnackbar("Soubor nesmí být větší než 128 MB!"); return false;}
+    let totalSize: number = 0;
+    files.forEach((file: File) => {
+      totalSize += file.size;
+    })
+    if (totalSize + file.size > 536870912) {openErrorSnackbar("Soubory nesmí být větší než 512 MB!"); return false;}
+    return true;
+  }
+
+  const addFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!validateSize(file)) {e.target.files = null; return;}
+    setFiles((prev: File[]) => {
+      return [...prev, file]
+    });
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLSpanElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (!validateSize(e.dataTransfer.files[0])) {e.dataTransfer.clearData();return;}
+      setFiles((prev: File[]) => {
+        return [...prev, e.dataTransfer.files[0]]
+      });
+      e.dataTransfer.clearData();
+    }
+  };
+
   const handlePostOffer = async (data: Form) => {
     setValidate(true);
     console.info(data);
+    console.info(files);
   }
 
   return (
@@ -137,6 +178,27 @@ const NewOffer = () => {
         }}
       />
       <p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
+      <label className='attachments'>Přílohy</label>
+      
+      <div className='attachment-wrapper'>
+        <input type='file' className='dropzone' onChange={addFile} id={"dropzone"}/>
+        <span 
+          onClick={() => document.getElementById("dropzone")?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          onDragEnter={(e) => e.preventDefault()}
+        >
+          Sem klikněte nebo přetáhněte soubor...
+        </span>
+      </div>
+      {files.map((file: File, index: number) => {
+        return (
+          <div className='attachment' key={index}>
+            <span>{file.name}</span>
+            <CloseIcon className="close-icon" onClick={() => onFileCloseButtonClick(index)} />
+          </div>
+        )
+      })}
       <div className='buttons'>
         <Button type="submit">Vytvořit nabídku</Button>
       </div>

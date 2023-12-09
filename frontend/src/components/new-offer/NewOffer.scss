@@ -161,7 +161,74 @@
     }
   }
 
+  .attachment-wrapper {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    height: 36px;
+    max-height: 36px;
+    overflow: hidden;
+    margin-top: 9px;
+    margin-bottom: 4px;
+
+    &:hover {
+      border-color: gray;
+    }
+
+    input {
+      color: transparent;
+      z-index: 99;
+      margin-top: 0;
+      border: 0;
+      cursor: pointer;
+
+      &::file-selector-button {
+        display: none;
+      }
+    }
+
+    span {
+      cursor: pointer;
+      z-index: 1;
+      position: relative;
+      top: -28px;
+      right: -14px;
+      color: #999;
+    }
+  }
+
+  .attachment {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    height: 36px;
+    max-height: 36px;
+    overflow: hidden;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      width: 100%;
+      margin-left: 8px;
+    }
+
+    svg {
+      height: 18px;
+      width: 18px;
+      margin-right: 8px;
+      cursor: pointer;
+
+      &:hover {
+        color: dimgray;
+      }
+    }
+  }
+
   .buttons {
+    margin-top: 5px;
     width: 100%;
     display: flex;
     flex-direction: row;
