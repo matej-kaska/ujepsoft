@@ -1,5 +1,5 @@
 .unit-offer {
-  max-height: 16.25rem;
+  max-height: 16.375rem;
   border: solid 1px $color-darkgray;
   border-radius: 28px;
   max-width: unset;
@@ -29,6 +29,7 @@
   .unit-author {
     display: flex; 
     align-items: center; 
+    font-size: 18px;
       
       .profile-picture {
         margin-right: 8px; 

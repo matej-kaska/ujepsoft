@@ -24,7 +24,7 @@ const UnitOffer = ({offer}: UnitOfferProps) => {
       </section>
       <p className="unit-description">{offer.description}</p>
       <div className="unit-footer">
-        <Button icon={<FontAwesomeIcon icon={faChevronRight}/>}  iconPosition="right">Zobrazit</Button>
+      <Link to={`/offer/${offer.id}`}><Button icon={<FontAwesomeIcon icon={faChevronRight}/>}  iconPosition="right">Zobrazit</Button></Link>
       </div>
     </section>
   )
