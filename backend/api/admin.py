@@ -1,3 +1,6 @@
 from django.contrib import admin
+from api.models import File, Keyword, Offer
 
-# Register your models here.
+admin.site.register(Keyword)
+admin.site.register(File)
+admin.site.register(Offer)
