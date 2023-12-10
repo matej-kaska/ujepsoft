@@ -3,7 +3,7 @@ type Author = {
     email: string;
 }
 
-type File = {
+export type Attachment = {
     name: string;
     file: string;
 }
@@ -14,5 +14,5 @@ export type Offer = {
     description: string;
     author: Author;
     keywords: string[];
-    files: File[];
+    files: Attachment[];
 }

@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { ErrorBoundary } from './utils/ErrorHandling';
 import HomePage from './pages/HomePage';
 import { AuthProvider } from './contexts/AuthProvider';
+import OfferPage from 'pages/OfferPage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const App = () => {
             <AuthProvider>
               <Routes>
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/offer/:id" element={<ProtectedRoute><OfferPage /></ProtectedRoute>} />
               </Routes>
             </AuthProvider>
           </ModalProvider>

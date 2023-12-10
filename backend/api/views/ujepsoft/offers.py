@@ -72,3 +72,11 @@ class OfferList(generics.ListAPIView):
     offers = Offer.objects.all()
 
     return offers
+  
+class OfferDetail(APIView):
+  serializer_class = OfferSerializer
+
+  def get(self, request, pk):
+    offer = Offer.objects.get(pk=pk)
+
+    return Response(self.serializer_class(offer).data, status=status.HTTP_200_OK)

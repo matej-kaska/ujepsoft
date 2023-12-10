@@ -1,0 +1,19 @@
+.attachment {
+  display: flex;
+  border-radius: 6px;
+  align-items: center;
+  border: 1px solid $color-darkgray;
+  padding: 0.75rem 0.5rem;
+  width: fit-content;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    border-color: darken($color-darkgray, 10%);
+    background-color: darken(white, 5%);
+  }
+
+  svg {
+    margin-inline: 0.5rem;
+  }
+}
