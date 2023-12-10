@@ -111,9 +111,48 @@ const NewOffer = () => {
   };
 
   const handlePostOffer = async (data: Form) => {
-    setValidate(true);
+    if (!userInfo.id) return;
     console.info(data);
     console.info(files);
+    
+    const encodeFileToBase64 = (file: File) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+
+    const filesBase64 = await Promise.all(
+      files.map((file) => encodeFileToBase64(file))
+    );
+
+    const postData = {
+      name: data.name,
+      keywords: data.keywords,
+      description: data.description,
+      files: filesBase64.map((base64: any, index) => {
+        const content = base64.split(',')[1];
+        return {
+          name: files[index].name,
+          content: content,
+        };
+      })
+    };
+
+    try {
+      const response = await axios.post('/api/offer', postData);
+      console.log(response);
+      openSnackbar('Nabídka byla úspěšně vytvořena!');
+      closeModal();
+    } catch (error) {
+      openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
+      setError("apiError", {
+        type: "server",
+        message: "Někde nastala chyba zkuste to znovu",
+      });
+      console.error('Error posting offer:', error);
+    }
   }
 
   return (
@@ -199,8 +238,9 @@ const NewOffer = () => {
           </div>
         )
       })}
+      {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
       <div className='buttons'>
-        <Button type="submit">Vytvořit nabídku</Button>
+        <Button type="submit" onClick={() => setValidate(true)}>Vytvořit nabídku</Button>
       </div>
     </form>
   )

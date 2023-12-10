@@ -130,6 +130,7 @@ const Login = ({token}: LoginProps) => {
             </div>
             <span className='password-reset-label' onClick={() => showModal(<PasswordReset/>)}>Zapomenuté heslo</span>
           </div>
+          {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
           <div className='buttons'>
             <Button color='secondary' type="button" onClick={handleRegister}>Zaregistrovat se</Button>
             <Button type="submit">Přihlásit se</Button>
