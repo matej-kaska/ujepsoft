@@ -1,13 +1,9 @@
-import Button from "components/buttons/Button";
 import axios from "utils/axios";
 import { useEffect, useState } from "react";
 import Navbar from "components/navbar/Navbar";
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useModal } from 'contexts/ModalProvider';
-import Login from 'components/authetication/Login';
-import ChangePassword from 'components/password-reset/ChangePassword';
 import { Offer } from 'types/offer';
-import UnitOffer from 'components/unit-offer/UnitOffer';
 import { useDispatch, useSelector } from 'react-redux';
 import NewOffer from 'components/new-offer/NewOffer';
 import { setReload } from 'redux/reloadSlice';
@@ -19,10 +15,12 @@ import Attachment from "components/attachment/Attachment";
 import { ReactComponent as EditIcon } from '../images/edit-icon.svg';
 import { ReactComponent as RemoveIcon } from '../images/remove-icon.svg';
 import GeneralModal from "components/general-modal/GeneralModal";
+import { useSnackbar } from "contexts/SnackbarProvider";
 
 const OfferPage = () => {
   const { id } = useParams();
-  const { showModal } = useModal();
+  const { showModal, closeModal } = useModal();
+  const { openErrorSnackbar, openSnackbar } = useSnackbar();
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const dispatch = useDispatch();
   const reload = useSelector((state: any) => state.reload);
@@ -69,7 +67,15 @@ const OfferPage = () => {
   };
 
   const removeOffer = async () => {
-    
+    closeModal();
+    try {
+      await axios.delete(`/api/offer/${id}`);
+      openSnackbar('Nabídka byla úspěšně smazána!');
+      navigate("/");
+    } catch (error) {
+      openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
+      console.error('Error deleting offer:', error);
+    }
   };
 
   return (
