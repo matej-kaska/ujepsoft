@@ -28,7 +28,7 @@ const UnitOffer = ({offer}: UnitOfferProps) => {
       <p className="unit-description">{htmlToPlainText(offer.description)}</p>
       <div className="unit-footer">
         {offer.files.length > 0 && 
-          <Tooltip text={`Nabídka obsahuje ${offer.files.length} ${offer.files.length === 1 ? "přílohu" : offer.files.length > 4 ? "přílohy" : "příloh"}`}><FontAwesomeIcon icon={faFile}/></Tooltip>
+          <Tooltip text={`Nabídka obsahuje ${offer.files.length} ${offer.files.length === 1 ? "přílohu" : offer.files.length > 4 ? "příloh" : "přílohy"}`}><FontAwesomeIcon icon={faFile}/></Tooltip>
         }
         <Link to={`/offer/${offer.id}`}><Button icon={<FontAwesomeIcon icon={faChevronRight}/>}  iconPosition="right">Zobrazit</Button></Link>
       </div>
