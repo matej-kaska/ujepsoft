@@ -1,6 +1,3 @@
-import { ReactComponent as CloseIcon } from 'images/close.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Button from "components/buttons/Button";
 import axios from "utils/axios";
 import { useEffect, useState } from "react";
@@ -11,29 +8,22 @@ import Login from 'components/authetication/Login';
 import ChangePassword from 'components/password-reset/ChangePassword';
 import { Offer } from 'types/offer';
 import UnitOffer from 'components/unit-offer/UnitOffer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NewOffer from 'components/new-offer/NewOffer';
+import { setReload } from 'redux/reloadSlice';
+import { getOffersRowAmount } from 'utils/getUnitsRowAmount';
+import LoadingScreen from 'components/loading-screen/LoadingScreen';
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
   const { showModal } = useModal();
   const [loaded, setLoaded] = useState<boolean>(false);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
-
-  const dummyOffer: Offer = {
-    id: 1,
-    title: "Dummy Offer Dummy Offer Dummy Offer Dummy Offer Dummy Offer",
-    description: "This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer,This is a dummy offer",
-    author: 1,
-    author_email: "test@test.com",
-    keywords: ["dummy", "offer", "dummy", "dummy", "offer", "dummy", "dummy", "offer", "dummy", "dummy", "offer", "dummy"]
-  }
   const [offers, setOffers] = useState<Offer[]>([]);
-
-  useEffect(() => {
-    setOffers(new Array(10).fill(dummyOffer));
-  }, [])
-
+  const dispatch = useDispatch();
+  const reload = useSelector((state: any) => state.reload);
+  const [next, setNext] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [connection, setConnection] = useState<string>("Click for check connection to backend...");
   const [connectionRedis, setConnectionRedis] = useState<string>("Click for check connection to Redis...");
@@ -41,7 +31,32 @@ const HomePage = () => {
 
   useEffect(() => {
     setLoaded(true);
+    getOffers();
   }, [])
+
+  useEffect(() => {
+    if (!reload.location || reload.location !== "offer") return;
+    getOffers();
+    dispatch(setReload(""));
+  }, [reload])
+
+  const getOffers = async () => {
+    setLoading(true);
+    const pageAmount = getOffersRowAmount() * 2;
+    const response = await axios.get(`/api/offer/list?page-size=${pageAmount}`);
+    if (!response.data) return;
+    setOffers(response.data.results);
+    setNext(response.data.next);
+    setLoading(false);
+  };
+
+  const getMoreOffers = async () => {
+    setLoading(true);
+    const response = await axios.get(next);
+    setOffers(prev => [...prev, ...response.data.results]);
+    setNext(response.data.next);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (!searchParams) return;
@@ -92,7 +107,7 @@ const HomePage = () => {
             Skvělá příležitost pro praktické zkušenosti a spolupráci mezi studenty a personálem.
           </p>
           {userInfo && userInfo.id &&
-            <Button onClick={() => showModal(<NewOffer/>)}>+ Přidat nabídku</Button>
+            <Button color='accent' onClick={() => showModal(<NewOffer/>)}>+ Přidat nabídku</Button>
           }
         </header>
         <section className='offer-container'>
@@ -100,15 +115,25 @@ const HomePage = () => {
             <UnitOffer offer={offer} key={index}/>
           ))}
         </section>
-        <p>HOMEPAGE</p>
+        {loading ? 
+          <LoadingScreen upper/>
+        :
+          <>
+            {next && <Button color="accent" onClick={getMoreOffers}>Načíst další</Button>}
+          </>
+        }
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <p>{connection}</p>
         <Button onClick={checkConnection}>Check</Button>
         <p>{connectionRedis}</p>
         <Button onClick={checkConnectionRedis}>Check</Button>
         <p>{connectionSQL}</p>
         <Button onClick={checkConnectionSQL}>Check</Button>
-        <CloseIcon />
-        <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3" />
       </div>
     </>
   )

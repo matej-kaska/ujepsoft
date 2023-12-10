@@ -53,6 +53,7 @@
     min-height: 56px;
     max-height: 56px;
     overflow: hidden;
+    overflow-wrap: anywhere;
   }
 
   .unit-footer {
@@ -60,12 +61,38 @@
     margin-top: auto;
     padding-top: 0.5rem;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 
-    button {
-      padding: 6px 12px;
-      span {
-        margin-left: 6px !important;
+    .tooltip {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 6px;
+
+      button {
+        margin-top: auto;
+        margin-bottom: 2px;
+
+        svg {
+          height: 20px;
+          width: 18px;
+  
+          &:hover {
+            color: dimgray;
+          }
+        }
+      }
+    }
+
+    a {
+      margin-left: auto;
+
+      button {
+        padding: 6px 12px;
+        user-select: none;
+        span {
+          margin-left: 6px !important;
+        }
       }
     }
   }

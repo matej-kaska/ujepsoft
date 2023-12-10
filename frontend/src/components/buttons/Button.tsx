@@ -1,6 +1,6 @@
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children?: React.ReactNode;
-  color?: "primary" | "secondary";
+  color?: "primary" | "secondary" | "accent";
   size?: "medium" | "large" | "small";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";

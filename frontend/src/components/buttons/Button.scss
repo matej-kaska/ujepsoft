@@ -18,6 +18,14 @@
     }
   }
 
+  &.accent {
+    background-color: $color-accent;
+    color: white;
+    &:hover {
+      background-color: darken($color-accent, 10%);
+    }
+  }
+
   // Size variants
   &.small {
     font-size: 0.8rem;

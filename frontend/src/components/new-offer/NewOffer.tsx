@@ -12,7 +12,8 @@ import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import "./react-draft-wysiwyg.css";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReload } from 'redux/reloadSlice';
 
 type Form = {
   name: string;
@@ -30,6 +31,7 @@ const NewOffer = () => {
   const [files, setFiles] = useState<File[]>([]);
   const { closeModal } = useModal();
   const { openSnackbar, openErrorSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (validate) setValue("keywords", keywords, { shouldValidate: true })
@@ -112,8 +114,6 @@ const NewOffer = () => {
 
   const handlePostOffer = async (data: Form) => {
     if (!userInfo.id) return;
-    console.info(data);
-    console.info(files);
     
     const encodeFileToBase64 = (file: File) =>
       new Promise((resolve, reject) => {
@@ -145,6 +145,8 @@ const NewOffer = () => {
       console.log(response);
       openSnackbar('Nabídka byla úspěšně vytvořena!');
       closeModal();
+      dispatch(setReload("offer"));
+      // TODO: navigate to offer detail
     } catch (error) {
       openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
       setError("apiError", {
@@ -193,7 +195,7 @@ const NewOffer = () => {
         stripPastedStyles={true}
         editorState={descriptionEditorState}
         toolbarClassName="toolbarClassName"
-        wrapperClassName={`wrapperClassName ${errors.keywords ? "border-red-600" : ""}`}
+        wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""}`}
         editorClassName="editorClassName"
         editorStyle={{fontFamily: 'Plus Jakarta Sans'}}
         toolbar={{

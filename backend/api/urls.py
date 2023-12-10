@@ -5,5 +5,6 @@ from .views.ujepsoft import offers as offer_views
 urlpatterns = [
     path("redis/", test_views.RedisTestViewSet.as_view(), name="api_tests_redis"),
     path("sql/", test_views.SQLTestViewSet.as_view(), name="api_tests_sql"),
-    path("offer", offer_views.OfferUpload.as_view(), name="api_offers"),
+    path("offer", offer_views.OfferUpload.as_view(), name="api_offer"),
+    path("offer/list", offer_views.OfferList.as_view(), name="api_offer_list"),
 ]

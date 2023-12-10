@@ -1,7 +1,9 @@
 import base64
 
 from api.models import File, Keyword, Offer
-from rest_framework import status, permissions
+from api.pagination import StandardPagination
+from api.serializers.serializers import OfferSerializer
+from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.files.base import ContentFile
@@ -61,3 +63,12 @@ class OfferUpload(APIView):
     return Response({
       "id": of.pk
     }, status=status.HTTP_201_CREATED)
+  
+class OfferList(generics.ListAPIView):
+  pagination_class = StandardPagination
+  serializer_class = OfferSerializer
+
+  def get_queryset(self):
+    offers = Offer.objects.all()
+
+    return offers
