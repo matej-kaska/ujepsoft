@@ -1,4 +1,4 @@
-import base64
+import json
 
 from api.models import File, Keyword, Offer
 from api.pagination import StandardPagination
@@ -6,16 +6,16 @@ from api.serializers.serializers import OfferSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.core.files.base import ContentFile
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class OfferUpload(APIView):
   permission_classes = (permissions.IsAuthenticated,)
+  parser_classes = [MultiPartParser, FormParser]
 
   def post(self, request):
-    name = request.data.get('name', None)
-    keywords = request.data.get('keywords', None)
-    description = request.data.get('description', None)
-    files = request.data.get('files', [])
+    name = request.POST.get('name', None)
+    keywords = json.loads(request.POST.get('keywords')) if request.POST.get('keywords') else None
+    description = request.POST.get('description', None)
 
     if name is None or keywords is None or description is None:
       return Response({
@@ -48,15 +48,10 @@ class OfferUpload(APIView):
         kw = Keyword.objects.create(name=keyword)
       of.keywords.add(kw)
 
-    for file in files:
-      file_content_base64 = file["content"]
-      file_content_base64 += '=' * (-len(file_content_base64) % 4)
-      file_content = base64.b64decode(file_content_base64)
-      file_name = file["name"]
-      django_file = ContentFile(file_content, name=file_name)
+    for uploaded_file in request.FILES.getlist('files'):
       File.objects.create(
-        name=file["name"],
-        file=django_file,
+        name=uploaded_file.name,
+        file=uploaded_file,
         offer=of
       )
 
@@ -75,8 +70,89 @@ class OfferList(generics.ListAPIView):
   
 class OfferDetail(APIView):
   serializer_class = OfferSerializer
+  parser_classes = [MultiPartParser, FormParser]
+
+  def get_permissions(self):
+    if self.request.method in ['PUT', 'DELETE']:
+        return [permissions.IsAuthenticated()]
+    return []
 
   def get(self, request, pk):
     offer = Offer.objects.get(pk=pk)
 
     return Response(self.serializer_class(offer).data, status=status.HTTP_200_OK)
+  
+  def put(self, request, pk):
+    offer = Offer.objects.get(pk=pk)
+
+    if (self.request.user != offer.author and not self.request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this offer",
+        "cz": "Nejste autorem této nabídky"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    name = request.POST.get('name', None)
+    keywords = json.loads(request.POST.get('keywords')) if request.POST.get('keywords') else None
+    description = request.POST.get('description', None)
+    existing_files = json.loads(request.POST.get('existingFiles')) if request.POST.get('existingFiles') else []
+
+    if name is None or keywords is None or description is None:
+      return Response({
+        "en": "All required fields must be specified",
+        "cz": "Všechna povinná pole musí být specifikována"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(keywords) == 0:
+      return Response({
+        "en": "At least one keyword must be specified",
+        "cz": "Musí být specifikován alespoň jeden klíčový výraz"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(keywords) > 19:
+      return Response({
+        "en": "Maximum of 20 keywords can be specified",
+        "cz": "Maximum 20 klíčových výrazů může být specifikováno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    offer.name = name
+    offer.description = description
+    
+    for keyword in keywords:
+      try:
+        kw = Keyword.objects.get(name__iexact=keyword)
+      except Keyword.DoesNotExist:
+        kw = Keyword.objects.create(name=keyword)
+      offer.keywords.add(kw)
+
+    for file in File.objects.filter(offer=offer):
+      file_found = False
+      for existing_file in existing_files:
+        if file.name == existing_file:
+          file_found = True
+          break
+      if not file_found:
+        file.delete()
+
+    for uploaded_file in request.FILES.getlist('files'):
+      File.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        offer=offer
+      )
+
+    offer.save()
+
+    return Response(status=status.HTTP_200_OK)
+
+  def delete(self, request, pk):
+    offer = Offer.objects.get(pk=pk)
+
+    if (self.request.user != offer.author and not self.request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this offer",
+        "cz": "Nejste autorem této nabídky"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    offer.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)

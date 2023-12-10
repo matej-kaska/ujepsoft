@@ -2,7 +2,7 @@ import Button from "components/buttons/Button";
 import axios from "utils/axios";
 import { useEffect, useState } from "react";
 import Navbar from "components/navbar/Navbar";
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useModal } from 'contexts/ModalProvider';
 import Login from 'components/authetication/Login';
 import ChangePassword from 'components/password-reset/ChangePassword';
@@ -16,6 +16,9 @@ import Keyword from "components/keyword/Keyword";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import Attachment from "components/attachment/Attachment";
+import { ReactComponent as EditIcon } from '../images/edit-icon.svg';
+import { ReactComponent as RemoveIcon } from '../images/remove-icon.svg';
+import GeneralModal from "components/general-modal/GeneralModal";
 
 const OfferPage = () => {
   const { id } = useParams();
@@ -26,6 +29,7 @@ const OfferPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [offer, setOffer] = useState<Offer>({} as Offer);
   const [filesOpen, setFilesOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getOffer();
@@ -39,10 +43,14 @@ const OfferPage = () => {
 
   const getOffer = async () => {
     setLoading(true);
-    const response = await axios.get(`/api/offer/${id}`);
-    if (!response.data) return;
-    setOffer(response.data);
-    setLoading(false);
+    try {
+      const response = await axios.get(`/api/offer/${id}`);
+      if (!response.data) return;
+      setOffer(response.data);
+      setLoading(false);
+    } catch {
+      navigate("/");
+    }
   };
 
   const linkify = (text: string) => {
@@ -53,12 +61,15 @@ const OfferPage = () => {
   }
 
   const formatDescription = (description: string) => {
-    console.log(description)
     if (!description) return;
     let newDescription: string | null = description;
     if (!newDescription.startsWith("<p>")) newDescription = "<p>" + newDescription;
     if (!newDescription.endsWith("</p>/n")) newDescription = newDescription + "</p>";
     return linkify(newDescription.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/<p>\s?<\/p>/g, '<br>').replace(/<em>/g, '<i>').replace(/<\/em>/g, '</i>').replace(/\\"/g, '"').replace(/\\n/g, ''));
+  };
+
+  const removeOffer = async () => {
+    
   };
 
   return (
@@ -70,7 +81,15 @@ const OfferPage = () => {
         :
           <>
             <header>
-              <h1>{offer.name}</h1>
+              <div className="header-buttons">
+                <h1>{offer.name}</h1>
+                {(userInfo.is_staff || userInfo.id === offer.author.id) &&
+                  <>
+                    <EditIcon className='edit-icon' onClick={() => showModal(<NewOffer offer={offer}/>)}/>
+                    <RemoveIcon className='remove-icon' onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer}/>)}/>
+                  </>
+                }
+              </div>
               <h2>{offer.author.email}</h2>
             </header>
             <div className="keywords">

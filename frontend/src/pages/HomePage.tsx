@@ -88,7 +88,6 @@ const HomePage = () => {
   const checkConnectionSQL = async () => {
     try {
       const response = await axios.get("/api/sql");
-      console.log(response)
       setConnectionSQL(response.data.message);
     } catch {
       setConnectionSQL("Error");

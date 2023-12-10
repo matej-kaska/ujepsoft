@@ -7,15 +7,51 @@
   padding-inline: 3rem;
   gap: 1rem;
 
+  .loading-screen {
+    width: 100%;
+  }
+
   header {
     margin-top: 1rem;
     gap: 0.5rem;
     display: flex;
     flex-direction: column;
 
-    h1 {
-      font-size: 32px;
+    .header-buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      h1 {
+        font-size: 32px;
+        margin-right: 2px;
+      }
+
+      .edit-icon, .remove-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        padding: 6px;
+        margin-left: 6px;
+        cursor: pointer;
+      }
+
+      .edit-icon {
+        background-color: #E6F4F1;
+        &:hover {
+          background-color: #D4E2DF;
+        }
+      }
+
+      .remove-icon {
+        background-color: #FCE8E8;
+        &:hover {
+          background-color: #F8C9C9;
+        }
+      }
     }
+
+
 
     h2 {
       font-size: 24px;
@@ -26,9 +62,10 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+    gap: 0.25rem;
 
     .keywords-span {
-      margin-right: 0.5rem;
+      margin-right: 0.25rem;
     }
   }
 
@@ -50,6 +87,9 @@
 
     .files {
       margin-top: 0.5rem;
+      gap: 0.5rem;
+      display: flex;
+      flex-direction: column;
 
       .file {
         a {

@@ -9,11 +9,14 @@ import { offerKeywordsSchema, offerNameSchema, descriptionSchema } from 'utils/v
 import { useEffect, useState } from 'react';
 import { ReactComponent as CloseIcon } from '../../images/close.svg';
 import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from 'draft-js';
+import { ContentState, EditorState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import "./react-draft-wysiwyg.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { setReload } from 'redux/reloadSlice';
+import { Attachment, Offer } from 'types/offer';
+import htmlToDraft from 'html-to-draftjs';
+import { useNavigate } from 'react-router-dom';
 
 type Form = {
   name: string;
@@ -22,16 +25,33 @@ type Form = {
   apiError?: any;
 }
 
-const NewOffer = () => {
+type NewOfferProps = {
+  offer?: Offer;
+}
+
+const NewOffer = ({offer}: NewOfferProps) => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [keywordsInputValue, setKeywordsInputValue] = useState<string>("");
   const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
   const [validate, setValidate] = useState<boolean>(false);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const [files, setFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
   const { closeModal } = useModal();
   const { openSnackbar, openErrorSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!offer) return;
+    setValue('name', offer.name);
+    setKeywords(offer.keywords);
+    const editorState = EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft((offer.description) || '<p></p>').contentBlocks));
+    setDescriptionEditorState(editorState);
+    setUploadedFiles(offer.files);
+    const text = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+    setValue("description", text);
+  }, [])
 
   useEffect(() => {
     if (validate) setValue("keywords", keywords, { shouldValidate: true })
@@ -79,6 +99,12 @@ const NewOffer = () => {
     });
   }
 
+  const onUploadedFileCloseButtonClick = (index: number) => {
+    setUploadedFiles((prev: Attachment[]) => {
+      return prev.filter((_file: Attachment, fileIndex: number) => fileIndex !== index)
+    });
+  }
+
   const validateSize = (file: File) => {
     if (file.size > 134217728) {openErrorSnackbar("Soubor nesmí být větší než 128 MB!"); return false;}
     let totalSize: number = 0;
@@ -114,52 +140,58 @@ const NewOffer = () => {
 
   const handlePostOffer = async (data: Form) => {
     if (!userInfo.id) return;
+
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('keywords', JSON.stringify(data.keywords));
+    formData.append('description', data.description);
+  
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+  
+    let newUploadedFiles: string[] = [];
+    uploadedFiles.forEach(uploadedFile => {
+      newUploadedFiles = [...newUploadedFiles, uploadedFile.name]
+    });
+
+    formData.append('existingFiles', JSON.stringify(newUploadedFiles));
     
-    const encodeFileToBase64 = (file: File) =>
-      new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-
-    const filesBase64 = await Promise.all(
-      files.map((file) => encodeFileToBase64(file))
-    );
-
-    const postData = {
-      name: data.name,
-      keywords: data.keywords,
-      description: data.description,
-      files: filesBase64.map((base64: any, index) => {
-        const content = base64.split(',')[1];
-        return {
-          name: files[index].name,
-          content: content,
-        };
-      })
-    };
-
-    try {
-      const response = await axios.post('/api/offer', postData);
-      console.log(response);
-      openSnackbar('Nabídka byla úspěšně vytvořena!');
-      closeModal();
-      dispatch(setReload("offer"));
-      // TODO: navigate to offer detail
-    } catch (error) {
-      openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
-      setError("apiError", {
-        type: "server",
-        message: "Někde nastala chyba zkuste to znovu",
-      });
-      console.error('Error posting offer:', error);
+    if (offer) {
+      try {
+        await axios.put(`/api/offer/${offer.id}`, formData);
+        openSnackbar('Nabídka byla úspěšně upravena!');
+        closeModal();
+        dispatch(setReload("offerpage"));
+      } catch (error) {
+        openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
+        setError("apiError", {
+          type: "server",
+          message: "Někde nastala chyba zkuste to znovu",
+        });
+        console.error('Error editing offer:', error);
+      }
+    } else {
+      try {
+        const response = await axios.post('/api/offer', formData);
+        openSnackbar('Nabídka byla úspěšně vytvořena!');
+        closeModal();
+        dispatch(setReload("offer"));
+        navigate(`/offer/${response.data.id}`);
+      } catch (error) {
+        openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
+        setError("apiError", {
+          type: "server",
+          message: "Někde nastala chyba zkuste to znovu",
+        });
+        console.error('Error posting offer:', error);
+      }
     }
   }
 
   return (
     <form className='new-offer' onSubmit={handleSubmit(handlePostOffer)}>
-      <h1>Vytvořit nabídku</h1>
+      <h1>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</h1>
       <label className='name'>Název</label>
       <input className={`${errors.name ? "border-red-600" : ""}`} placeholder='Zadejte název nabídky...' {...register("name")}/>
       <p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
@@ -240,9 +272,17 @@ const NewOffer = () => {
           </div>
         )
       })}
+      {uploadedFiles.map((file: Attachment, index: number) => {
+        return (
+          <div className='attachment' key={index}>
+            <span>{file.name}</span>
+            <CloseIcon className="close-icon" onClick={() => onUploadedFileCloseButtonClick(index)} />
+          </div>
+        )
+      })}
       {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
       <div className='buttons'>
-        <Button type="submit" onClick={() => setValidate(true)}>Vytvořit nabídku</Button>
+        <Button type="submit" onClick={() => setValidate(true)}>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</Button>
       </div>
     </form>
   )
