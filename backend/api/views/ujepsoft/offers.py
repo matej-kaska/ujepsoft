@@ -35,6 +35,25 @@ class OfferUpload(APIView):
         "cz": "Maximum 20 klíčových výrazů může být specifikováno"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    MAX_FILE_SIZE = 134217728 # 128 MB
+    MAX_TOTAL_FILES_SIZE = 536870912 # 512 MB
+
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > MAX_FILE_SIZE:
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > MAX_TOTAL_FILES_SIZE:
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
     of = Offer.objects.create(
       name=name,
       description=description,
@@ -112,6 +131,25 @@ class OfferDetail(APIView):
       return Response({
         "en": "Maximum of 20 keywords can be specified",
         "cz": "Maximum 20 klíčových výrazů může být specifikováno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    MAX_FILE_SIZE = 134217728 # 128 MB
+    MAX_TOTAL_FILES_SIZE = 536870912 # 512 MB
+
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > MAX_FILE_SIZE:
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > MAX_TOTAL_FILES_SIZE:
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
     
     offer.name = name
