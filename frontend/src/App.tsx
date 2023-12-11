@@ -10,6 +10,7 @@ import { ErrorBoundary } from './utils/ErrorHandling';
 import HomePage from './pages/HomePage';
 import { AuthProvider } from './contexts/AuthProvider';
 import OfferPage from 'pages/OfferPage';
+import GuidePage from 'pages/GuidePage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                 <Route path="/offer/:id" element={<ProtectedRoute><OfferPage /></ProtectedRoute>} />
+                <Route path="/guides" element={<ProtectedRoute userIsNeeded><GuidePage /></ProtectedRoute>} />
               </Routes>
             </AuthProvider>
           </ModalProvider>

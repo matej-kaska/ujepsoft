@@ -22,7 +22,7 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
   const navigateLink = useSelector((state: RootState) => state.navigator.link);
 
   useEffect(() => {
-    const redirectUrls = ["/me", "/lists"];
+    const redirectUrls = ["/guides", "/issues"];
     if (redirectLoggedUser) {
       nativNavigate("/");
       return;
@@ -40,6 +40,9 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
       // remove the user information from Redux state and local storage and navigate to login page
       dispatch(removeUser());
       const path = "/" + window.location.pathname.split("/")[1];
+      store.dispatch(openErrorSnackbar("Pro tuto akci musíte být přihlášeni!"));
+      store.dispatch(openModal(<Login />));
+      console.warn("You must be logged in to perform this action!");
       if (redirectUrls.includes(path)) {
         nativNavigate("/");
         return;
