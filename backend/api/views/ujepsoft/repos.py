@@ -94,6 +94,9 @@ class RepoAdd(APIView):
       try:
         new_issue = Issue.objects.get(number=issue['number'], repo=new_repo)
       except Issue.DoesNotExist:
+
+        if issue.get('pull_request', None) is not None:
+          continue
         
         new_issue = Issue.objects.create(
           number=issue['number'],
@@ -163,7 +166,7 @@ class RepoAdd(APIView):
 
     cache.set("repo" + str(new_repo.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     
-    return Response(status=status.HTTP_201_CREATED)
+    return Response(serializer.data,status=status.HTTP_201_CREATED)
   
 class RepoDelete(APIView):
   permission_classes = (permissions.IsAuthenticated,)

@@ -14,7 +14,7 @@ class GitHubAPIService:
   
   @classmethod
   def get_repo_issues(cls, user, repo_name):
-    url = f"https://api.github.com/repos/{user}/{repo_name}/issues"
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues?state=all"
     response = cls.session.get(url)
     return response.json() if response.status_code == 200 else None
   
