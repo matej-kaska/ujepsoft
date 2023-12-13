@@ -116,7 +116,7 @@ const Login = ({token}: LoginProps) => {
       {loading ?
         <LoadingScreen login/>
       :
-       <>
+        <>
           <h1>Přihlásit se</h1>
           <label>E-mail:</label>
           <input className={`${errors.email ? "border-red-600" : ""}`} type="email" placeholder='Zadejte e-mail...' {...register("email")}/>

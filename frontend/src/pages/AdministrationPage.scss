@@ -1,0 +1,113 @@
+.administration-page {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: calc(100svh - 223px);
+  padding-inline: 3rem;
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+
+    h1 {
+      text-align: center;
+      color: $color-darkpurple;
+      margin-block: 1rem;
+      font-size: 40px;
+    }
+  }
+
+  .repos-wrapper {
+
+    h2 {
+      font-size: 20px;
+      margin-left: 2px;
+    }
+
+    .add-new {
+
+      .input-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 6px;
+
+        input {
+          height: 2.5rem;
+          width: 32rem;
+          border-radius: 5px;
+          border: 1px solid #CCCCCC;
+          padding-left: 12px;
+          padding-right: 6px;
+          margin-right: 6px;
+  
+          &:focus-visible {
+              border-color: gray;
+              outline: 0px;
+          }
+        }
+      }
+
+      .loading-status {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 2.5rem;
+        max-height: 2.5rem;
+
+        .loader {
+          width: 32px;
+          height: 32px;
+        }
+
+        .loading-p {
+          margin-left: 6px;
+          font-style: italic;
+        }
+
+        .success {
+          margin-left: -3.5px;
+        }
+      }
+    }
+    
+    .repos-list-wrapper {
+      .repos-list {
+        gap: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-direction: column;
+        margin-top: 0.5rem;
+
+        .repo {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 2rem;
+
+          a:hover {
+            text-decoration: underline;
+          }
+
+          .remove-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            padding: 6px;
+            margin-left: 6px;
+            cursor: pointer;
+            background-color: #FCE8E8;
+            &:hover {
+              background-color: #F8C9C9;
+            }
+          }
+        }
+      }
+    }
+  }
+}

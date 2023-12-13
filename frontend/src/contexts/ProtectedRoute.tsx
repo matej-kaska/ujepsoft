@@ -13,9 +13,10 @@ type ProtectedRouteProps = {
   userIsNeeded?: boolean;
   redirectLoggedUser?: boolean;
   children: JSX.Element;
+  userIsStaff?: boolean;
 }
 
-const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser = false, children }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser = false, children, userIsStaff = false }: ProtectedRouteProps) => {
   const dispatch = useDispatch();
   const nativNavigate = useNavigate();
   const userInfo = useSelector((state: RootState) => state.auth.userInfo);
@@ -69,6 +70,13 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
   /*   if (userInfo._id && (!allowedRoles || (userInfo.role && allowedRoles.includes(userInfo.role)))) {
       return children
     } */
+
+  if (userIsStaff && userInfo.id && userInfo.is_staff === true) {
+    return children
+  } else if (userIsStaff) {
+    nativNavigate("/");
+    return;
+  }
 
   if (userInfo.id) {
     return children

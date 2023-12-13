@@ -1,5 +1,5 @@
 import Button from "components/buttons/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useModal } from "contexts/ModalProvider";
 import Login from "components/authetication/Login";
 import { useSelector } from "react-redux";
@@ -12,8 +12,10 @@ const Navbar = () => {
   const { showModal } = useModal();
   const { openSnackbar } = useSnackbar();
   const userInfo = useSelector((state: any) => state.auth.userInfo);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
+    navigate("/");
     store.dispatch(removeUser());
     axios.defaults.headers.common['Authorization'] = '';
     openSnackbar("Byl jste úspěšně odhlášen!");
@@ -32,6 +34,7 @@ const Navbar = () => {
           <li><Link to={"/"}>Nabídky</Link></li>
           <li><Link to={"/issues"}>Pohledávky</Link></li>
           <li><Link to={"/guides"}>Návody</Link></li>
+          {userInfo.is_staff && <li><Link to={"/repo-administration"}>Administrace</Link></li>}
         </ul>
         <div className="user-wrapper">
           {userInfo.id ? 

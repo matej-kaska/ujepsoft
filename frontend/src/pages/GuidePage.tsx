@@ -9,7 +9,7 @@ const GuidePage = () => {
   return (
     <>
     <Navbar/>
-      <div className="guide-page">
+      <section className="guide-page">
         <header>
           <h1>Návody</h1>
           <p>Zde naleznete návody... (doplnit)</p>
@@ -19,7 +19,7 @@ const GuidePage = () => {
             <div className={"guide-wrapper"} key={index}>{guide}</div>
           )}
         </section>
-      </div>
+      </section>
     </>
   )
 };

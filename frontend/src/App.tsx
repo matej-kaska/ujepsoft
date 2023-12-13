@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import { AuthProvider } from './contexts/AuthProvider';
 import OfferPage from 'pages/OfferPage';
 import GuidePage from 'pages/GuidePage';
+import AdministrationPage from 'pages/AdministrationPage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const App = () => {
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                 <Route path="/offer/:id" element={<ProtectedRoute><OfferPage /></ProtectedRoute>} />
                 <Route path="/guides" element={<ProtectedRoute userIsNeeded><GuidePage /></ProtectedRoute>} />
+                <Route path="/repo-administration" element={<ProtectedRoute userIsNeeded ><AdministrationPage /></ProtectedRoute>} />
               </Routes>
             </AuthProvider>
           </ModalProvider>

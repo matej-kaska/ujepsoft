@@ -1,6 +1,7 @@
 from django.urls import path
 from .views.tests import views as test_views
 from .views.ujepsoft import offers as offer_views
+from .views.ujepsoft import repos as repo_views
 
 urlpatterns = [
     path("redis/", test_views.RedisTestViewSet.as_view(), name="api_tests_redis"),
@@ -8,4 +9,7 @@ urlpatterns = [
     path("offer", offer_views.OfferUpload.as_view(), name="api_offer"),
     path("offer/list", offer_views.OfferList.as_view(), name="api_offer_list"),
     path("offer/<int:pk>", offer_views.OfferDetail.as_view(), name="api_offer_detail"),
+    path("repo", repo_views.RepoAdd.as_view(), name="api_repo_add"),
+    path("repo/list", repo_views.ReposList.as_view(), name="api_repo_list"),
+    path("repo/<int:pk>", repo_views.RepoDelete.as_view(), name="api_repo_detail"),
 ]

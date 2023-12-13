@@ -52,6 +52,9 @@ services:
       - DJANGO_EMAIL_HOST_PASSWORD=${DJANGO_EMAIL_HOST_PASSWORD}
       - DJANGO_EMAIL_FROM=ujepsoft@hotmail.com
       - DJANGO_SECRET=${DJANGO_SECRET}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_USERNAME=matej-kaska
+      - REDIS-TIMEOUT=15
 
   ## Frontend
   frontend:

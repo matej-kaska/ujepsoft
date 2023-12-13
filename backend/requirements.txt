@@ -7,3 +7,4 @@ psycopg2-binary==2.9.6
 Pillow==10.0.0
 djangorestframework==3.14.0
 django-redis==5.4.0
+requests==2.31.0

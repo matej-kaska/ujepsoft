@@ -30,6 +30,9 @@ instance.interceptors.request.use((config) => {
     const state = store.getState();
     const token = state.auth.token;
 
+    // TODO: Remove this console.log
+    console.log("Token ", token);
+
     if (token && token !== '') {
         config.headers.Authorization = `Token ${token}`;
     }

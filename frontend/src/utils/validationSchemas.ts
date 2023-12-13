@@ -41,3 +41,7 @@ export const descriptionSchema = yup.string()
   .required("Toto pole je povinné")
   .min(32, "Popis nabídky musí být minimálně raw 32 znaků dlouhý")
   .max(8192, "Název nabídky nesmí být delší než raw 8192 znaků");
+
+export const urlGithubSchema = yup.string()
+  .required('Toto pole je povinné')
+  .matches(/^https:\/\/github\.com\//, 'URL musí začínat "https://github.com/"');

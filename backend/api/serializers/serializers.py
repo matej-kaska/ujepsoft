@@ -1,6 +1,6 @@
 from users.serializers.serializers import UserPublicSerializer
 from rest_framework import serializers
-from api.models import Offer, Keyword, File
+from api.models import Offer, Keyword, File, Repo, Label, Issue, Comment, ReactionsIssue, ReactionsComment
 
 class KeywordSerializer(serializers.ModelSerializer):
   class Meta:
@@ -23,3 +23,43 @@ class OfferSerializer(serializers.ModelSerializer):
 
   def get_keywords(self, obj):
     return [keyword.name for keyword in obj.keywords.all()]
+  
+class CommentSerializer(serializers.ModelSerializer):
+  reactions = serializers.SerializerMethodField()
+
+  class Meta:
+    model = Comment
+    fields = ['id', 'number', 'body', 'author','author_profile_pic', 'created_at', 'updated_at', 'reactions']
+
+  def get_reactions(self, obj):
+    reactions = ReactionsComment.objects.filter(comment=obj)
+    return {reaction.name: reaction.count for reaction in reactions}
+
+class IssueSerializer(serializers.ModelSerializer):
+  labels = serializers.SerializerMethodField()
+  reactions = serializers.SerializerMethodField()
+  comments = CommentSerializer(many=True, read_only=True)
+
+  class Meta:
+    model = Issue
+    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'created_at', 'updated_at', 'reactions', 'comments']
+
+  def get_labels(self, obj):
+    return [label.name for label in obj.labels.all()]
+
+  def get_reactions(self, obj):
+    reactions = ReactionsIssue.objects.filter(issue=obj)
+    return {reaction.name: reaction.count for reaction in reactions}
+  
+class RepoFullSerializer(serializers.ModelSerializer):
+  issues = IssueSerializer(many=True, read_only=True)
+
+  class Meta:
+    model = Repo
+    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private', 'issues']
+
+class RepoSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Repo
+    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private']
