@@ -1,11 +1,11 @@
 import Navbar from "components/navbar/Navbar";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
-import NevimGuide from "components/guides/NevimGuide";
+import CreateOfferGuide from "components/guides/CreateOfferGuide";
 
 const GuidePage = () => {
   const guides = new Array<JSX.Element>();
+  guides.push(<CreateOfferGuide />);
   guides.push(<ScreenshotGuide />);
-  guides.push(<NevimGuide />);
 
   return (
     <>
