@@ -3,6 +3,7 @@
   border: solid 1px $color-darkgray;
   border-radius: 28px;
   max-width: unset;
+  min-width: 47.75rem;
   padding-inline: 1.25rem;
   padding-block: 1rem;
   display: flex;
@@ -75,6 +76,7 @@
     padding-top: 0.5rem;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     .unit-comments {
       margin-right: 1rem;

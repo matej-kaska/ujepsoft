@@ -34,6 +34,7 @@
       align-items: center;
       width: 100%;
       justify-content: space-between;
+      min-width: 37.5rem;
 
       .switch-wrapper {
         display: flex;
@@ -45,6 +46,7 @@
           display: inline-block;
           width: 40px;
           height: 22px;
+          min-width: 40px;
       
           input {
             opacity: 0;
