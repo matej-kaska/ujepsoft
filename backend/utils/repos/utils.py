@@ -15,14 +15,19 @@ def checkCollaborant(user, repo):
 
 def changeCollaborant(user, repo, repo_pk):
   response = GitHubAPIService.get_repo_collaborators(user, repo)
-
+  repo = Repo.objects.get(pk=repo_pk)
+  
   if response is None:
+    repo.collaborant = False
+    repo.save()
     return
+  
   for collaborant in response:
     if collaborant['login'] == os.environ['GITHUB_USERNAME']:
+      repo.collaborant = True
+      repo.save()
       return
   
-  repo = Repo.objects.get(pk=repo_pk)
   repo.collaborant = False
   repo.save()
 

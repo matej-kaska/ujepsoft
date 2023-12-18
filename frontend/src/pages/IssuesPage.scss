@@ -1,0 +1,118 @@
+.issues-page {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100svh - 223px);
+
+  header,.issues-container {
+    padding-inline: 3rem;
+    width: 85vw;
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    h1 {
+      text-align: center;
+      margin-block: 1rem;
+      font-size: 40px;
+    }
+
+    p {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+
+      .switch-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 40px;
+          height: 22px;
+      
+          input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 22px;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+          }
+          
+          input:checked + .slider {
+            background-color: $color-primary;
+          }
+          
+          input:focus + .slider {
+            box-shadow: 0 0 1px $color-secondary;
+          }
+          
+          input:checked + .slider:before {
+            -webkit-transform: translateX(18px);
+            -ms-transform: translateX(18px);
+            transform: translateX(18px);
+          }
+        }
+
+        .text {
+          margin-left: 6px;
+        }
+      }
+
+      .button {
+        justify-self: center;
+      }
+
+      .spacer {
+        width: 13.25rem;
+      }
+    }    
+  }
+  
+  .issues-container {
+    margin-block: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; 
+    max-width: 100%;
+  }
+}

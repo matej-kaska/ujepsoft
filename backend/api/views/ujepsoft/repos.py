@@ -21,8 +21,7 @@ class ReposList(generics.ListAPIView):
     repos = Repo.objects.all()
     for repo in repos:
       changeCollaborant(repo.author, repo.name, repo.pk)
-    return repos
-    # TODO: možná Repo.objects.all()
+    return Repo.objects.all()
   
 class RepoAdd(APIView):
   permission_classes = (permissions.IsAuthenticated, IsStaffUser)

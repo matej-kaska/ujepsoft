@@ -11,12 +11,14 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.permissions import IsStaffUser
+from api.pagination import IssuePagination
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import find_obj_by_id
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
   permission_classes = (permissions.IsAuthenticated,)
+  pagination_class = IssuePagination
 
   def list(self, request, *args, **kwargs):
     issues = Issue.objects.all()
@@ -33,6 +35,11 @@ class IssuesList(generics.ListAPIView):
 
     if len(response) > 0:
       print("getting issues from cache")
+      page = self.paginate_queryset(response)
+      if page is not None:
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+      
       serializer = self.get_serializer(response, many=True)
       return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -64,6 +71,11 @@ class IssuesList(generics.ListAPIView):
       # TODO: full serializer
       response.append(issue)
       print(f"getting issue {issue.number} from db")
+
+    page = self.paginate_queryset(response)
+    if page is not None:
+      serializer = self.get_serializer(page, many=True)
+      return self.get_paginated_response(serializer.data)
     
     serializer = self.get_serializer(response, many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)

@@ -1,0 +1,46 @@
+.label {
+  border-radius: 6px;
+  align-items: center;
+  padding-inline: 0.5rem;
+  padding-block: 2px;
+  max-height: 1.5rem;
+  color: white;
+  cursor: default;
+  user-select: none;
+
+  &.red {
+    background-color: rgb(215, 58, 74);
+    color: white;
+
+    &:hover {
+      background-color: darken(rgb(215, 58, 74), 10%);
+    }
+  }
+
+  &.blue {
+    background-color: rgb(162, 238, 239);
+    color: black;
+
+    &:hover {
+      background-color: darken(rgb(162, 238, 239), 10%);
+    }
+  }
+
+  &.pink {
+    background-color: rgb(216, 118, 227);
+    color: black;
+
+    &:hover {
+      background-color: darken(rgb(216, 118, 227), 10%);
+    }
+  }
+
+  &.gray {
+    background-color: gray;
+    color: white;
+
+    &:hover {
+      background-color: darken(gray, 10%);
+    }
+  }
+}

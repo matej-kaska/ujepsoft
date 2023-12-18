@@ -67,10 +67,12 @@ class RepoSerializer(serializers.ModelSerializer):
 
 class IssueSerializer(serializers.ModelSerializer):
   labels = serializers.SerializerMethodField()
+  repo = serializers.SerializerMethodField()
+  comments = serializers.SerializerMethodField()
 
   class Meta:
     model = Issue
-    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'created_at', 'updated_at']
+    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'created_at', 'updated_at', 'repo', 'comments']
 
   def get_labels(self, obj):
     if isinstance(obj, dict):
@@ -78,10 +80,27 @@ class IssueSerializer(serializers.ModelSerializer):
       return get_label_names_by_ids(label_ids)
     else:
       return [label.name for label in obj.labels.all()]
+    
+  def get_repo(self, obj):
+    if isinstance(obj, dict):
+      return obj.get('repo', None)
+    return obj.repo.name if obj.repo else None
+  
+  def get_comments(self, obj):
+    if isinstance(obj, dict):
+      return obj.get('comments', 0)
+    return len(obj.comments.all())
 
 class IssueCacheSerializer(serializers.ModelSerializer):
+  repo = serializers.SerializerMethodField()
+  comments = serializers.SerializerMethodField()
   
   class Meta:
     model = Issue
-    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'created_at', 'updated_at']
+    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'created_at', 'updated_at', 'repo', 'comments']
 
+  def get_repo(self, obj):
+    return obj.repo.name if obj.repo else None
+  
+  def get_comments(self, obj):
+    return len(obj.comments.all())
