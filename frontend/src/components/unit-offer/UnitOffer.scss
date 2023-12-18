@@ -17,8 +17,10 @@
     text-overflow: ellipsis;
     font-size: 18px;
     max-height: 2.75rem;
+    width: 100%;
 
     a {
+      max-width: 100%;
       &:hover {
         text-decoration: underline;
         cursor: pointer;

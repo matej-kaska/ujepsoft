@@ -8,6 +8,7 @@
   color: white;
   cursor: default;
   user-select: none;
+  overflow: hidden;
 
   &:hover {
     background-color: darken($color-lightpurple, 10%);

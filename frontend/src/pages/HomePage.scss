@@ -36,5 +36,13 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 16px; 
     max-width: 100%;
+
+    .unit-offer {
+      .keyword {
+        max-width: 22.125rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
   }
 }
