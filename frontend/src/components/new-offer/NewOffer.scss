@@ -164,6 +164,7 @@
     .editorClassName {
       display: flex;
       flex: 1 1;
+      cursor: text;
 
       .DraftEditor-root {
         min-width: 12px;
