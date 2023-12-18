@@ -109,11 +109,15 @@ const HomePage = () => {
             <Button color='accent' onClick={() => showModal(<NewOffer/>)}>+ Přidat nabídku</Button>
           }
         </header>
-        <section className='offer-container'>
-          {offers.map((offer: Offer, index: number) => (
-            <UnitOffer offer={offer} key={index}/>
-          ))}
-        </section>
+        {offers.length === 0 && !loading ?
+          <span className="mt-4 text-gray-600 italic">Nejsou zde žádné nabídky</span>
+        :
+          <section className='offer-container'>
+            {offers.map((offer: Offer, index: number) => (
+              <UnitOffer offer={offer} key={index}/>
+            ))}
+          </section>
+        }
         {loading ? 
           <LoadingScreen upper/>
         :

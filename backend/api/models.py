@@ -61,7 +61,8 @@ class Label(models.Model):
     return repr(self)
 
 class Issue(models.Model):
-  number = models.IntegerField()
+  number = models.CharField()
+  gh_id = models.CharField()
   title = models.CharField(max_length=255)
   body = models.CharField(max_length=8192, blank=True, null=True)
   state = models.CharField(max_length=15)
@@ -79,7 +80,7 @@ class Issue(models.Model):
     return repr(self)
 
 class Comment(models.Model):
-  number = models.IntegerField()
+  number = models.CharField()
   body = models.CharField(max_length=8192)
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
   author = models.CharField(max_length=255)
