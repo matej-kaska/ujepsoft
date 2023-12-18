@@ -135,6 +135,13 @@
     min-height: 200px;
     overflow-x: hidden;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    &.focused {
+      border-color: gray;
+      outline: 0px;
+    }
 
     .rdw-editor-toolbar {
       margin: -1px;
@@ -155,8 +162,14 @@
     }
 
     .editorClassName {
-      span, strong, i, del {
-        font-family: 'Roboto' !important;
+      display: flex;
+      flex: 1 1;
+
+      .DraftEditor-root {
+        min-width: 12px;
+        span, strong, i, del {
+          font-family: 'Roboto' !important;
+        }
       }
     }
   }
