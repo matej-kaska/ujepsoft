@@ -41,6 +41,7 @@ class Repo(models.Model):
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)
   private = models.BooleanField(default=False)
+  collaborant = models.BooleanField(default=True)
 
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
@@ -60,7 +61,8 @@ class Label(models.Model):
     return repr(self)
 
 class Issue(models.Model):
-  number = models.IntegerField()
+  number = models.CharField()
+  gh_id = models.CharField()
   title = models.CharField(max_length=255)
   body = models.CharField(max_length=8192, blank=True, null=True)
   state = models.CharField(max_length=15)
@@ -78,7 +80,7 @@ class Issue(models.Model):
     return repr(self)
 
 class Comment(models.Model):
-  number = models.IntegerField()
+  number = models.CharField()
   body = models.CharField(max_length=8192)
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
   author = models.CharField(max_length=255)

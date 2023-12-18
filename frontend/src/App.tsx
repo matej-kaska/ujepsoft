@@ -12,6 +12,7 @@ import { AuthProvider } from './contexts/AuthProvider';
 import OfferPage from 'pages/OfferPage';
 import GuidePage from 'pages/GuidePage';
 import AdministrationPage from 'pages/AdministrationPage';
+import IssuesPage from 'pages/IssuesPage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
                 <Route path="/offer/:id" element={<ProtectedRoute><OfferPage /></ProtectedRoute>} />
+                <Route path='/issues' element={<ProtectedRoute userIsNeeded><IssuesPage /></ProtectedRoute>} />
                 <Route path="/guides" element={<ProtectedRoute userIsNeeded><GuidePage /></ProtectedRoute>} />
                 <Route path="/repo-administration" element={<ProtectedRoute userIsNeeded ><AdministrationPage /></ProtectedRoute>} />
               </Routes>

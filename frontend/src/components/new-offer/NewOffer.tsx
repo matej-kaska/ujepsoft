@@ -34,6 +34,7 @@ const NewOffer = ({offer}: NewOfferProps) => {
   const [keywordsInputValue, setKeywordsInputValue] = useState<string>("");
   const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
   const [validate, setValidate] = useState<boolean>(false);
+  const [focusDescription, setFocusDescription] = useState<boolean>(false);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const [files, setFiles] = useState<File[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
@@ -57,6 +58,22 @@ const NewOffer = ({offer}: NewOfferProps) => {
     if (validate) setValue("keywords", keywords, { shouldValidate: true })
     else setValue("keywords", keywords);
   }, [keywords])
+
+  useEffect(() => {
+    const editorElement = document.querySelector('.public-DraftEditor-content');
+
+    if (editorElement) {
+      editorElement.addEventListener('focus', () => setFocusDescription(true), true);
+      editorElement.addEventListener('blur', () => setFocusDescription(false), true);
+    }
+
+    return () => {
+      if (editorElement) {
+        editorElement.addEventListener('focus', () => setFocusDescription(true), true);
+        editorElement.addEventListener('blur', () => setFocusDescription(false), true);
+      }
+    };
+  }, []);
 
   const formSchema = yup.object().shape({
     name: offerNameSchema,
@@ -112,6 +129,7 @@ const NewOffer = ({offer}: NewOfferProps) => {
       totalSize += file.size;
     })
     if (totalSize + file.size > 536870912) {openErrorSnackbar("Soubory nesmí být větší než 512 MB!"); return false;}
+    if (files.length > 49) {openErrorSnackbar("Nesmíte nahrát více jak 50 souborů"); return false;}
     return true;
   }
 
@@ -130,11 +148,9 @@ const NewOffer = ({offer}: NewOfferProps) => {
     e.stopPropagation();
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      if (!validateSize(e.dataTransfer.files[0])) {e.dataTransfer.clearData();return;}
-      setFiles((prev: File[]) => {
-        return [...prev, e.dataTransfer.files[0]]
-      });
-      e.dataTransfer.clearData();
+      const file = e.dataTransfer.files[0];
+      if (!validateSize(file)) return;
+      setFiles((prev: File[]) => [...prev, file]);
     }
   };
 
@@ -227,8 +243,8 @@ const NewOffer = ({offer}: NewOfferProps) => {
         stripPastedStyles={true}
         editorState={descriptionEditorState}
         toolbarClassName="toolbarClassName"
-        wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""}`}
-        editorClassName="editorClassName"
+        wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
+        editorClassName={`editorClassName`}
         editorStyle={{fontFamily: 'Plus Jakarta Sans'}}
         toolbar={{
           options: ['inline', 'fontSize', 'list', 'emoji', 'remove', 'history'],

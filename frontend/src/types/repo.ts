@@ -6,4 +6,5 @@ export type Repo = {
   description: string;
   author: string;
   author_profile_pic: string;
+  collaborant: boolean;
 }

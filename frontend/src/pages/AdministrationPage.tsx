@@ -24,7 +24,8 @@ type AddRepoForm = {
 const AdministrationPage = () => {
   const [successfullySubmitted, setSuccessfullySubmitted] = useState<boolean>(false);
   const [loadedRepos, setLoadedRepos] = useState<Repo[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const navigate = useNavigate();
   const { openErrorSnackbar, openSnackbar } = useSnackbar();
@@ -47,6 +48,7 @@ const AdministrationPage = () => {
     try {
       const response = await axios.get("/api/repo/list");
       setLoadedRepos(response.data);
+      setLoading(false);
     } catch {
       openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
       navigate("/");
@@ -55,15 +57,15 @@ const AdministrationPage = () => {
 
   const addRepo = async (data: AddRepoForm) => {
     setSuccessfullySubmitted(false);
-    setLoading(true);
+    setLoadingAdd(true);
     await axios.post("/api/repo", {url: data.url})
     .then(() => {
       setSuccessfullySubmitted(true);
-      setLoading(false);
+      setLoadingAdd(false);
       loadRepos();
     })
     .catch((error: any) => {
-      setLoading(false);
+      setLoadingAdd(false);
       console.error(error);
       if (error.response.data.cz) {
         setError("apiError", {type: "server", message: error.response.data.cz});
@@ -104,7 +106,7 @@ const AdministrationPage = () => {
               <Button className="add-button" type="submit">Přidat</Button>
             </div>
             <div className="loading-status">
-              {loading ? 
+              {loadingAdd ? 
                 <>
                   <LoadingScreen />
                   <p className="loading-p">Přidávání repozitáře do databáze...</p>
@@ -120,14 +122,25 @@ const AdministrationPage = () => {
           <section className="repos-list-wrapper">
             <h2>Seznam repozitářů</h2>
             <ul className="repos-list">
-              {loadedRepos && loadedRepos.map((repo, index) => 
-                <li key={index} className="repo">
-                  <ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}/>
-                  <span>{repo.name}</span>
-                  <Link to={repo.url} target="_blank" rel="noopener noreferrer">URL odkaz</Link>
-                  <RemoveIcon className='remove-icon' onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
-                </li>
-              )}
+              {loading ?
+                <div className="flex flex-row items-center">
+                  <LoadingScreen upper />
+                  <span className="ml-3 text-gray-600 italic">Načítání repozitářů a zjišťování statusu collaboranta</span>
+                </div>
+              :
+                <>
+                  {loadedRepos && loadedRepos.length === 0 && <li className="ml-0.5 text-gray-600 italic">Žádné repozitáře nebyly nalezeny</li>}
+                  {loadedRepos && loadedRepos.map((repo, index) => 
+                    <li key={index} className="repo">
+                      <ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}/>
+                      <span>{repo.name}</span>
+                      <Link to={repo.url} target="_blank" rel="noopener noreferrer">URL odkaz</Link>
+                      <RemoveIcon className='remove-icon' onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
+                      {!repo.collaborant && <span className="text-red-700">UJEP není collaborantem repozitáře!</span>}
+                    </li>
+                  )}
+                </>
+              }
             </ul>
           </section>
         </section>

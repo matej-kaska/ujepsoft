@@ -2,24 +2,29 @@ import json
 import os
 
 from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue, Repo
-from api.serializers.serializers import RepoSerializer, RepoFullSerializer
+from api.serializers.serializers import IssueCacheSerializer, IssueSerializer, RepoSerializer, RepoFullSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.cache import cache
 
 from api.services import GitHubAPIService
-from utils.repos.utils import checkCollaborant, checkLabels
+from api.permissions import IsStaffUser
+from utils.issues.new_obj import create_issue
+from utils.repos.utils import changeCollaborant, checkCollaborant, checkLabels
 
 class ReposList(generics.ListAPIView):
-  permission_classes = (permissions.IsAuthenticated,)
+  permission_classes = (permissions.IsAuthenticated, IsStaffUser)
   serializer_class = RepoSerializer
 
   def get_queryset(self):
+    repos = Repo.objects.all()
+    for repo in repos:
+      changeCollaborant(repo.author, repo.name, repo.pk)
     return Repo.objects.all()
   
 class RepoAdd(APIView):
-  permission_classes = (permissions.IsAuthenticated,)
+  permission_classes = (permissions.IsAuthenticated, IsStaffUser)
 
   def post(self, request):
     url = request.data.get('url', None)
@@ -35,12 +40,6 @@ class RepoAdd(APIView):
         "en": "Invalid URL",
         "cz": "Špatný URL odkaz"
       }, status=status.HTTP_400_BAD_REQUEST)
-    
-    if not self.request.user.is_staff:
-      return Response({
-        "en": "You are not authorized to add a repository",
-        "cz": "Nemáte oprávnění přidat repozitář"
-      }, status=status.HTTP_403_FORBIDDEN)
     
     user, repo = url.split('/')[-2:]
 
@@ -91,92 +90,18 @@ class RepoAdd(APIView):
       )
 
     for issue in repo_issues:
-      try:
-        new_issue = Issue.objects.get(number=issue['number'], repo=new_repo)
-      except Issue.DoesNotExist:
+      create_issue(issue, new_repo, user, repo)
 
-        if issue.get('pull_request', None) is not None:
-          continue
-        
-        new_issue = Issue.objects.create(
-          number=issue['number'],
-          title=issue['title'],
-          body=issue['body'],
-          state=issue['state'],
-          repo=new_repo,
-          author=issue['user']['login'],
-          author_profile_pic=issue['user']['avatar_url'],
-          created_at=issue['created_at'],
-          updated_at=issue['updated_at'],
-        )
-        
-      for label in issue['labels']:
-        label_name = label['name']
-        try:
-          label_obj = Label.objects.get(name=label_name)
-          new_issue.labels.add(label_obj)
-        except:
-          print(f"Label {label_name} does not exist! Not Creating it!")
+    repoSerializer = RepoFullSerializer(new_repo)
 
-      for reaction_type, count in issue['reactions'].items():
-          if reaction_type in ['url', 'total_count'] or count == 0:
-              continue
-
-          reaction_obj, created = ReactionsIssue.objects.get_or_create(
-              name=reaction_type, 
-              issue=new_issue,
-              defaults={'count': count}
-          )
-
-          if not created:
-              reaction_obj.count = count
-              reaction_obj.save()
-
-      if issue['comments'] > 0:
-        issue_comments = GitHubAPIService.get_issue_comments(user, repo, issue['number'])
-        for comment in issue_comments:
-          try:
-            new_comment = Comment.objects.get(number=comment['id'], issue=new_issue)
-          except Comment.DoesNotExist:
-            new_comment = Comment.objects.create(
-              number=comment['id'],
-              body=comment['body'],
-              issue=new_issue,
-              author=comment['user']['login'],
-              author_profile_pic=comment['user']['avatar_url'],
-              created_at=comment['created_at'],
-              updated_at=comment['updated_at'],
-            )
-          
-          for reaction_type, count in comment['reactions'].items():
-            if reaction_type in ['url', 'total_count'] or count == 0:
-                continue
-
-            reaction_obj, created = ReactionsComment.objects.get_or_create(
-                name=reaction_type, 
-                comment=new_comment,
-                defaults={'count': count}
-            )
-
-            if not created:
-                reaction_obj.count = count
-                reaction_obj.save()
-
-    serializer = RepoFullSerializer(new_repo)
-
-    cache.set("repo" + str(new_repo.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("repo-" + str(new_repo.pk), json.dumps(repoSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     
-    return Response(serializer.data,status=status.HTTP_201_CREATED)
+    return Response(repoSerializer.data,status=status.HTTP_201_CREATED)
   
 class RepoDelete(APIView):
-  permission_classes = (permissions.IsAuthenticated,)
+  permission_classes = (permissions.IsAuthenticated, IsStaffUser)
 
   def delete(self, request, pk):
-    if not self.request.user.is_staff:
-      return Response({
-        "en": "You are not authorized to delete a repository",
-        "cz": "Nemáte oprávnění smazat repozitář"
-      }, status=status.HTTP_403_FORBIDDEN)
     
     try:
       repo = Repo.objects.get(pk=pk)
@@ -186,16 +111,11 @@ class RepoDelete(APIView):
         "cz": "Repozitář nebyl nalezen"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    isCollaborant = checkCollaborant(repo.author, repo.name)
-
-    if not isCollaborant:
-      return Response({
-        "en": "You are not a collaborant of this repository",
-        "cz": "Nejste collaborantem tohoto repozitáře"
-      }, status=status.HTTP_403_FORBIDDEN)
+    for issue in repo:
+      cache.delete("issue-" + str(issue.pk))
     
     repo.delete()
 
-    cache.delete("repo" + str(pk))
+    cache.delete("repo-" + str(pk))
 
     return Response(status=status.HTTP_204_NO_CONTENT)

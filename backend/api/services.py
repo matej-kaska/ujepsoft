@@ -1,6 +1,8 @@
 import os
 import requests
 
+from api.models import Repo
+
 class GitHubAPIService:
   session = requests.Session()
   token = os.getenv('GITHUB_TOKEN')
@@ -41,3 +43,24 @@ class GitHubAPIService:
     url = f"https://api.github.com/repos/{user}/{repo_name}/labels"
     response = cls.session.post(url, data=data)
     return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def get_issue(cls, user, repo_name, issue_number):
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}"
+    response = cls.session.get(url)
+    return response.json() if response.status_code == 200 else None
+
+  @classmethod
+  def get_all_issues(cls):
+    repos = Repo.objects.all()
+    response = []
+
+    for repo in repos:
+      issues = cls.get_repo_issues(repo.author, repo.name)
+      if len(issues) == 0:
+        continue
+      for issue in issues:
+        if 'pull_request' not in issue:
+          response.append(issue)
+    
+    return response
