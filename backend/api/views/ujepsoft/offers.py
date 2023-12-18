@@ -35,6 +35,12 @@ class OfferUpload(APIView):
         "cz": "Maximum 20 klíčových výrazů může být specifikováno"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if len(request.FILES.getlist('files')) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
     MAX_FILE_SIZE = 134217728 # 128 MB
     MAX_TOTAL_FILES_SIZE = 536870912 # 512 MB
 

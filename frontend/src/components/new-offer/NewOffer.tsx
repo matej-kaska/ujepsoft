@@ -129,6 +129,7 @@ const NewOffer = ({offer}: NewOfferProps) => {
       totalSize += file.size;
     })
     if (totalSize + file.size > 536870912) {openErrorSnackbar("Soubory nesmí být větší než 512 MB!"); return false;}
+    if (files.length > 49) {openErrorSnackbar("Nesmíte nahrát více jak 50 souborů"); return false;}
     return true;
   }
 
@@ -147,11 +148,9 @@ const NewOffer = ({offer}: NewOfferProps) => {
     e.stopPropagation();
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      if (!validateSize(e.dataTransfer.files[0])) {e.dataTransfer.clearData();return;}
-      setFiles((prev: File[]) => {
-        return [...prev, e.dataTransfer.files[0]]
-      });
-      e.dataTransfer.clearData();
+      const file = e.dataTransfer.files[0];
+      if (!validateSize(file)) return;
+      setFiles((prev: File[]) => [...prev, file]);
     }
   };
 
