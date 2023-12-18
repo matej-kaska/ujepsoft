@@ -41,6 +41,7 @@ class Repo(models.Model):
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)
   private = models.BooleanField(default=False)
+  collaborant = models.BooleanField(default=True)
 
   def __repr__(self):
     return f"[{self.pk}] {self.name}"

@@ -56,10 +56,10 @@ class RepoFullSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Repo
-    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private', 'issues']
+    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private', 'issues', 'collaborant']
 
 class RepoSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Repo
-    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private']
+    fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private', 'collaborant']

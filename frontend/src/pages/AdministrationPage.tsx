@@ -126,6 +126,7 @@ const AdministrationPage = () => {
                   <span>{repo.name}</span>
                   <Link to={repo.url} target="_blank" rel="noopener noreferrer">URL odkaz</Link>
                   <RemoveIcon className='remove-icon' onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
+                  {!repo.collaborant && <span className="text-red-700">UJEP není collaborantem repozitáře!</span>}
                 </li>
               )}
             </ul>
