@@ -156,6 +156,10 @@ const NewOffer = ({offer}: NewOfferProps) => {
 
   const handlePostOffer = async (data: Form) => {
     if (!userInfo.id) return;
+    if (data.name.trim() === "") {
+      alert("Název nabídky nesmí být prázdný!");
+      return;
+    }
 
     const formData = new FormData();
     formData.append('name', data.name);
