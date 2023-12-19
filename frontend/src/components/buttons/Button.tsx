@@ -19,7 +19,7 @@ const Button = ({
 }: ButtonProps) => {
 
   return (
-    <button className={`button ${color} ${size} ${className}`} {...props}>
+    <button className={`button ${color} ${size} ${className && className}`} {...props}>
       {icon && iconPosition === "left" && <span className="button-icon mr-2">{icon}</span>}
       {children && children}
       {icon && iconPosition === "right" && <span className="button-icon ml-2">{icon}</span>}

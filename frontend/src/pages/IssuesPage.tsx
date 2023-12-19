@@ -83,7 +83,7 @@ const IssuesPage = () => {
           <LoadingScreen upper/>
         :
           <>
-            {next && <Button color="accent" onClick={getMoreIssues}>Načíst další</Button>}
+            {next && <Button color="accent" className="load-more" onClick={getMoreIssues}>Načíst další</Button>}
           </>
         }
       </div>
