@@ -18,28 +18,25 @@ const CreateOfferGuide = () => {
           <li>Objeví se tabulka pro vyplnění nabídky</li>
           <div className="image">
             <img src="/src/images/guides/createoffer2.png" alt="createoffer2" />
-            <li>
+            <ul>
               <strong>1</strong> &rarr; Název nabídky
               <i> (&quot;Aplikace pro zjištění počasí&quot;)</i>; nutno vyplnit.
-            </li>
-            <li>
+            </ul>
+            <ul>
               <strong>2</strong> &rarr; Klíčová slova jsou určena k tomu, aby
               zaujala programátora; není nutno vyplňovat.
-            </li>
-            <li>
+            </ul>
+            <ul>
               <strong>3</strong> &rarr; Důkladný popis aplikace/programu. Proč
               je aplikace potřebná, jaká jsou očekávání, atd.
-            </li>
-            <li>
+            </ul>
+            <ul>
               <strong>4</strong> &rarr;
-            </li>
-            <li>
+            </ul>
+            <ul>
               <strong>5</strong> &rarr;
-            </li>
+            </ul>
           </div>
-          <li>Napište do vyhledávácího pole &quot;Výstřižky&quot;</li>
-          <li>Vyberte oblast, kterou chcete zachytit</li>
-          <li>Vpravo nahoře klikněte na tlačítko diskety (Uložit jako)</li>
         </ol>
       )}
     </div>

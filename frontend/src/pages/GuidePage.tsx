@@ -1,10 +1,14 @@
 import Navbar from "components/navbar/Navbar";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
 import CreateOfferGuide from "components/guides/CreateOfferGuide";
+import LookAtIssues from "components/guides/LookAtIssues";
+import Administration from "components/guides/Administration";
 
 const GuidePage = () => {
   const guides = new Array<JSX.Element>();
+  guides.push(<Administration />);
   guides.push(<CreateOfferGuide />);
+  guides.push(<LookAtIssues />);
   guides.push(<ScreenshotGuide />);
 
   return (
