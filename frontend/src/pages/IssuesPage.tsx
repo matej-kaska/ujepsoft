@@ -11,7 +11,7 @@ import UnitIssue from "components/unit-issue/UnitIssue";
 
 const IssuesPage = () => {
   const { showModal } = useModal();
-  const [issues, setIssues] = useState<any[]>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const dispatch = useDispatch();
   const reload = useSelector((state: any) => state.reload);
   const [next, setNext] = useState<string>("");

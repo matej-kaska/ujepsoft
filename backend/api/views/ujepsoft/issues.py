@@ -13,7 +13,7 @@ from api.services import GitHubAPIService
 from api.permissions import IsStaffUser
 from api.pagination import IssuePagination
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import find_obj_by_id
+from utils.issues.utils import find_issue_by_id, find_obj_by_id, get_datetime
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -35,6 +35,8 @@ class IssuesList(generics.ListAPIView):
 
     if len(response) > 0:
       print("getting issues from cache")
+      response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
+
       page = self.paginate_queryset(response)
       if page is not None:
         serializer = self.get_serializer(page, many=True)
@@ -44,23 +46,28 @@ class IssuesList(generics.ListAPIView):
       return Response(serializer.data,status=status.HTTP_200_OK)
 
     fetched_issues = GitHubAPIService.get_all_issues()
+    issue_ids = [str(issue.gh_id) for issue in issues]
 
-    for issue in issues:
+    for fetched_issue in fetched_issues:
 
-      fetched_issue = find_obj_by_id(fetched_issues, issue.gh_id)
-      
+      if str(fetched_issue["id"]) in issue_ids:
+        issue_ids.remove(str(fetched_issue["id"]))
+
+      issue = find_issue_by_id(issues, fetched_issue["id"])
+
       # Getting new issue
-      if fetched_issue is None:
-        fetched_issue = GitHubAPIService.get_issue(issue.repo.author, issue.repo.name, issue.number)
-        if fetched_issue is None:
-          issue.delete()
-          print(f"deleting issue {issue.number}")
-          continue
-        create_issue(fetched_issue, issue.repo, issue.repo.author, issue.repo.name)
-        print(f"creating new issue {issue.number}")
+      if issue is None:
+        new_issue = GitHubAPIService.get_issue(fetched_issue["user"]["login"], fetched_issue["repo"], fetched_issue["number"])
+
+        repo = Repo.objects.get(author=fetched_issue["user"]["login"], name=fetched_issue["repo"])
+
+        create_issue(new_issue, repo, fetched_issue["user"]["login"], fetched_issue["repo"])
+        print(f"creating new issue {fetched_issue['number']}")
+
+        issue = Issue.objects.get(gh_id=fetched_issue["id"])
 
       # Getting updated issue
-      if datetime.strptime(fetched_issue["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
+      if issue and datetime.strptime(fetched_issue["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
         print(f"updating issue {issue.number}")
         continue
@@ -72,7 +79,11 @@ class IssuesList(generics.ListAPIView):
       response.append(issue)
       print(f"getting issue {issue.number} from db")
 
-    response = sorted(response, key=lambda x: x.updated_at, reverse=True)
+    if len(issue_ids) > 0:
+      Issue.objects.filter(gh_id__in=issue_ids).delete()
+      print(f"removing issue {issue_ids}")
+
+    response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
 
     page = self.paginate_queryset(response)
     if page is not None:

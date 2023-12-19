@@ -61,6 +61,7 @@ class GitHubAPIService:
         continue
       for issue in issues:
         if 'pull_request' not in issue:
+          issue['repo'] = repo.name
           response.append(issue)
     
     return response

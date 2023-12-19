@@ -25,7 +25,7 @@ const UnitIssue = ({issue}: UnitIssueProps) => {
           )
         })}
       </section>
-      <p className="unit-description">{htmlToPlainText(issue.body)}</p>
+      <p className="unit-description">{issue.body && htmlToPlainText(issue.body)}</p>
       <div className="unit-footer">
         <span className="unit-comments">Počet komentářů: {issue.comments}</span>
         <span className="unit-date">Vytvořeno: {new Date(issue.created_at).toLocaleDateString('cs-CZ')}</span>
