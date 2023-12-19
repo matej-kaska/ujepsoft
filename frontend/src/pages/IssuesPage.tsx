@@ -57,7 +57,7 @@ const IssuesPage = () => {
           <div className="footer-header">
             <div className="switch-wrapper">
               <label className="switch" htmlFor="toggle">
-                <input type="checkbox" id="toggle" checked={!closed} onClick={() => setClosed(!closed)}/>
+                <input type="checkbox" id="toggle" defaultChecked={!closed} onClick={() => setClosed(!closed)}/>
                 <span className="slider"></span>
               </label>
               <span className="text">Nezobrazovat uzavřené</span>
