@@ -2,7 +2,7 @@ export type Issue = {
     id: number;
     number: number;
     title: string;
-    body: string;
+    body: string | null;
     repo: string;
     state: string;
     labels: string[];

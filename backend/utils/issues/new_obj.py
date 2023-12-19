@@ -98,6 +98,7 @@ def update_issue(issue_pk, new_issue, user, repo):
   updating_issue.state = new_issue["state"]
   updating_issue.updated_at = new_issue["updated_at"]
   updating_issue.author_profile_pic = new_issue["user"]["avatar_url"]
+  updating_issue.labels.clear()
 
   for label in new_issue['labels']:
     label_name = label['name']

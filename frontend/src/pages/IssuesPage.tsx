@@ -11,7 +11,7 @@ import UnitIssue from "components/unit-issue/UnitIssue";
 
 const IssuesPage = () => {
   const { showModal } = useModal();
-  const [issues, setIssues] = useState<any[]>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const dispatch = useDispatch();
   const reload = useSelector((state: any) => state.reload);
   const [next, setNext] = useState<string>("");
@@ -57,7 +57,7 @@ const IssuesPage = () => {
           <div className="footer-header">
             <div className="switch-wrapper">
               <label className="switch" htmlFor="toggle">
-                <input type="checkbox" id="toggle" checked={!closed} onClick={() => setClosed(!closed)}/>
+                <input type="checkbox" id="toggle" defaultChecked={!closed} onClick={() => setClosed(!closed)}/>
                 <span className="slider"></span>
               </label>
               <span className="text">Nezobrazovat uzavřené</span>
@@ -83,7 +83,7 @@ const IssuesPage = () => {
           <LoadingScreen upper/>
         :
           <>
-            {next && <Button color="accent" onClick={getMoreIssues}>Načíst další</Button>}
+            {next && <Button color="accent" className="load-more" onClick={getMoreIssues}>Načíst další</Button>}
           </>
         }
       </div>
