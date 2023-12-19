@@ -72,6 +72,8 @@ class IssuesList(generics.ListAPIView):
       response.append(issue)
       print(f"getting issue {issue.number} from db")
 
+    response = sorted(response, key=lambda x: x.updated_at, reverse=True)
+
     page = self.paginate_queryset(response)
     if page is not None:
       serializer = self.get_serializer(page, many=True)
