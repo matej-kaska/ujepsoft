@@ -17,6 +17,7 @@ import { setReload } from 'redux/reloadSlice';
 import { Attachment, Offer } from 'types/offer';
 import htmlToDraft from 'html-to-draftjs';
 import { useNavigate } from 'react-router-dom';
+import LoadingScreen from 'components/loading-screen/LoadingScreen';
 
 type Form = {
   name: string;
@@ -38,6 +39,7 @@ const NewOffer = ({offer}: NewOfferProps) => {
   const userInfo = useSelector((state: any) => state.auth.userInfo);
   const [files, setFiles] = useState<File[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const { closeModal } = useModal();
   const { openSnackbar, openErrorSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -176,14 +178,16 @@ const NewOffer = ({offer}: NewOfferProps) => {
     });
 
     formData.append('existingFiles', JSON.stringify(newUploadedFiles));
-    
+    setLoading(true);
     if (offer) {
       try {
         await axios.put(`/api/offer/${offer.id}`, formData);
+        setLoading(false);
         openSnackbar('Nabídka byla úspěšně upravena!');
         closeModal();
         dispatch(setReload("offerpage"));
       } catch (error) {
+        setLoading(false);
         openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
         setError("apiError", {
           type: "server",
@@ -194,12 +198,14 @@ const NewOffer = ({offer}: NewOfferProps) => {
     } else {
       try {
         const response = await axios.post('/api/offer', formData);
+        setLoading(false);
         openSnackbar('Nabídka byla úspěšně vytvořena!');
         closeModal();
         dispatch(setReload("offer"));
         navigate(`/offer/${response.data.id}`);
       } catch (error) {
         openErrorSnackbar('Někde nastala chyba zkuste to znovu!');
+        setLoading(false);
         setError("apiError", {
           type: "server",
           message: "Někde nastala chyba zkuste to znovu",
@@ -210,101 +216,107 @@ const NewOffer = ({offer}: NewOfferProps) => {
   }
 
   return (
-    <form className='new-offer' onSubmit={handleSubmit(handlePostOffer)}>
-      <h1>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</h1>
-      <label className='name'>Název</label>
-      <input className={`${errors.name ? "border-red-600" : ""}`} placeholder='Zadejte název nabídky...' {...register("name")} maxLength={100}/>
-      <p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
-      <div className='keywords-wrapper'>
-        <div className="keywords-container">
-          <label htmlFor="keywords-input">Klíčová slova: </label>
-          <div className="keywords">
-            {keywords.length ? null :
-              <span className="add-keyword">Pro přidání klíčového slova stikněte Enter...</span>
-            }
-            {keywords.map((keyword, index) => (
-              <div key={index} className="keyword-tag">
-                <div className="keyword-name">{keyword}</div>
-                <CloseIcon className="close-icon" onClick={() => onKeywordCloseButtonClick(keyword)} />
+    <>
+      {loading ?
+        <LoadingScreen modal/>
+      :
+        <form className='new-offer' onSubmit={handleSubmit(handlePostOffer)}>
+          <h1>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</h1>
+          <label className='name'>Název</label>
+          <input className={`${errors.name ? "border-red-600" : ""}`} placeholder='Zadejte název nabídky...' {...register("name")} maxLength={100}/>
+          <p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
+          <div className='keywords-wrapper'>
+            <div className="keywords-container">
+              <label htmlFor="keywords-input">Klíčová slova: </label>
+              <div className="keywords">
+                {keywords.length ? null :
+                  <span className="add-keyword">Pro přidání klíčového slova stikněte Enter...</span>
+                }
+                {keywords.map((keyword, index) => (
+                  <div key={index} className="keyword-tag">
+                    <div className="keyword-name">{keyword}</div>
+                    <CloseIcon className="close-icon" onClick={() => onKeywordCloseButtonClick(keyword)} />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <input
+              type="text"
+              className={`${errors.keywords ? "border-red-600" : ""} keywords-input`}
+              id='keywords-input'
+              placeholder='Zadejte klíčové slovo...'
+              maxLength={63}
+              value={keywordsInputValue}
+              onChange={(e) => setKeywordsInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </div>
-        </div>
-        <input
-          type="text"
-          className={`${errors.keywords ? "border-red-600" : ""} keywords-input`}
-          id='keywords-input'
-          placeholder='Zadejte klíčové slovo...'
-          maxLength={63}
-          value={keywordsInputValue}
-          onChange={(e) => setKeywordsInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
-      <p className={`${errors.keywords ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.keywords?.message || (errors.keywords?.[0]?.message)}!</p>
-      <label className="description" htmlFor="description">Popis nabídky</label>
-      <WysiwygEditor
-        stripPastedStyles={true}
-        editorState={descriptionEditorState}
-        toolbarClassName="toolbarClassName"
-        wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
-        editorClassName={`editorClassName`}
-        editorStyle={{fontFamily: 'Plus Jakarta Sans'}}
-        toolbar={{
-          options: ['inline', 'fontSize', 'list', 'emoji', 'remove', 'history'],
-          inline: {options: ['bold', 'italic', 'underline', 'strikethrough']}
-        }}
-        onEditorStateChange={ (newState: any) => {
-          let hasAtomicValue = false
-          newState.getCurrentContent().blockMap.forEach((element: any) => {
-            if (element.type === "atomic") hasAtomicValue = true
-          })
-          if (hasAtomicValue) {
-            alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
-            return;
-          }
-          const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
-          if (text.length > 8191) return alert('Popis nabídky nesmí být delší než 8191 raw znaků!');
-          setDescriptionEditorState(newState);
-          if (validate) setValue("description", text, { shouldValidate: true })
-          else setValue("description", text);
-        }}
-      />
-      <p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
-      <label className='attachments'>Přílohy</label>
-      
-      <div className='attachment-wrapper'>
-        <input type='file' className='dropzone' onChange={addFile} id={"dropzone"}/>
-        <span 
-          onClick={() => document.getElementById("dropzone")?.click()}
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          onDragEnter={(e) => e.preventDefault()}
-        >
-          Sem klikněte nebo přetáhněte soubor...
-        </span>
-      </div>
-      {files.map((file: File, index: number) => {
-        return (
-          <div className='attachment' key={index}>
-            <span>{file.name}</span>
-            <CloseIcon className="close-icon" onClick={() => onFileCloseButtonClick(index)} />
+          <p className={`${errors.keywords ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.keywords?.message || (errors.keywords?.[0]?.message)}!</p>
+          <label className="description" htmlFor="description">Popis nabídky</label>
+          <WysiwygEditor
+            stripPastedStyles={true}
+            editorState={descriptionEditorState}
+            toolbarClassName="toolbarClassName"
+            wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
+            editorClassName={`editorClassName`}
+            editorStyle={{fontFamily: 'Plus Jakarta Sans'}}
+            toolbar={{
+              options: ['inline', 'fontSize', 'list', 'emoji', 'remove', 'history'],
+              inline: {options: ['bold', 'italic', 'underline', 'strikethrough']}
+            }}
+            onEditorStateChange={ (newState: any) => {
+              let hasAtomicValue = false
+              newState.getCurrentContent().blockMap.forEach((element: any) => {
+                if (element.type === "atomic") hasAtomicValue = true
+              })
+              if (hasAtomicValue) {
+                alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
+                return;
+              }
+              const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
+              if (text.length > 8191) return alert('Popis nabídky nesmí být delší než 8191 raw znaků!');
+              setDescriptionEditorState(newState);
+              if (validate) setValue("description", text, { shouldValidate: true })
+              else setValue("description", text);
+            }}
+          />
+          <p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
+          <label className='attachments'>Přílohy</label>
+          
+          <div className='attachment-wrapper'>
+            <input type='file' className='dropzone' onChange={addFile} id={"dropzone"}/>
+            <span 
+              onClick={() => document.getElementById("dropzone")?.click()}
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
+            >
+              Sem klikněte nebo přetáhněte soubor...
+            </span>
           </div>
-        )
-      })}
-      {uploadedFiles.map((file: Attachment, index: number) => {
-        return (
-          <div className='attachment' key={index}>
-            <span>{file.name}</span>
-            <CloseIcon className="close-icon" onClick={() => onUploadedFileCloseButtonClick(index)} />
+          {files.map((file: File, index: number) => {
+            return (
+              <div className='attachment' key={index}>
+                <span>{file.name}</span>
+                <CloseIcon className="close-icon" onClick={() => onFileCloseButtonClick(index)} />
+              </div>
+            )
+          })}
+          {uploadedFiles.map((file: Attachment, index: number) => {
+            return (
+              <div className='attachment' key={index}>
+                <span>{file.name}</span>
+                <CloseIcon className="close-icon" onClick={() => onUploadedFileCloseButtonClick(index)} />
+              </div>
+            )
+          })}
+          {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
+          <div className='buttons'>
+            <Button type="submit" onClick={() => setValidate(true)}>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</Button>
           </div>
-        )
-      })}
-      {errors.apiError && (<p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>)}
-      <div className='buttons'>
-        <Button type="submit" onClick={() => setValidate(true)}>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</Button>
-      </div>
-    </form>
+        </form>
+      }
+    </>
   )
 }
 
