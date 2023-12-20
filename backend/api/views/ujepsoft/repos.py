@@ -111,7 +111,7 @@ class RepoDelete(APIView):
         "cz": "Repozitář nebyl nalezen"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    for issue in repo:
+    for issue in repo.issues.all():
       cache.delete("issue-" + str(issue.pk))
     
     repo.delete()

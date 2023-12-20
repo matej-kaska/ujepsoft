@@ -41,7 +41,7 @@ const IssuesPage = () => {
       setNext(response.data.next);
       setLoading(false);
     } catch {
-      openErrorSnackbar("Někde nastala chyba zkuste to znovu");
+      openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
       navigate("/");
     }
   };
