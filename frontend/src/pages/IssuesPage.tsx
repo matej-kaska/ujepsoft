@@ -8,6 +8,8 @@ import { setReload } from 'redux/reloadSlice';
 import LoadingScreen from 'components/loading-screen/LoadingScreen';
 import { Issue } from "types/issue";
 import UnitIssue from "components/unit-issue/UnitIssue";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "contexts/SnackbarProvider";
 
 const IssuesPage = () => {
   const { showModal } = useModal();
@@ -17,6 +19,8 @@ const IssuesPage = () => {
   const [next, setNext] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [closed, setClosed] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const {openErrorSnackbar} = useSnackbar();
 
   useEffect(() => {
     getIssues();
@@ -30,11 +34,16 @@ const IssuesPage = () => {
 
   const getIssues = async () => {
     setLoading(true);
-    const response = await axios.get(`/api/issue/list`);
-    if (!response.data) return;
-    setIssues(response.data.results);
-    setNext(response.data.next);
-    setLoading(false);
+    try {
+      const response = await axios.get(`/api/issue/list`);
+      if (!response.data) return;
+      setIssues(response.data.results);
+      setNext(response.data.next);
+      setLoading(false);
+    } catch {
+      openErrorSnackbar("Někde nastala chyba zkuste to znovu");
+      navigate("/");
+    }
   };
 
   const getMoreIssues = async () => {
