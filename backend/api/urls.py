@@ -11,7 +11,8 @@ urlpatterns = [
     path("offer/list", offer_views.OfferList.as_view(), name="api_offer_list"),
     path("offer/<int:pk>", offer_views.OfferDetail.as_view(), name="api_offer_detail"),
     path("repo", repo_views.RepoAdd.as_view(), name="api_repo_add"),
-    path("repo/list", repo_views.ReposList.as_view(), name="api_repo_list"),
+    path("repo/list", repo_views.RepoList.as_view(), name="api_repo_list"),
+    path("repo/list/small", repo_views.RepoListSmall.as_view(), name="api_repo_list_small"),
     path("repo/<int:pk>", repo_views.RepoDelete.as_view(), name="api_repo_detail"),
     path("issue/list", issue_views.IssuesList.as_view(), name="api_issue_list"),
 ]

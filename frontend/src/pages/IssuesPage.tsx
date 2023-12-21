@@ -10,6 +10,7 @@ import { Issue } from "types/issue";
 import UnitIssue from "components/unit-issue/UnitIssue";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import NewIssue from "components/new-issue/NewIssue";
 
 const IssuesPage = () => {
   const { showModal } = useModal();
@@ -71,7 +72,7 @@ const IssuesPage = () => {
               </label>
               <span className="text">Nezobrazovat uzavřené</span>
             </div>
-            <Button color='accent' onClick={() => console.log("add issue")}>+ Přidat pohledávku</Button>
+            <Button color='accent' onClick={() => showModal(<NewIssue/>)}>+ Přidat pohledávku</Button>
             <div className="spacer"/>
           </div>
         </header>

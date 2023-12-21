@@ -8,3 +8,8 @@ export type Repo = {
   author_profile_pic: string;
   collaborant: boolean;
 }
+
+export type RepoSelect = {
+  id: number;
+  name: string;
+}

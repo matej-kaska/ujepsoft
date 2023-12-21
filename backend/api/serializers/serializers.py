@@ -65,6 +65,16 @@ class RepoSerializer(serializers.ModelSerializer):
     model = Repo
     fields = ['id', 'name', 'description', 'url', 'author', 'author_profile_pic', 'private', 'collaborant']
 
+class RepoSerializerSmall(serializers.ModelSerializer):
+  name = serializers.SerializerMethodField()
+
+  class Meta:
+    model = Repo
+    fields = ['id', 'name']
+
+  def get_name(self, obj):
+    return f"{obj.name} ({obj.author})"
+
 class IssueSerializer(serializers.ModelSerializer):
   labels = serializers.SerializerMethodField()
   repo = serializers.SerializerMethodField()
