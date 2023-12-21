@@ -197,7 +197,7 @@ const NewIssue = ({issue}: NewIssueProps) => {
       alert("Název pohledávky nesmí být prázdný!");
       return;
     }
-
+    console.log(data.description)
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('repo', data.repo.toString());
