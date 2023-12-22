@@ -206,6 +206,10 @@
 
     .rdw-editor-toolbar {
       margin: -1px;
+
+      .rdw-dropdown-optionwrapper {
+        width: inherit;
+      }
     }
 
     .rdw-dropdown-selectedtext {
@@ -237,8 +241,6 @@
           overflow: hidden;
 
           div {
-            
-
             span, strong, i, del {
               font-family: 'Roboto' !important;
             }

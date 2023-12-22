@@ -12,6 +12,7 @@ import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
 import { ContentState, EditorState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import "/src/static/react-draft-wysiwyg.css";
+import { editorLabels } from 'static/wysiwyg';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReload } from 'redux/reloadSlice';
 import { Attachment, Offer } from 'types/offer';
@@ -310,9 +311,10 @@ const NewIssue = ({issue}: NewIssueProps) => {
             editorClassName={`editorClassName`}
             editorStyle={{fontFamily: 'Plus Jakarta Sans'}}
             toolbar={{
-              options: ['inline', 'fontSize', 'list', 'emoji', 'remove', 'history'],
+              options: ['inline', 'blockType', 'list', 'emoji', 'remove', 'history'],
               inline: {options: ['bold', 'italic', 'underline', 'strikethrough']}
             }}
+            localization={{ locale: 'en', translations: editorLabels }}
             onEditorStateChange={ (newState: any) => {
               let hasAtomicValue = false
               newState.getCurrentContent().blockMap.forEach((element: any) => {
