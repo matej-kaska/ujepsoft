@@ -1,0 +1,326 @@
+.new-issue {
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+  align-items: flex-start;
+  width: clamp(300px, 50vw, 1000px);
+  user-select: none;
+
+  h1 {
+    margin-left: 2px;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  label {
+    margin-left: 2px;
+  }
+
+  input {
+    min-height: 36px;
+    height: 36px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    padding-left: 12px;
+    margin-top: 6px;
+
+    &:focus-visible {
+      border-color: gray;
+      outline: 0px;
+    }
+  }
+
+  .name, .description, .repo {
+    margin-bottom: 3px;
+  }
+
+  .dropdown {
+    width: 100%;
+
+    .select {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      border: 1px solid #CCCCCC;
+      min-height: 36px;
+      height: 36px;
+      border-radius: 5px;
+      padding-left: 12px;
+      margin-top: 6px;
+  
+      &.darken {
+        border-color: gray;
+        outline: 0px;
+      }
+  
+      &:hover {
+        border-color: gray;
+        outline: 0px;
+      }
+  
+      &:active {
+        border-color: gray;
+        outline: 0px;
+      }
+  
+      &.unselected {
+        color: #999;
+      }
+    }
+
+    .options {
+      width: 100% !important;
+      margin-top: 1px !important;
+
+      button {
+        padding-inline: 1rem !important;
+        padding-block: 0.5rem !important;
+      }
+    }
+  }
+
+  .arrow {
+    align-self: self-end;
+    position: relative;
+    color: black;
+    height: 12px;
+    width: 12px;
+    bottom: 24px;
+    right: 8px;
+    cursor: pointer;
+    pointer-events: none;
+    margin-bottom: -12px;
+  }
+
+  .labels-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .labels {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      width: 100%;
+      padding-inline: 3rem;
+
+      .label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        label {
+          cursor: pointer;
+          border-radius: 6px;
+          align-items: center;
+          padding-inline: 0.5rem;
+          padding-block: 2px;
+          max-height: 1.5rem;
+          user-select: none;  
+        }
+
+        .bug {
+          background-color: rgb(215, 58, 74);
+          color: white;
+        }
+      
+        .enhancement {
+          background-color: rgb(162, 238, 239);
+          color: black;
+        }
+      
+        .question {
+          background-color: rgb(216, 118, 227);
+          color: black;
+        }
+
+        input {
+          min-height: unset;
+          height: 16px;
+          width: 16px;
+          margin-top: unset;
+          border-radius: 10px;
+          margin-right: 4px;
+          accent-color: $color-primary;
+          cursor: pointer;
+          appearance: none;
+          border: 1px solid gray;
+          border-radius: 3px;
+          background-color: white;
+          z-index: 1;
+          margin-bottom: 1px;
+
+          &:checked {
+            z-index: 0;
+            border-color: $color-primary;
+            background-color: $color-primary;
+
+            &:hover {
+              background-color: darken($color-primary, 10%);
+            }
+          }
+
+          &:hover {
+            background-color: darken(white, 10%);
+          }
+
+          &.error {
+            border-color: red;
+          }
+        }
+
+        .check {
+          position: relative;
+          color: white;
+          height: 12px;
+          width: 12px;
+          right: 6px;
+          pointer-events: none;
+          margin-left: -12px;
+        }
+      }
+    }
+  }
+
+  .rdw-editor-wrapper {
+    width: 100%;
+    margin-top: 6px;
+    border: 1px solid #CCCCCC;
+    min-height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    &.focused {
+      border-color: gray;
+      outline: 0px;
+    }
+
+    .rdw-editor-toolbar {
+      margin: -1px;
+
+      .rdw-dropdown-optionwrapper {
+        width: inherit;
+      }
+    }
+
+    .rdw-dropdown-selectedtext {
+      color: black;
+    }
+
+    .rdw-dropdown-optionwrapper {
+      position: absolute;
+      width: auto;
+    }
+
+    .rdw-emoji-modal {
+      position: absolute;
+      height: 150px;
+    }
+
+    .editorClassName {
+      display: flex;
+      flex: 1 1;
+      cursor: text;
+
+      .DraftEditor-root {
+        min-width: 12px;
+        width: 100%;
+        height: unset;
+
+        .DraftEditor-editorContainer {
+          height: 100%;
+          overflow: hidden;
+
+          div {
+            span, strong, i, del {
+              font-family: 'Roboto' !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .attachment-wrapper {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    height: 36px;
+    max-height: 36px;
+    overflow: hidden;
+    margin-top: 9px;
+    margin-bottom: 4px;
+
+    &:hover {
+      border-color: gray;
+    }
+
+    input {
+      color: transparent;
+      z-index: 99;
+      margin-top: 0;
+      border: 0;
+      cursor: pointer;
+
+      &::file-selector-button {
+        display: none;
+      }
+    }
+
+    span {
+      cursor: pointer;
+      z-index: 1;
+      position: relative;
+      top: -28px;
+      right: -14px;
+      color: #999;
+    }
+  }
+
+  .attachment {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    height: 36px;
+    max-height: 36px;
+    overflow: hidden;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      width: 100%;
+      margin-left: 8px;
+    }
+
+    svg {
+      height: 18px;
+      width: 18px;
+      margin-right: 8px;
+      cursor: pointer;
+
+      &:hover {
+        color: dimgray;
+      }
+    }
+  }
+
+  .buttons {
+    margin-top: 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

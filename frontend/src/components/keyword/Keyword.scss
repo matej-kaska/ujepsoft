@@ -1,5 +1,5 @@
 .keyword {
-  background-color: $color-lightpurple;
+  background-color: $color-lightaccent;
   border-radius: 6px;
   align-items: center;
   padding-inline: 0.5rem;
@@ -11,6 +11,6 @@
   overflow: hidden;
 
   &:hover {
-    background-color: darken($color-lightpurple, 10%);
+    background-color: darken($color-lightaccent, 10%);
   }
 }

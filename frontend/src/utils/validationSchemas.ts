@@ -45,3 +45,16 @@ export const descriptionSchema = yup.string()
 export const urlGithubSchema = yup.string()
   .required('Toto pole je povinné')
   .matches(/^https:\/\/github\.com\//, 'URL musí začínat "https://github.com/"');
+
+export const labelsSchema = yup.array(
+  yup.string()
+    .required("Toto pole je povinné")
+    .oneOf(["bug", "question", "enhancement"], "Toto pole je povinné")
+  )
+  .required("Toto pole je povinné")
+  .min(1, "Musíte vybrat alespoň 1 označení")
+  .max(3, "Nesmíte vybrat více než 3 označení");
+
+export const repoSelectSchema = yup.number()
+  .required("Toto pole je povinné")
+  .min(1, "Musíte vybrat repozitář");

@@ -52,7 +52,7 @@ const DropdownItem = ({ children, className, defaultClasses=true, disabled=false
   <Menu.Item {...props}>
     {({ active }) => (
       <button 
-        className={`${disabled ? '!cursor-not-allowed opacity-50' : ''} ${active ? '!rounded-md bg-gray-100 text-gray-900' : 'text-gray-700'} ${defaultClasses ? 'flex items-center w-full text-left p-5 select-none' : '' } ${className ? className : ''}`}>
+        className={`${disabled ? '!cursor-not-allowed opacity-50' : ''} ${active ? '!rounded-md bg-gray-100 text-gray-900' : 'text-gray-700'} ${defaultClasses ? 'flex items-center w-full text-left p-5 select-none' : '' } ${className ? className : ''}`} type="button">
         {children}
       </button>
     )}

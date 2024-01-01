@@ -168,8 +168,18 @@
 
       .DraftEditor-root {
         min-width: 12px;
-        span, strong, i, del {
-          font-family: 'Roboto' !important;
+        width: 100%;
+        height: unset;
+
+        .DraftEditor-editorContainer {
+          height: 100%;
+          overflow: hidden;
+
+          div {
+            span, strong, i, del {
+              font-family: 'Roboto' !important;
+            }
+          }
         }
       }
     }

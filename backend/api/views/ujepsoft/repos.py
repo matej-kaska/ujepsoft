@@ -2,7 +2,7 @@ import json
 import os
 
 from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue, Repo
-from api.serializers.serializers import IssueCacheSerializer, IssueSerializer, RepoSerializer, RepoFullSerializer
+from api.serializers.serializers import IssueCacheSerializer, IssueSerializer, RepoSerializer, RepoFullSerializer, RepoSerializerSmall
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,7 +13,7 @@ from api.permissions import IsStaffUser
 from utils.issues.new_obj import create_issue
 from utils.repos.utils import changeCollaborant, checkCollaborant, checkLabels
 
-class ReposList(generics.ListAPIView):
+class RepoList(generics.ListAPIView):
   permission_classes = (permissions.IsAuthenticated, IsStaffUser)
   serializer_class = RepoSerializer
 
@@ -111,7 +111,7 @@ class RepoDelete(APIView):
         "cz": "Repozitář nebyl nalezen"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    for issue in repo:
+    for issue in repo.issues.all():
       cache.delete("issue-" + str(issue.pk))
     
     repo.delete()
@@ -119,3 +119,10 @@ class RepoDelete(APIView):
     cache.delete("repo-" + str(pk))
 
     return Response(status=status.HTTP_204_NO_CONTENT)
+  
+class RepoListSmall(generics.ListAPIView):
+  permission_classes = (permissions.IsAuthenticated,)
+  serializer_class = RepoSerializerSmall
+
+  def get_queryset(self):
+    return Repo.objects.all()
