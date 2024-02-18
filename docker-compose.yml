@@ -3,15 +3,16 @@ version: '3'
 services:
   ## Postgres
   postgresql:
-    image: 'char0n/postgresql-czech-fulltext'
+    container_name: ujepsoft-postgresql
+    image: 'bitnami/postgresql:latest'
     environment:
-      - POSTGRESQL_USERNAME=postgres
-      - POSTGRESQL_PASSWORD=postgres
-      - POSTGRESQL_DATABASE=ujepsoft
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ujepsoft
+      - POSTGRES_DB=ujepsoft 
     volumes:
-      - 'postgresql_data:/var/lib/postgresql/data'
+      - postgresql_data:/bitnami/postgresql
+      - postgresql_pre_initdb:/docker-entrypoint-preinitdb.d
+      - postgresql_initdb:/docker-entrypoint-initdb.d
     ports:
       - '127.0.0.1:5432:5432'
 
@@ -89,7 +90,7 @@ services:
 volumes:
   node_modules:
     driver: local
-  postgresql_data:
+  postgresql-data:
     driver: local
   postgresql_initdb:
     driver: local

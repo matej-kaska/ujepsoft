@@ -1,34 +1,34 @@
-import { Middleware, Dispatch, Action, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { GlobalErrorService } from 'utils/ErrorHandling';
+import { Action, Dispatch, Middleware, PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { GlobalErrorService } from "utils/ErrorHandling";
 
 type ErrorState = {
-  message: string | null;
+	message: string | null;
 };
 
 const initialState: ErrorState = {
-  message: null,
+	message: null,
 };
 
 const errorSlice = createSlice({
-  name: 'error',
-  initialState,
-  reducers: {
-    setError: (state, action: PayloadAction<string>) => {
-      state.message = action.payload;
-    },
-  },
+	name: "error",
+	initialState,
+	reducers: {
+		setError: (state, action: PayloadAction<string>) => {
+			state.message = action.payload;
+		},
+	},
 });
 
 export const { setError } = errorSlice.actions;
 
 export const errorHandlingMiddleware: Middleware = (storeAPI) => (next: Dispatch) => (action: Action) => {
-  try {
-    return next(action);
-  } catch (err: any) {
-    storeAPI.dispatch(setError(err.message));
-    GlobalErrorService.handleReduxError(err);
-    throw err;
-  }
+	try {
+		return next(action);
+	} catch (err: any) {
+		storeAPI.dispatch(setError(err.message));
+		GlobalErrorService.handleReduxError(err);
+		throw err;
+	}
 };
 
 export default errorSlice.reducer;

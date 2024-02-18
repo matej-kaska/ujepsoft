@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
+
+jobs:
+  frontend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run Biome on frontend
+        run: npx biome ci --config-path=.\ .
+
+  backend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.2'
+      - name: Install ruff
+        run: pip install ruff
+      - name: Run ruff on backend
+        run: ruff ./backend
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+        ports:
+          - 2376:2376
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build the Docker Compose stack
+      run: docker-compose -f docker-compose.yml build
+
+    - name: Run tests
+      run: |
+        docker-compose -f docker-compose.yml up -d postgresql
+        docker-compose -f docker-compose.yml run backend ./manage.py test
+        docker-compose -f docker-compose.yml down
+
+  frontend-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Install NPM dependencies
+        run: |
+          cd frontend
+          npm install
+      
+      - name: Run NPM Audit
+        run: |
+          cd frontend
+          npm audit
+
+  backend-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.2'
+      
+      - name: Install pip-audit
+        run: pip install pip-audit
+      
+      - name: Run pip-audit
+        run: |
+          cd backend
+          pip-audit -r requirements.txt
+  
+  docker-compose-build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Docker Compose Build
+        run: docker-compose build
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https gnupg lsb-release
+          curl -fsSL https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: Scan Docker Images with Trivy
+        run: |
+          images=$(docker-compose config | grep 'image:' | awk '{print $2}' | sort | uniq)
+          for image in $images; do
+            echo "Scanning $image"
+            trivy image $image || true
+          done
+
+      - name: Scan backend Dockerfile with Trivy
+        run: trivy fs --security-checks vuln,config backend/
+
+      - name: Scan frontend Dockerfile with Trivy
+        run: trivy fs --security-checks vuln,config frontend/

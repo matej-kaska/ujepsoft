@@ -1,21 +1,21 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type NavigateState = {
-  link: string;
-}
+	link: string;
+};
 
 const initialState: NavigateState = {
-  link: "",
+	link: "",
 };
 
 const navigateSlice = createSlice({
-  name: 'navigate',
-  initialState,
-  reducers: {
-    navigate: (state, action: PayloadAction<string>) => {
-      state.link = action.payload;
-    }
-  }
+	name: "navigate",
+	initialState,
+	reducers: {
+		navigate: (state, action: PayloadAction<string>) => {
+			state.link = action.payload;
+		},
+	},
 });
 
 export const { navigate } = navigateSlice.actions;
