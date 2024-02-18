@@ -57,7 +57,7 @@ jobs:
 
     - name: Run tests
       run: |
-        docker-compose -f docker-compose.yml up -d postgresql
+        docker-compose -f docker-compose.yml up -d postgresql redis
         docker-compose -f docker-compose.yml run backend ./manage.py test
         docker-compose -f docker-compose.yml down
 
