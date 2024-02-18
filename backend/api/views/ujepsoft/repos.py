@@ -82,7 +82,7 @@ class RepoAdd(APIView):
     except Repo.DoesNotExist:
       new_repo = Repo.objects.create(
         name=repo_data["name"],
-        description=repo_data['description'],
+        description=repo_data.get('description', '') or '',
         url=repo_data['html_url'],
         author=repo_data['owner']['login'],
         author_profile_pic=repo_data['owner']['avatar_url'],

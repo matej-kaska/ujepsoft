@@ -20,7 +20,7 @@ def create_issue(issue, associated_repo, user, repo):
       number=issue['number'],
       gh_id=issue['id'],
       title=issue['title'],
-      body=issue['body'],
+      body=issue.get('body', '') or '',
       state=issue['state'],
       repo=associated_repo,
       author=issue['user']['login'],
