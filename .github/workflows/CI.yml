@@ -56,6 +56,9 @@ jobs:
       run: docker-compose -f docker-compose.yml build
 
     - name: Run tests
+      env:
+        REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+        DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
       run: |
         docker-compose -f docker-compose.yml up -d postgresql redis
         docker-compose -f docker-compose.yml run backend ./manage.py test
