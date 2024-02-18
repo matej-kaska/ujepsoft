@@ -4,7 +4,7 @@ type PillButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 	size?: "small" | "medium";
 	className?: string;
 	onClick?: () => void;
-	type: "button" | "submit" | "reset";
+	type?: "button" | "submit" | "reset";
 };
 
 const PillButton = ({ children, color = "primary", size = "medium", type = "button", className, ...props }: PillButtonProps) => {

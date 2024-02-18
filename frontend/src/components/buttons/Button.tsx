@@ -6,7 +6,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 	iconPosition?: "left" | "right";
 	className?: string;
 	onClick?: () => void;
-	type: "button" | "submit" | "reset";
+	type?: "button" | "submit" | "reset";
 };
 
 const Button = ({ children, color = "primary", size = "medium", icon, iconPosition = "left", type = "button", className, ...props }: ButtonProps) => {
