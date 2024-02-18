@@ -92,7 +92,7 @@ services:
 volumes:
   node_modules:
     driver: local
-  postgresql-data:
+  postgresql_data:
     driver: local
   postgresql_initdb:
     driver: local
