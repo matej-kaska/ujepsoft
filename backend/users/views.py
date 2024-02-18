@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
-from rest_framework import viewsets, permissions, generics
+from rest_framework import permissions, generics
 from users.serializers.serializers import UserPublicSerializer, UserSerializer
 
 from users.models import PasswordResetCode, RegistrationCode, User

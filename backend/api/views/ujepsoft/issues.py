@@ -2,18 +2,16 @@ import json
 import os
 from datetime import datetime, timezone
 
-from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue, Repo
+from api.models import Issue, Repo
 from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.cache import cache
 
 from api.services import GitHubAPIService
-from api.permissions import IsStaffUser
 from api.pagination import IssuePagination
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import find_issue_by_id, find_obj_by_id, get_datetime
+from utils.issues.utils import find_issue_by_id, get_datetime
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -73,8 +71,8 @@ class IssuesList(generics.ListAPIView):
         continue
 
       # Getting issue from database
-      issueSerializer = IssueCacheSerializer(issue)
-      cache.set("issue-" + str(issue.pk), json.dumps(issueSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+      issue_serializer = IssueCacheSerializer(issue)
+      cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
       # TODO: full serializer
       response.append(issue)
       print(f"getting issue {issue.number} from db")
