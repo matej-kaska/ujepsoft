@@ -15,12 +15,12 @@
 
 ## Pravidla workflow
 - Názvy branchí: feature/xxx, fix/xxx, styling/xxx, enhancement/xxx, devx/xxx
-- Zákaz používání formátovacích doplňků na již vytvořených souborech
+- Zákaz používání jiných formátovacích doplňků než je nastaven
 - Vytvářet co nejvíce a co nejmenší komponenty
 - Používat barvy a fonty z App.scss
 - Sass dělat jenom vnořený (pouze jedna classa)
 - Každá komponenta má parent div, který má classu jméno komponenty `<Zapati/>  ->  return(<footer classname="zapati"></footer>)`
-- Při PR opravit chyby v ESLintu, pokud se zde nějaké nachází
+- Při PR opravit chyby v Biome.js (cd frontend -> npx biome check .) a Ruff (cd backend -> ruff check .)
 - Na FE držet tuto hierarchii `import > komponenta > useState > useEffect > funkce > return JSX HTML`
 - Používat arrow funkce `const funkce = () => {}`
 - Používat SVGs všude, kde je to možné
@@ -30,7 +30,6 @@
 ### backend-old je Django, na kterým se můžeš učit
 
 ### Doporučené extesions pro VS Code
-- ESLint
 - PostCSS Language Support
 - Tailwind CSS IntelliSense
 - Error Lens
