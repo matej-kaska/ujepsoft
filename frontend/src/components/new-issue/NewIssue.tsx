@@ -226,7 +226,6 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			alert("Název pohledávky nesmí být prázdný!");
 			return;
 		}
-		console.log(data.description);
 		const formData = new FormData();
 		formData.append("name", data.name);
 		formData.append("repo", data.repo.toString());
@@ -245,6 +244,8 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
+
+		console.log(JSON.stringify(Object.fromEntries(formData)));
 		if (issue) {
 			try {
 				await axios.put(`/api/issue/${issue.id}`, formData);

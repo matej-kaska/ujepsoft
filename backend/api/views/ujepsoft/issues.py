@@ -1,11 +1,13 @@
 import json
 import os
 from datetime import datetime, timezone
+from tkinter import Label
 
 from api.models import Issue, Repo
 from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.core.cache import cache
 
 from api.services import GitHubAPIService
@@ -90,3 +92,81 @@ class IssuesList(generics.ListAPIView):
     
     serializer = self.get_serializer(response, many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
+  
+class Issue(APIView):
+
+  def post(self, request):
+    name = request.POST.get('name', None)
+    repo = request.POST.get('repo', None)
+    labels = json.loads(request.POST.get('keywords')) if request.POST.get('keywords') else None
+    description = request.POST.get('description', None)
+
+    if name is None or repo is None or labels is None or description is None:
+      return Response({
+        "en": "All required fields must be specified",
+        "cz": "Všechna povinná pole musí být specifikována"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(labels) == 0:
+      return Response({
+        "en": "At least one keyword must be specified",
+        "cz": "Musí být specifikován alespoň jeden klíčový výraz"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(name) < 6 or len(name) > 100:
+      return Response({
+        "en": "Name must be between 6 and 100 characters long",
+        "cz": "Název musí být dlouhý 6 až 100 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(description) < 32 or len(description) > 8192:
+      return Response({
+        "en": "Description must be between 32 and 8192 characters long",
+        "cz": "Popis musí být dlouhý 32 až 8192 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(request.FILES.getlist('files')) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if not Repo.objects.filter(pk=repo).exists():
+      return Response({
+        "en": "Repository not found",
+        "cz": "Repozitář nebyl nalezen"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    for label in labels:
+      if not Label.objects.filter(name=label).exists():
+        return Response({
+          "en": "Label " + label + " does not exist",
+          "cz": "Označení " + label + " neexistuje"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      
+    # Format description (Add files and author)
+    
+    # Create offer on Github
+    # Wait for response
+    # Create issue in database from response
+    # Add issue to cache
+
+    return Response({
+      "id": "of.pk"
+    }, status=status.HTTP_201_CREATED)

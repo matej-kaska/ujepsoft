@@ -70,6 +70,7 @@ class Issue(models.Model):
   repo = models.ForeignKey(Repo, on_delete=models.CASCADE, related_name='issues')
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)
+  author_ujepsoft = models.CharField(max_length=320, blank=True)
   created_at = models.DateTimeField()
   updated_at = models.DateTimeField()
 
@@ -85,6 +86,7 @@ class Comment(models.Model):
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)
+  author_ujepsoft = models.CharField(max_length=320, blank=True)
   created_at = models.DateTimeField()
   updated_at = models.DateTimeField()
 
