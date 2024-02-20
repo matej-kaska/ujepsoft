@@ -28,3 +28,14 @@ def get_datetime(updated_at):
   if isinstance(updated_at, str):
     return datetime.strptime(updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
   return updated_at
+
+def get_ujepsoft_author(description: str) -> str:
+  """
+  Get ujepsoft author's email of the issue/comment from description/body
+  """
+  if not description:
+    return ""
+  # TODO: Make it work
+  return ""
+  author = description.split('Author: ')[1].split('\n')[0]
+  return author

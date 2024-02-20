@@ -6,7 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import find_comment_by_id
+from utils.issues.utils import find_comment_by_id, get_ujepsoft_author
 
 def create_issue(issue, associated_repo, user, repo):
   try:
@@ -16,6 +16,11 @@ def create_issue(issue, associated_repo, user, repo):
     if issue.get('pull_request', None) is not None:
       return None
     
+    if issue['user']['login'] == os.getenv('GITHUB_USERNAME'):
+      author_ujepsoft = get_ujepsoft_author(issue['body'])
+    else:
+      author_ujepsoft = ""
+
     new_issue = Issue.objects.create(
       number=issue['number'],
       gh_id=issue['id'],
@@ -27,6 +32,7 @@ def create_issue(issue, associated_repo, user, repo):
       author_profile_pic=issue['user']['avatar_url'],
       created_at=issue['created_at'],
       updated_at=issue['updated_at'],
+      author_ujepsoft=author_ujepsoft
     )
     
   for label in issue['labels']:
@@ -57,6 +63,12 @@ def create_issue(issue, associated_repo, user, repo):
       try:
         new_comment = Comment.objects.get(number=comment['id'], issue=new_issue)
       except Comment.DoesNotExist:
+        
+        if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+          author_ujepsoft = get_ujepsoft_author(comment['body'])
+        else:
+          author_ujepsoft = ""
+
         new_comment = Comment.objects.create(
           number=comment['id'],
           body=comment['body'],
@@ -65,6 +77,7 @@ def create_issue(issue, associated_repo, user, repo):
           author_profile_pic=comment['user']['avatar_url'],
           created_at=comment['created_at'],
           updated_at=comment['updated_at'],
+          author_ujepsoft=author_ujepsoft
         )
       
       for reaction_type, count in comment['reactions'].items():
@@ -183,6 +196,12 @@ def update_comment(comment, associated_issue):
       reaction_obj.save()
 
 def create_comment(comment, associated_issue):
+
+  if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+    author_ujepsoft = get_ujepsoft_author(comment['body'])
+  else:
+    author_ujepsoft = ""
+
   new_comment = Comment.objects.create(
     number=comment['id'],
     body=comment['body'],
@@ -191,6 +210,7 @@ def create_comment(comment, associated_issue):
     author_profile_pic=comment['user']['avatar_url'],
     created_at=comment['created_at'],
     updated_at=comment['updated_at'],
+    author_ujepsoft=author_ujepsoft
   )
   
   for reaction_type, count in comment['reactions'].items():
