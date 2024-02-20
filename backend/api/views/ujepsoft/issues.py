@@ -92,7 +92,7 @@ class IssuesList(generics.ListAPIView):
     serializer = self.get_serializer(response, many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
   
-class Issue(APIView):
+class IssueCreate(APIView):
 
   def post(self, request):
     name = request.POST.get('name', None)

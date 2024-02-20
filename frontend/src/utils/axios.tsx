@@ -44,6 +44,7 @@ instance.interceptors.request.use(
 		return config;
 	},
 	(error) => {
+		console.warn(error);
 		return Promise.reject(error);
 	},
 );

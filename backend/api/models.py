@@ -78,7 +78,7 @@ class Issue(models.Model):
     return repr(self)
   
   def __repr__(self):
-    return f"[{self.pk}] {self.name}"
+    return f"[{self.pk}] {self.title}"
 
 class Comment(models.Model):
   number = models.CharField()
@@ -94,7 +94,7 @@ class Comment(models.Model):
     return repr(self)
   
   def __repr__(self):
-    return f"[{self.pk}] {self.name}"
+    return f"[{self.pk}] {self.number}"
 
 class ReactionsIssue(models.Model):
   name = models.CharField(max_length=63)
