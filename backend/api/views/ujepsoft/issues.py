@@ -11,6 +11,7 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.pagination import IssuePagination
+from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
 
@@ -160,6 +161,7 @@ class IssueCreate(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
       
     # TODO: Check labels
+    
       
     # Create temporary Issue
     new_issue = Issue.objects.create(
@@ -195,6 +197,9 @@ class IssueCreate(APIView):
 
     # Create Issue on Github
     associated_repo = Repo.objects.get(pk=repo)
+    
+    check_labels(associated_repo.author, associated_repo.name)
+
     response = GitHubAPIService.post_issue(associated_repo.author, associated_repo.name, name, description, labels)
 
     # Create issue in database from response
