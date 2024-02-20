@@ -87,7 +87,7 @@ class OfferList(generics.ListAPIView):
   serializer_class = OfferSerializer
 
   def get_queryset(self):
-    offers = Offer.objects.all()
+    offers = Offer.objects.all().order_by('created_at')
 
     return offers
   
