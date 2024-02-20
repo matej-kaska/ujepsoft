@@ -1,9 +1,8 @@
 import json
 import os
 from datetime import datetime, timezone
-from tkinter import Label
 
-from api.models import Issue, Repo
+from api.models import Issue, Label, Repo
 from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
