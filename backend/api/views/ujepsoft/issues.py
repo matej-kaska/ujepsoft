@@ -11,7 +11,6 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.pagination import IssuePagination
-from api import IMAGES_EXTENSIONS
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
 
