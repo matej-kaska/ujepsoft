@@ -1,7 +1,7 @@
 import json
 import os
 
-from api.models import File, Keyword, Offer
+from api.models import OfferFile, Keyword, Offer
 from api.pagination import StandardPagination
 from api.serializers.serializers import OfferSerializer
 from rest_framework import status, permissions, generics
@@ -72,7 +72,7 @@ class OfferUpload(APIView):
       of.keywords.add(kw)
 
     for uploaded_file in request.FILES.getlist('files'):
-      File.objects.create(
+      OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
         offer=of
@@ -163,7 +163,7 @@ class OfferDetail(APIView):
         kw = Keyword.objects.create(name=keyword)
       offer.keywords.add(kw)
 
-    for file in File.objects.filter(offer=offer):
+    for file in OfferFile.objects.filter(offer=offer):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
@@ -173,7 +173,7 @@ class OfferDetail(APIView):
         file.delete()
 
     for uploaded_file in request.FILES.getlist('files'):
-      File.objects.create(
+      OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
         offer=offer

@@ -23,9 +23,9 @@ class Offer(models.Model):
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
 
-class File(models.Model):
+class OfferFile(models.Model):
   name = models.CharField(max_length=255)
-  file = models.FileField(upload_to='files')
+  file = models.FileField(upload_to='offer_files')
   offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name='files')
 
   def __str__(self):
@@ -111,6 +111,28 @@ class ReactionsComment(models.Model):
   name = models.CharField(max_length=63)
   count = models.IntegerField()
   comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='reactions_comment')
+
+  def __str__(self):
+    return repr(self)
+  
+  def __repr__(self):
+    return f"[{self.pk}] {self.name}"
+  
+class IssueFile(models.Model):
+  name = models.CharField(max_length=255)
+  file = models.FileField(upload_to='issue_files')
+  issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='files')
+
+  def __str__(self):
+    return repr(self)
+  
+  def __repr__(self):
+    return f"[{self.pk}] {self.name}"
+  
+class CommentFile(models.Model):
+  name = models.CharField(max_length=255)
+  file = models.FileField(upload_to='comment_files')
+  comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='files')
 
   def __str__(self):
     return repr(self)

@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from api.models import Issue, Label, Repo
+from api.models import Issue, Label, Repo, IssueFile
 from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
@@ -11,8 +11,9 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.pagination import IssuePagination
+from api import IMAGES_EXTENSIONS
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import find_issue_by_id, get_datetime
+from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -97,7 +98,7 @@ class IssueCreate(APIView):
   def post(self, request):
     name = request.POST.get('name', None)
     repo = request.POST.get('repo', None)
-    labels = json.loads(request.POST.get('keywords')) if request.POST.get('keywords') else None
+    labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
     description = request.POST.get('description', None)
 
     if name is None or repo is None or labels is None or description is None:
@@ -159,13 +160,69 @@ class IssueCreate(APIView):
           "cz": "Označení " + label + " neexistuje"
         }, status=status.HTTP_400_BAD_REQUEST)
       
-    # Format description (Add files and author)
+    # TODO: Check labels
+      
+    # Create temporary Issue
+    new_issue = Issue.objects.create(
+      repo=Repo.objects.get(pk=repo),
+      number='temp__number',
+      gh_id='temp__gh_id',
+      title='temp__title',
+      body='temp__body',
+      state='temp__state',
+      author='temp__author',
+      author_profile_pic='temp__author_profile_pic',
+      created_at=datetime.now().replace(tzinfo=timezone.utc),
+      updated_at=datetime.now().replace(tzinfo=timezone.utc),
+    )
     
-    # Create offer on Github
-    # Wait for response
+    # Create files
+    issue_files = []
+    for uploaded_file in request.FILES.getlist('files'):
+      new_issue_file = IssueFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        issue=new_issue
+      )
+      issue_files.append(new_issue_file)
+
+    # Format description
+    description = description + "\n<p>"
+    
+    description = add_files_to_description(description, issue_files)
+    description = add_ujepsoft_author(description, request.user.email)
+
+    description = description + "\n</p>\n"
+
+    # Create Issue on Github
+    associated_repo = Repo.objects.get(pk=repo)
+    response = GitHubAPIService.post_issue(associated_repo.author, associated_repo.name, name, description, labels)
+
     # Create issue in database from response
+    Issue.objects.filter(pk=new_issue.pk).update(
+      number=response.get("number"),
+      gh_id=response.get("id"),
+      title=response.get("title"),
+      body=response.get("body"),
+      state=response.get("state"),
+      author=response.get("user").get("login"),
+      author_profile_pic=response.get("user").get("avatar_url"),
+      author_ujepsoft=request.user.email,
+      created_at=response.get("created_at"),
+      updated_at=response.get("updated_at"),
+    )
+
+    for label in labels:
+      try:
+        label_obj = Label.objects.get(name=label)
+        new_issue.labels.add(label_obj)
+      except Label.DoesNotExist:
+        print(f"Label {label} does not exist! Not Creating it!")
+
     # Add issue to cache
+    issue_serializer = IssueCacheSerializer(Issue.objects.get(pk=new_issue.pk))
+    cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response({
-      "id": "of.pk"
+      "id": new_issue.pk
     }, status=status.HTTP_201_CREATED)

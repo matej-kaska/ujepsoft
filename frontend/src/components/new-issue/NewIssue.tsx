@@ -314,21 +314,21 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						<h2>Označení </h2>
 						<div className="labels">
 							<div className="label">
-								<input type="checkbox" id="bug" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("bug")} />
+								<input type="checkbox" id="bug" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("bug")} checked={getValues("labels").includes("bug")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="bug" className="bug">
 									chyba
 								</label>
 							</div>
 							<div className="label">
-								<input type="checkbox" id="enhancement" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("enhancement")} />
+								<input type="checkbox" id="enhancement" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("enhancement")} checked={getValues("labels").includes("enhancement")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="enhancement" className="enhancement">
 									vylepšení
 								</label>
 							</div>
 							<div className="label">
-								<input type="checkbox" id="question" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("question")} />
+								<input type="checkbox" id="question" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("question")} checked={getValues("labels").includes("question")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="question" className="question">
 									otázka
