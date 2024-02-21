@@ -190,5 +190,6 @@ jobs:
       
       - name: Scan licences with Trivy
         run: |
+          trivy fs --scanners license --license-full .
           trivy fs --scanners license ./frontend
           trivy fs --scanners license ./backend/venv
