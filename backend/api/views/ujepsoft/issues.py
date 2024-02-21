@@ -160,9 +160,6 @@ class IssueCreate(APIView):
           "cz": "Označení " + label + " neexistuje"
         }, status=status.HTTP_400_BAD_REQUEST)
       
-    # TODO: Check labels
-    
-      
     # Create temporary Issue
     new_issue = Issue.objects.create(
       repo=Repo.objects.get(pk=repo),
