@@ -1,6 +1,6 @@
 name: CI
 
-on:
+on: 
   push:
     branches:
       - main
@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - development
+  workflow_dispatch
 
 jobs:
   frontend-lint:
@@ -136,11 +137,5 @@ jobs:
             trivy image $image || true
           done
       
-      - name: Scan Docker compose with Trivy
+      - name: Scan docker-compose and Dockerfiles for vulnerability with Trivy
         run: trivy fs --security-checks vuln,config .
-
-      - name: Scan backend Dockerfile with Trivy
-        run: trivy fs --security-checks vuln,config backend/
-
-      - name: Scan frontend Dockerfile with Trivy
-        run: trivy fs --security-checks vuln,config frontend/
