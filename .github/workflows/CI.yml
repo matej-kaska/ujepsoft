@@ -175,6 +175,8 @@ jobs:
       - name: Install Python dependencies
         run: |
           cd backend
+          python -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Install Trivy
@@ -188,4 +190,5 @@ jobs:
       
       - name: Scan licences with Trivy
         run: |
-          trivy fs --security-checks license .
+          trivy fs --security-checks license ./frontend
+          trivy fs --security-checks license ./backend/venv
