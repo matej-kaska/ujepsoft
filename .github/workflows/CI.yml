@@ -132,6 +132,9 @@ jobs:
             echo "Scanning $image"
             trivy image $image || true
           done
+      
+      - name: Scan Docker compose with Trivy
+        run: trivy fs --security-checks vuln,config /
 
       - name: Scan backend Dockerfile with Trivy
         run: trivy fs --security-checks vuln,config backend/
