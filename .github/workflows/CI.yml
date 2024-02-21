@@ -111,7 +111,7 @@ jobs:
           pip-audit -r requirements.txt
   
   docker-compose-build-and-scan:
-    name: Docker compose scan images for vulnerabilities
+    name: Scan Docker images for vulnerabilities
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -148,6 +148,7 @@ jobs:
           trivy fs --security-checks vuln,config .
           trivy conf ./test
           ls
+          trivy --version
 
   licences-scan:
     name: Licences scan
