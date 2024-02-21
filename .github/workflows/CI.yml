@@ -141,3 +141,4 @@ jobs:
         run: |
           trivy fs --security-checks vuln,config .
           trivy config docker-compose.yml
+          ls
