@@ -138,5 +138,6 @@ jobs:
           done
       
       - name: Scan docker-compose and Dockerfiles for vulnerabilities with Trivy
-        run: trivy fs --security-checks vuln,config .
+        run: |
+          trivy fs --security-checks vuln,config .
           trivy config /docker-compose.yml
