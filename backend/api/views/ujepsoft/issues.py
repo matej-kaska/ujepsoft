@@ -75,7 +75,7 @@ class IssuesList(generics.ListAPIView):
       # Getting issue from database
       issue_serializer = IssueCacheSerializer(issue)
       cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
-      # TODO: full serializer
+      # TODO: full serializer???
       response.append(issue)
       print(f"getting issue {issue.number} from db")
 
@@ -94,6 +94,7 @@ class IssuesList(generics.ListAPIView):
     return Response(serializer.data,status=status.HTTP_200_OK)
   
 class IssueCreate(APIView):
+  permission_classes = (permissions.IsAuthenticated,)
 
   def post(self, request):
     name = request.POST.get('name', None)
@@ -227,3 +228,96 @@ class IssueCreate(APIView):
     return Response({
       "id": new_issue.pk
     }, status=status.HTTP_201_CREATED)
+
+class IssueDetail(APIView):
+  serializer_class = IssueSerializer
+  permission_classes = (permissions.IsAuthenticated,)
+
+  def get(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    cached_issue = cache.get("issue-" + str(issue.pk))
+    if cached_issue:
+      return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
+    
+    # Get issue from Github and compare updated_at
+    serializer = self.get_serializer(issue)
+    cache.set("issue-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
+  def delete(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user != issue.author and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    issue.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+  
+  def put(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user != issue.author and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    name = request.POST.get('name', None)
+    labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
+    description = request.POST.get('description', None)
+    # Existing files
+    # Files
+    
+    if name is None or labels is None or description is None:
+      return Response({
+        "en": "All required fields must be specified",
+        "cz": "Všechna povinná pole musí být specifikována"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(labels) == 0:
+      return Response({
+        "en": "At least one keyword must be specified",
+        "cz": "Musí být specifikován alespoň jeden klíčový výraz"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(name) < 6 or len(name) > 100:
+      return Response({
+        "en": "Name must be between 6 and 100 characters long",
+        "cz": "Název musí být dlouhý 6 až 100 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(description) < 32 or len(description) > 8192:
+      return Response({
+        "en": "Description must be between 32 and 8192 characters long",
+        "cz": "Popis musí být dlouhý 32 až 8192 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    for label in labels:
+      if not Label.objects.filter(name=label).exists():
+        return Response({
+          "en": "Label " + label + " does not exist",
+          "cz": "Označení " + label + " neexistuje"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      
