@@ -50,6 +50,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { closeModal } = useModal();
 	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const [labels, setLabels] = useState<string[]>([]);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -147,20 +148,28 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		let labels = getValues("labels");
 		if (!labels) labels = [];
 		if (validate) {
-			if (labels?.includes(label))
+			if (labels?.includes(label)) {
 				setValue(
 					"labels",
 					labels.filter((l: string) => l !== label),
 					{ shouldValidate: true },
 				);
-			else setValue("labels", [...labels, label], { shouldValidate: true });
+				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
+			} else {
+				setValue("labels", [...labels, label], { shouldValidate: true });
+				setLabels([...labels, label]);
+			}
 		} else {
-			if (labels?.includes(label))
+			if (labels?.includes(label)) {
 				setValue(
 					"labels",
 					labels.filter((l: string) => l !== label),
 				);
-			else setValue("labels", [...labels, label]);
+				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
+			} else {
+				setValue("labels", [...labels, label]);
+				setLabels([...labels, label]);
+			}
 		}
 	};
 
@@ -314,21 +323,21 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						<h2>Označení </h2>
 						<div className="labels">
 							<div className="label">
-								<input type="checkbox" id="bug" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("bug")} checked={getValues("labels").includes("bug")} />
+								<input type="checkbox" id="bug" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("bug")} checked={labels.includes("bug")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="bug" className="bug">
 									chyba
 								</label>
 							</div>
 							<div className="label">
-								<input type="checkbox" id="enhancement" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("enhancement")} checked={getValues("labels").includes("enhancement")} />
+								<input type="checkbox" id="enhancement" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("enhancement")} checked={labels.includes("enhancement")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="enhancement" className="enhancement">
 									vylepšení
 								</label>
 							</div>
 							<div className="label">
-								<input type="checkbox" id="question" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("question")} checked={getValues("labels").includes("question")} />
+								<input type="checkbox" id="question" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("question")} checked={labels.includes("question")} />
 								<FontAwesomeIcon icon={faCheck} className="check" />
 								<label htmlFor="question" className="question">
 									otázka

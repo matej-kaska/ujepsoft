@@ -38,10 +38,15 @@ def get_ujepsoft_author(description: str) -> str:
   """
   if not description:
     return ""
-  # TODO: Make it work
-  return ""
-  author = description.split('Author: ')[1].split('\n')[0]
-  return author
+  
+  last_p_start = description.rfind('<p>')
+  last_p_end = description.rfind('</p>') + len('</p>')
+  last_p_content = description[last_p_start:last_p_end]
+
+  h2_start = last_p_content.find('<h2>') + len('<h2>')
+  h2_end = last_p_content.find('</h2>')
+  h2_content = last_p_content[h2_start:h2_end]
+  return h2_content.replace("Autor Issue: ", "") if "Autor Issue: " in h2_content else ""
 
 def add_ujepsoft_author(description: str, author: str) -> str:
   """
