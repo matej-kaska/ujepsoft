@@ -146,7 +146,7 @@ jobs:
       - name: Scan docker-compose and Dockerfiles for vulnerabilities with Trivy
         run: |
           trivy fs --scanners vuln,misconfig .
-          trivy config --policy config-policy.rego docker-compose.yml
+          trivy config --policy ./config-policy.rego ./docker-compose.yml
 
   licences-scan:
     name: Licences scan
