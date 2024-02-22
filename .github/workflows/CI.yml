@@ -143,10 +143,9 @@ jobs:
             trivy image $image || true
           done
       
-      - name: Scan docker-compose and Dockerfiles for vulnerabilities with Trivy
+      - name: Scan Dockerfiles for vulnerabilities with Trivy
         run: |
           trivy fs --scanners vuln,misconfig .
-          trivy config --policy . .
 
   licences-scan:
     name: Licences scan
