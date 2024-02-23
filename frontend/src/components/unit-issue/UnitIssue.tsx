@@ -18,8 +18,8 @@ const UnitIssue = ({ issue }: UnitIssueProps) => {
 				<Link to={`/issue/${issue.id}`}>{issue.title}</Link>
 				{issue.state === "closed" && <span className="closed">(uzavřené)</span>}
 			</h2>
-			<h3>{issue.repo}</h3>
-			<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} />
+			<h3>{issue.repo.name}</h3>
+			<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} authorUjepsoft={issue.author_ujepsoft} />
 			<section className="unit-labels">
 				{issue.labels.map((label, index) => {
 					return <Label label={label} key={index} />;

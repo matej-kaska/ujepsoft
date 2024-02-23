@@ -1,5 +1,6 @@
 import AdministrationPage from "pages/AdministrationPage";
 import GuidePage from "pages/GuidePage";
+import IssuePage from "pages/IssuePage";
 import IssuesPage from "pages/IssuesPage";
 import OfferPage from "pages/OfferPage";
 import { useEffect } from "react";
@@ -59,6 +60,14 @@ const App = () => {
 									element={
 										<ProtectedRoute userIsNeeded>
 											<IssuesPage />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/issue/:id"
+									element={
+										<ProtectedRoute>
+											<IssuePage />
 										</ProtectedRoute>
 									}
 								/>

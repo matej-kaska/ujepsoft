@@ -24,5 +24,6 @@ export default defineConfig({
 	},
 	define: {
 		global: "window",
+		"process.env.VITE_GITHUB_USERNAME": JSON.stringify(process.env.VITE_GITHUB_USERNAME),
 	},
 });

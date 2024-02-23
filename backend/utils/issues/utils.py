@@ -55,7 +55,7 @@ def add_ujepsoft_author(description: str, author: str) -> str:
   if not description:
     return ""
   description = description + f"<h2>Autor Issue: {author}</h2>\n"
-  description = description + "<h3>Tento Issue byl vygenerován pomocí aplikace UJEPSoft</h3>\n"
+  description = description + "<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft</h3>\n"
   return description
 
 def add_files_to_description(description: str, files) -> str:

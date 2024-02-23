@@ -15,7 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { editorLabels } from "static/wysiwyg";
-import { Attachment, Offer } from "types/offer";
+import { Issue } from "types/issue";
+import { Attachment } from "types/offer";
 import { RepoSelect } from "types/repo";
 import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
@@ -34,7 +35,7 @@ type Form = {
 };
 
 type NewIssueProps = {
-	issue?: Offer;
+	issue?: Issue;
 };
 
 const NewIssue = ({ issue }: NewIssueProps) => {
@@ -57,9 +58,12 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	useEffect(() => {
 		getRepos();
 		if (!issue) return;
-		setValue("name", issue.name);
-		// TODO: set labels
-		const editorState = EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(issue.description || "<p></p>").contentBlocks));
+		setValue("name", issue.title);
+		setValue("labels", issue.labels);
+		setLabels(issue.labels);
+		setValue("repo", issue.repo.id);
+		setSelectValue(issue.repo.id);
+		const editorState = EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(issue.body || "<p></p>").contentBlocks));
 		setDescriptionEditorState(editorState);
 		setUploadedFiles(issue.files);
 		const text = draftToHtml(convertToRaw(editorState.getCurrentContent()));

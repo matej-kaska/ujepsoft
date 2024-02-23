@@ -247,7 +247,7 @@ class IssueDetail(APIView):
       return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
     
     # Get issue from Github and compare updated_at
-    serializer = self.get_serializer(issue)
+    serializer = self.serializer_class(issue)
     cache.set("issue-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     return Response(serializer.data, status=status.HTTP_200_OK)
   
