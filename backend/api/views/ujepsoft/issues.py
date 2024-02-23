@@ -290,7 +290,6 @@ class IssueDetail(APIView):
     labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
     description = request.POST.get('description', None)
     existing_files = json.loads(request.POST.get('existingFiles')) if request.POST.get('existingFiles') else []
-    files = json.loads(request.POST.get('files')) if request.POST.get('files') else []
     
     if name is None or labels is None or description is None or repo is None:
       return Response({
