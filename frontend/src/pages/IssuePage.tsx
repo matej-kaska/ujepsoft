@@ -47,7 +47,6 @@ const IssuePage = () => {
 			const response = await axios.get(`/api/issue/${id}`);
 			if (!response.data) return;
 			response.data.body = removeFooterFromBody(response.data.body);
-			console.log(response.data.labels);
 			setIssue(response.data);
 			setLoading(false);
 		} catch {
@@ -105,6 +104,10 @@ const IssuePage = () => {
 								return <Label label={label} key={index} />;
 							})}
 						</div>
+						<section className="description-wrapper">
+							<h2>Popis Issue:</h2>
+							<div className="description" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "") || "<p></p>" }} />
+						</section>
 						{issue.files.length > 0 && (
 							<section className="files-wrapper">
 								<div className="show-more" onClick={() => setFilesOpen(!filesOpen)}>
@@ -120,10 +123,6 @@ const IssuePage = () => {
 								)}
 							</section>
 						)}
-						<section className="description-wrapper">
-							<h2>Popis nabídky:</h2>
-							<div className="description" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "") || "<p></p>" }} />
-						</section>
 					</>
 				)}
 			</div>

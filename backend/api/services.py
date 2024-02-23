@@ -77,3 +77,14 @@ class GitHubAPIService:
     url = f"https://api.github.com/repos/{user}/{repo_name}/issues"
     response = cls.session.post(url, json=data)
     return response.json() if response.status_code == 201 else None
+  
+  @classmethod
+  def update_issue(cls, user, repo_name, issue_number, title, body, labels):
+    data = {
+      "title": title,
+      "body": body,
+      "labels": labels
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}"
+    response = cls.session.patch(url, json=data)
+    return response.json() if response.status_code == 200 else None

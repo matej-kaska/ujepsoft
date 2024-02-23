@@ -32,6 +32,19 @@ def get_datetime(updated_at):
     return datetime.strptime(updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
   return updated_at
 
+def remove_footer_from_body(description: str) -> str:
+  """
+  Remove footer from the body of the issue
+  """
+  if not description:
+    return ""
+  
+  last_p_start = description.rfind('<p>')
+  last_p_end = description.rfind('</p>') + len('</p>')
+  last_p_content = description[last_p_start:last_p_end]
+
+  return description.replace(last_p_content, "") if last_p_content else description
+
 def get_ujepsoft_author(description: str) -> str:
   """
   Get ujepsoft author's email of the issue/comment from description/body

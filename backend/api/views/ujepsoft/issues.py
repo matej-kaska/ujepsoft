@@ -13,7 +13,7 @@ from api.services import GitHubAPIService
 from api.pagination import IssuePagination
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
+from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_footer_from_body
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -278,6 +278,7 @@ class IssueDetail(APIView):
         "cz": "Issue nebyl nalezen"
       }, status=status.HTTP_404_NOT_FOUND)
     
+    # TODO: Maybe email? and ujepsoft_author
     if (request.user != issue.author and not request.user.is_staff):
       return Response({
         "en": "You are not the author of this issue",
@@ -285,16 +286,30 @@ class IssueDetail(APIView):
       }, status=status.HTTP_403_FORBIDDEN)
     
     name = request.POST.get('name', None)
+    repo = request.POST.get('repo', None)
     labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
     description = request.POST.get('description', None)
-    # Existing files
-    # Files
+    existing_files = json.loads(request.POST.get('existingFiles')) if request.POST.get('existingFiles') else []
+    files = json.loads(request.POST.get('files')) if request.POST.get('files') else []
     
-    if name is None or labels is None or description is None:
+    if name is None or labels is None or description is None or repo is None:
       return Response({
         "en": "All required fields must be specified",
         "cz": "Všechna povinná pole musí být specifikována"
       }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+      associated_repo = Repo.objects.filter(pk=repo)
+      if associated_repo.pk != repo:
+        return Response({
+          "en": "You cannot change repository",
+          "cz": "Nemůžete změnit repozitář"
+        })
+    except Repo.DoesNotExist:
+      return Response({
+        "en": "Repository does not exists",
+        "cz": "Repozitář neexistuje"
+      })
     
     if len(labels) == 0:
       return Response({
@@ -320,4 +335,74 @@ class IssueDetail(APIView):
           "en": "Label " + label + " does not exist",
           "cz": "Označení " + label + " neexistuje"
         }, status=status.HTTP_400_BAD_REQUEST)
-      
+ 
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Upload new files
+    for uploaded_file in request.FILES.getlist('files'):
+      IssueFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        issue=issue
+      )
+
+    # Delete non Existing files
+    for file in IssueFile.objects.filter(issue=issue):
+      file_found = False
+      for existing_file in existing_files:
+        if file.name == existing_file:
+          file_found = True
+          break
+      if not file_found:
+        file.delete()
+
+    # Get all files in this issue
+    issue_files = IssueFile.objects.filter(issue=issue)
+    
+    # Format description
+    description = remove_footer_from_body(description)
+
+    description = description + "\n<p>"
+    
+    description = add_files_to_description(description, issue_files)
+    description = add_ujepsoft_author(description, request.user.email)
+
+    description = description + "\n</p>\n"
+
+    # GITHUB request for edit
+    response = GitHubAPIService.update_issue(associated_repo.author, associated_repo.name, issue.gh_id, name, description, labels)
+
+    # Update Issue from response 
+    issue.name = response.get("title")
+    issue.body = response.get("body")
+    issue.updated_at = response.get("updated_at")
+
+    issue.labels = []
+    for label in labels:
+      try:
+        label_obj = Label.objects.get(name=label)
+        issue.labels.add(label_obj)
+      except Label.DoesNotExist:
+        print(f"Label {label} does not exist! Not Creating it!")
+
+    issue.save()
+
+    # Add issue to cache
+    issue_serializer = IssueCacheSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    return Response(status=status.HTTP_200_OK)
