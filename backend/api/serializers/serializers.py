@@ -110,11 +110,19 @@ class IssueCacheSerializer(serializers.ModelSerializer):
   repo = RepoForIssueSerializer()
   comments = serializers.SerializerMethodField()
   files = FileSerializer(many=True, read_only=True)
+  labels = serializers.SerializerMethodField()
   
   class Meta:
     model = Issue
     fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'repo', 'comments']
   
+  def get_labels(self, obj):
+    if isinstance(obj, dict):
+      label_ids = obj.get('labels', [])
+      return get_label_names_by_ids(label_ids)
+    else:
+      return [label.name for label in obj.labels.all()]
+    
   def get_comments(self, obj):
     return len(obj.comments.all())
   

@@ -47,6 +47,7 @@ const IssuePage = () => {
 			const response = await axios.get(`/api/issue/${id}`);
 			if (!response.data) return;
 			response.data.body = removeFooterFromBody(response.data.body);
+			console.log(response.data.labels);
 			setIssue(response.data);
 			setLoading(false);
 		} catch {
