@@ -1,0 +1,4 @@
+[tool.ruff]
+line-length = 640
+lint.select = ["E", "F", "N", "DJ"]
+lint.extend-ignore = []

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const ScreenshotGuide = () => {
-  const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
 
   return (
     <div className={`guide ${open ? "open" : ""}`}>

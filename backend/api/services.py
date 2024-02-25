@@ -65,3 +65,15 @@ class GitHubAPIService:
           response.append(issue)
     
     return response
+  
+  @classmethod
+  def post_issue(cls, user, repo_name, title, body, labels):
+    data = {
+      "title": title,
+      "body": body,
+      "assignees": [user],
+      "labels": labels
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues"
+    response = cls.session.post(url, json=data)
+    return response.json() if response.status_code == 201 else None

@@ -1,7 +1,7 @@
 from utils.issues.utils import get_label_names_by_ids
 from users.serializers.serializers import UserPublicSerializer
 from rest_framework import serializers
-from api.models import Offer, Keyword, File, Repo, Label, Issue, Comment, ReactionsIssue, ReactionsComment
+from api.models import Offer, Keyword, OfferFile, Repo, Issue, Comment, ReactionsIssue, ReactionsComment
 
 class KeywordSerializer(serializers.ModelSerializer):
   class Meta:
@@ -10,7 +10,7 @@ class KeywordSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
   class Meta:
-    model = File
+    model = OfferFile
     fields = ['name', 'file']
 
 class OfferSerializer(serializers.ModelSerializer):

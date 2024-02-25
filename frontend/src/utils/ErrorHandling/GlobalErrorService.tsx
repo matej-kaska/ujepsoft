@@ -1,24 +1,23 @@
-
 // Uncomment the following lines when Sentry is set up
-// import * as Sentry from '@sentry/browser'; 
+// import * as Sentry from '@sentry/browser';
 
 export default class GlobalErrorService {
-  public static handleError(error: Error | Event, errorInfo?: object): void {
-    console.error('Global error handler:', error, errorInfo);
-  
-    // Sentry.captureException(error);
-    // Sentry.captureException({ error, errorInfo }); ?
-  }
+	public static handleError(error: Error | Event, errorInfo?: object): void {
+		console.error("Global error handler:", error, errorInfo);
 
-  public static handlePromiseRejection(reason: any): void {
-    console.error('Global unhandled promise rejection handler:', reason);
+		// Sentry.captureException(error);
+		// Sentry.captureException({ error, errorInfo }); ?
+	}
 
-    // Sentry.captureException(reason);
-  }
+	public static handlePromiseRejection(reason: any): void {
+		console.error("Global unhandled promise rejection handler:", reason);
 
-  public static handleReduxError(error: Error): void {
-    console.error('Global Redux error handler:', error);
+		// Sentry.captureException(reason);
+	}
 
-    // Sentry.captureException(error);
-  }
+	public static handleReduxError(error: Error): void {
+		console.error("Global Redux error handler:", error);
+
+		// Sentry.captureException(error);
+	}
 }

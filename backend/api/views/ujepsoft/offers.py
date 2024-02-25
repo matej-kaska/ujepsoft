@@ -1,6 +1,7 @@
 import json
+import os
 
-from api.models import File, Keyword, Offer
+from api.models import OfferFile, Keyword, Offer
 from api.pagination import StandardPagination
 from api.serializers.serializers import OfferSerializer
 from rest_framework import status, permissions, generics
@@ -40,21 +41,18 @@ class OfferUpload(APIView):
         "en": "Maximum of 50 files can be uploaded",
         "cz": "Maximum 50 souborů může být nahráno"
       }, status=status.HTTP_400_BAD_REQUEST)
-    
-    MAX_FILE_SIZE = 134217728 # 128 MB
-    MAX_TOTAL_FILES_SIZE = 536870912 # 512 MB
 
     total_files_size = 0
     
     for uploaded_file in request.FILES.getlist('files'):
-      if uploaded_file.size > MAX_FILE_SIZE:
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
         return Response({
           "en": "File size exceeds the maximum limit of 128 MB",
           "cz": "Velikost souboru překračuje maximální limit 128 MB"
         }, status=status.HTTP_400_BAD_REQUEST)
       total_files_size += uploaded_file.size
 
-    if total_files_size > MAX_TOTAL_FILES_SIZE:
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
       return Response({
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
@@ -74,7 +72,7 @@ class OfferUpload(APIView):
       of.keywords.add(kw)
 
     for uploaded_file in request.FILES.getlist('files'):
-      File.objects.create(
+      OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
         offer=of
@@ -89,7 +87,7 @@ class OfferList(generics.ListAPIView):
   serializer_class = OfferSerializer
 
   def get_queryset(self):
-    offers = Offer.objects.all()
+    offers = Offer.objects.all().order_by('pk')
 
     return offers
   
@@ -138,21 +136,18 @@ class OfferDetail(APIView):
         "en": "Maximum of 20 keywords can be specified",
         "cz": "Maximum 20 klíčových výrazů může být specifikováno"
       }, status=status.HTTP_400_BAD_REQUEST)
-    
-    MAX_FILE_SIZE = 134217728 # 128 MB
-    MAX_TOTAL_FILES_SIZE = 536870912 # 512 MB
 
     total_files_size = 0
     
     for uploaded_file in request.FILES.getlist('files'):
-      if uploaded_file.size > MAX_FILE_SIZE:
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
         return Response({
           "en": "File size exceeds the maximum limit of 128 MB",
           "cz": "Velikost souboru překračuje maximální limit 128 MB"
         }, status=status.HTTP_400_BAD_REQUEST)
       total_files_size += uploaded_file.size
 
-    if total_files_size > MAX_TOTAL_FILES_SIZE:
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
       return Response({
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
@@ -168,7 +163,7 @@ class OfferDetail(APIView):
         kw = Keyword.objects.create(name=keyword)
       offer.keywords.add(kw)
 
-    for file in File.objects.filter(offer=offer):
+    for file in OfferFile.objects.filter(offer=offer):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
@@ -178,7 +173,7 @@ class OfferDetail(APIView):
         file.delete()
 
     for uploaded_file in request.FILES.getlist('files'):
-      File.objects.create(
+      OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
         offer=offer

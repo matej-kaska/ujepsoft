@@ -1,20 +1,20 @@
 import { Component, ErrorInfo, ReactNode } from "react";
-import SomethingWentWrong from "./SomethingWentWrong";
+import { connect } from "react-redux";
+import { RootState } from "../../redux/store";
 import GlobalErrorService from "./GlobalErrorService";
-import { connect } from 'react-redux';
-import { RootState } from '../../redux/store';
+import SomethingWentWrong from "./SomethingWentWrong";
 
 interface State {
-  hasError: boolean;
-  error?: Error;
+	hasError: boolean;
+	error?: Error;
 }
 
 interface StateProps {
-  reduxError: string | null;
+	reduxError: string | null;
 }
 
 interface Props extends StateProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 /**
@@ -23,40 +23,40 @@ interface Props extends StateProps {
  * that will be connected to error reporting service.
  */
 class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-  };
+	public state: State = {
+		hasError: false,
+	};
 
-  // eslint-disable-next-line
-  public static getDerivedStateFromError(_: Error): State {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
+	// eslint-disable-next-line
+	public static getDerivedStateFromError(_: Error): State {
+		// Update state so the next render will show the fallback UI.
+		return { hasError: true };
+	}
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error("Uncaught error:", error, errorInfo);
-    GlobalErrorService.handleError(error, errorInfo);
-  }
+	public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+		console.error("Uncaught error:", error, errorInfo);
+		GlobalErrorService.handleError(error, errorInfo);
+	}
 
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.reduxError && !prevProps.reduxError) {
-      this.setState({ hasError: true });
-    }
-  }
+	componentDidUpdate(prevProps: Props) {
+		if (this.props.reduxError && !prevProps.reduxError) {
+			this.setState({ hasError: true });
+		}
+	}
 
-  public render(): ReactNode {
-    if (this.state.hasError) {
-      return <SomethingWentWrong />;
-    }
+	public render(): ReactNode {
+		if (this.state.hasError) {
+			return <SomethingWentWrong />;
+		}
 
-    return this.props.children;
-  }
+		return this.props.children;
+	}
 }
 
 const mapStateToProps = (state: RootState): StateProps => {
-  return {
-    reduxError: state.error.message,
-  }
-}
+	return {
+		reduxError: state.error.message,
+	};
+};
 
 export default connect(mapStateToProps)(ErrorBoundary);

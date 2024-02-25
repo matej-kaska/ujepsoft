@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "biome lint .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,37 +26,32 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.15.0",
+    "react-helmet-async": "^2.0.4",
     "react-hook-form": "^7.48.2",
     "react-redux": "^8.1.3",
     "react-router-dom": "^6.18.0",
     "redux-persist": "^6.0.0",
-    "vite-plugin-sass-glob-import": "^3.0.2",
     "vite-plugin-svgr": "^3.2.0",
     "vite-tsconfig-paths": "^4.2.1",
     "yup": "^1.3.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "@mojojoejo/vite-plugin-purgecss": "^1.1.0",
     "@types/node": "^20.9.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitejs/plugin-react-swc": "^3.4.1",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.45.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
     "postcss": "^8.4.31",
     "sass": "^1.69.5",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vite-plugin-eslint": "^1.8.1"
+    "vite-plugin-biome": "^1.0.8",
+    "vite-plugin-sass-glob-import": "^3.0.2",
+    "vite-plugin-sitemap": "^0.5.3"
   }
 }

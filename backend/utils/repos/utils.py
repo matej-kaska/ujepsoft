@@ -3,7 +3,7 @@ import os
 
 from api.models import Label, Repo
 
-def checkCollaborant(user, repo):
+def check_collaborant(user, repo):
   response = GitHubAPIService.get_repo_collaborators(user, repo)
 
   if response is None:
@@ -13,7 +13,7 @@ def checkCollaborant(user, repo):
       return True
   return False
 
-def changeCollaborant(user, repo, repo_pk):
+def change_collaborant(user, repo, repo_pk):
   response = GitHubAPIService.get_repo_collaborators(user, repo)
   repo = Repo.objects.get(pk=repo_pk)
   
@@ -33,7 +33,7 @@ def changeCollaborant(user, repo, repo_pk):
 
   return
 
-def checkLabels(user, repo):
+def check_labels(user, repo):
   response = GitHubAPIService.get_repo_labels(user, repo)
 
   if response is None:

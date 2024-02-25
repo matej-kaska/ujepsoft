@@ -1,8 +1,8 @@
 import json
 import os
 
-from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue, Repo
-from api.serializers.serializers import IssueCacheSerializer, IssueSerializer, RepoSerializer, RepoFullSerializer, RepoSerializerSmall
+from api.models import Repo
+from api.serializers.serializers import RepoSerializer, RepoFullSerializer, RepoSerializerSmall
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,7 +11,7 @@ from django.core.cache import cache
 from api.services import GitHubAPIService
 from api.permissions import IsStaffUser
 from utils.issues.new_obj import create_issue
-from utils.repos.utils import changeCollaborant, checkCollaborant, checkLabels
+from utils.repos.utils import change_collaborant, check_labels, check_collaborant
 
 class RepoList(generics.ListAPIView):
   permission_classes = (permissions.IsAuthenticated, IsStaffUser)
@@ -20,7 +20,7 @@ class RepoList(generics.ListAPIView):
   def get_queryset(self):
     repos = Repo.objects.all()
     for repo in repos:
-      changeCollaborant(repo.author, repo.name, repo.pk)
+      change_collaborant(repo.author, repo.name, repo.pk)
     return Repo.objects.all()
   
 class RepoAdd(APIView):
@@ -43,9 +43,9 @@ class RepoAdd(APIView):
     
     user, repo = url.split('/')[-2:]
 
-    isCollaborant = checkCollaborant(user, repo)
+    is_collaborant = check_collaborant(user, repo)
 
-    if not isCollaborant:
+    if not is_collaborant:
       return Response({
         "en": "You are not a collaborant of this repository",
         "cz": "Nejste collaborantem tohoto repozitáře"
@@ -67,9 +67,9 @@ class RepoAdd(APIView):
         "cz": "Repozitář nebyl nalezen"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    areLabelsSet = checkLabels(user, repo)
+    are_labels_set = check_labels(user, repo)
 
-    if not areLabelsSet:
+    if not are_labels_set:
       return Response({
         "en": "You are not a collaborant of this repository",
         "cz": "Nejste collaborantem tohoto repozitáře"
@@ -82,7 +82,7 @@ class RepoAdd(APIView):
     except Repo.DoesNotExist:
       new_repo = Repo.objects.create(
         name=repo_data["name"],
-        description=repo_data['description'],
+        description=repo_data.get('description', '') or '',
         url=repo_data['html_url'],
         author=repo_data['owner']['login'],
         author_profile_pic=repo_data['owner']['avatar_url'],
@@ -92,11 +92,11 @@ class RepoAdd(APIView):
     for issue in repo_issues:
       create_issue(issue, new_repo, user, repo)
 
-    repoSerializer = RepoFullSerializer(new_repo)
+    repo_serializer = RepoFullSerializer(new_repo)
 
-    cache.set("repo-" + str(new_repo.pk), json.dumps(repoSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("repo-" + str(new_repo.pk), json.dumps(repo_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     
-    return Response(repoSerializer.data,status=status.HTTP_201_CREATED)
+    return Response(repo_serializer.data,status=status.HTTP_201_CREATED)
   
 class RepoDelete(APIView):
   permission_classes = (permissions.IsAuthenticated, IsStaffUser)

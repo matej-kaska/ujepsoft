@@ -6,7 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import find_comment_by_id, find_obj_by_id
+from utils.issues.utils import find_comment_by_id, get_ujepsoft_author
 
 def create_issue(issue, associated_repo, user, repo):
   try:
@@ -16,17 +16,23 @@ def create_issue(issue, associated_repo, user, repo):
     if issue.get('pull_request', None) is not None:
       return None
     
+    if issue['user']['login'] == os.getenv('GITHUB_USERNAME'):
+      author_ujepsoft = get_ujepsoft_author(issue['body'])
+    else:
+      author_ujepsoft = ""
+
     new_issue = Issue.objects.create(
       number=issue['number'],
       gh_id=issue['id'],
       title=issue['title'],
-      body=issue['body'],
+      body=issue.get('body', '') or '',
       state=issue['state'],
       repo=associated_repo,
       author=issue['user']['login'],
       author_profile_pic=issue['user']['avatar_url'],
       created_at=issue['created_at'],
       updated_at=issue['updated_at'],
+      author_ujepsoft=author_ujepsoft
     )
     
   for label in issue['labels']:
@@ -34,7 +40,7 @@ def create_issue(issue, associated_repo, user, repo):
     try:
       label_obj = Label.objects.get(name=label_name)
       new_issue.labels.add(label_obj)
-    except:
+    except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
 
   for reaction_type, count in issue['reactions'].items():
@@ -57,6 +63,12 @@ def create_issue(issue, associated_repo, user, repo):
       try:
         new_comment = Comment.objects.get(number=comment['id'], issue=new_issue)
       except Comment.DoesNotExist:
+        
+        if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+          author_ujepsoft = get_ujepsoft_author(comment['body'])
+        else:
+          author_ujepsoft = ""
+
         new_comment = Comment.objects.create(
           number=comment['id'],
           body=comment['body'],
@@ -65,6 +77,7 @@ def create_issue(issue, associated_repo, user, repo):
           author_profile_pic=comment['user']['avatar_url'],
           created_at=comment['created_at'],
           updated_at=comment['updated_at'],
+          author_ujepsoft=author_ujepsoft
         )
       
       for reaction_type, count in comment['reactions'].items():
@@ -81,11 +94,11 @@ def create_issue(issue, associated_repo, user, repo):
           reaction_obj.count = count
           reaction_obj.save()
 
-  issueSerializer = IssueCacheSerializer(new_issue)
-  cache.set("issue-" + str(new_issue.pk), json.dumps(issueSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  issue_serializer = IssueCacheSerializer(new_issue)
+  cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  issueFullSerializer = IssueFullSerializer(new_issue)
-  cache.set("issue-full-" + str(new_issue.pk), json.dumps(issueFullSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  issue_full_serializer = IssueFullSerializer(new_issue)
+  cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
 def update_issue(issue_pk, new_issue, user, repo):
   try:
@@ -106,7 +119,7 @@ def update_issue(issue_pk, new_issue, user, repo):
       label_obj = Label.objects.get(name=label_name)
       if label_obj not in updating_issue.labels.all():
         updating_issue.labels.add(label_obj)
-    except:
+    except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
 
 
@@ -153,11 +166,11 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   updating_issue.save()
 
-  issueSerializer = IssueCacheSerializer(updating_issue)
-  cache.set("issue-" + str(updating_issue.pk), json.dumps(issueSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  issue_serializer = IssueCacheSerializer(updating_issue)
+  cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  issueFullSerializer = IssueFullSerializer(updating_issue)
-  cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issueFullSerializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  issue_full_serializer = IssueFullSerializer(updating_issue)
+  cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
   return updating_issue
 
@@ -183,6 +196,12 @@ def update_comment(comment, associated_issue):
       reaction_obj.save()
 
 def create_comment(comment, associated_issue):
+
+  if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+    author_ujepsoft = get_ujepsoft_author(comment['body'])
+  else:
+    author_ujepsoft = ""
+
   new_comment = Comment.objects.create(
     number=comment['id'],
     body=comment['body'],
@@ -191,6 +210,7 @@ def create_comment(comment, associated_issue):
     author_profile_pic=comment['user']['avatar_url'],
     created_at=comment['created_at'],
     updated_at=comment['updated_at'],
+    author_ujepsoft=author_ujepsoft
   )
   
   for reaction_type, count in comment['reactions'].items():

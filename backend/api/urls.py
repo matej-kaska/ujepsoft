@@ -15,4 +15,5 @@ urlpatterns = [
     path("repo/list/small", repo_views.RepoListSmall.as_view(), name="api_repo_list_small"),
     path("repo/<int:pk>", repo_views.RepoDelete.as_view(), name="api_repo_detail"),
     path("issue/list", issue_views.IssuesList.as_view(), name="api_issue_list"),
+    path("issue", issue_views.IssueCreate.as_view(), name="api_issue_create"),
 ]
