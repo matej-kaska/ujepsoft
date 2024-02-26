@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { editorLabels } from "static/wysiwyg";
-import { Issue } from "types/issue";
+import { FullIssue } from "types/issue";
 import { Attachment } from "types/offer";
 import { RepoSelect } from "types/repo";
 import { timeout } from "utils/timeout";
@@ -35,7 +35,7 @@ type Form = {
 };
 
 type NewIssueProps = {
-	issue?: Issue;
+	issue?: FullIssue;
 };
 
 const NewIssue = ({ issue }: NewIssueProps) => {

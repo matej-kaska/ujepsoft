@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
-import { Issue } from "types/issue";
+import { FullIssue } from "types/issue";
 import axios from "utils/axios";
 import { formatDescription } from "utils/plainTextToHtml";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
@@ -27,7 +27,7 @@ const IssuePage = () => {
 	const dispatch = useDispatch();
 	const reload = useSelector((state: any) => state.reload);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [issue, setIssue] = useState<Issue>({} as Issue);
+	const [issue, setIssue] = useState<FullIssue>({} as FullIssue);
 	const [filesOpen, setFilesOpen] = useState<boolean>(false);
 	const navigate = useNavigate();
 
@@ -47,6 +47,7 @@ const IssuePage = () => {
 			const response = await axios.get(`/api/issue/${id}`);
 			if (!response.data) return;
 			response.data.body = removeFooterFromBody(response.data.body);
+			console.log(response.data);
 			setIssue(response.data);
 			setLoading(false);
 		} catch {

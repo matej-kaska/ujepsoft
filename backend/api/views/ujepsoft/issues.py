@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from api.models import Issue, Label, Repo, IssueFile
-from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
+from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,14 +36,11 @@ class IssuesList(generics.ListAPIView):
     if len(response) > 0:
       print("getting issues from cache")
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
-
       page = self.paginate_queryset(response)
       if page is not None:
-        serializer = IssueSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(response)
       
-      serializer = IssueSerializer(response, many=True)
-      return Response(serializer.data,status=status.HTTP_200_OK)
+      return Response(response,status=status.HTTP_200_OK)
 
     fetched_issues = GitHubAPIService.get_all_issues()
     issue_ids = [str(issue.gh_id) for issue in issues]
@@ -73,7 +70,7 @@ class IssuesList(generics.ListAPIView):
         continue
 
       # Getting issue from database
-      issue_serializer = IssueCacheSerializer(issue)
+      issue_serializer = IssueSerializer(issue)
       cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
       # TODO: full serializer???
       response.append(issue)
@@ -222,7 +219,8 @@ class IssueCreate(APIView):
         print(f"Label {label} does not exist! Not Creating it!")
 
     # Add issue to cache
-    issue_serializer = IssueCacheSerializer(Issue.objects.get(pk=new_issue.pk))
+    # TODO: full serializer???
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
     cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response({
@@ -230,7 +228,7 @@ class IssueCreate(APIView):
     }, status=status.HTTP_201_CREATED)
 
 class IssueDetail(APIView):
-  serializer_class = IssueSerializer
+  serializer_class = IssueFullSerializer
   permission_classes = (permissions.IsAuthenticated,)
 
   def get(self, request, pk):
@@ -242,13 +240,13 @@ class IssueDetail(APIView):
         "cz": "Issue nebyl nalezen"
       }, status=status.HTTP_404_NOT_FOUND)
     
-    cached_issue = cache.get("issue-" + str(issue.pk))
+    cached_issue = cache.get("issue-full-" + str(issue.pk))
     if cached_issue:
       return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
     
     # Get issue from Github and compare updated_at
     serializer = self.serializer_class(issue)
-    cache.set("issue-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def delete(self, request, pk):
@@ -401,7 +399,8 @@ class IssueDetail(APIView):
     issue.save()
 
     # Add issue to cache
-    issue_serializer = IssueCacheSerializer(Issue.objects.get(pk=issue.pk))
+    # TODO: Maybe full?
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response(status=status.HTTP_200_OK)

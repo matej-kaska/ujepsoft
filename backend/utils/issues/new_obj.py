@@ -1,6 +1,6 @@
 import datetime
 from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue
-from api.serializers.serializers import IssueCacheSerializer, IssueFullSerializer
+from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from api.services import GitHubAPIService
 import json
 import os
@@ -94,9 +94,10 @@ def create_issue(issue, associated_repo, user, repo):
           reaction_obj.count = count
           reaction_obj.save()
 
-  issue_serializer = IssueCacheSerializer(new_issue)
+  issue_serializer = IssueSerializer(new_issue)
   cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
+  # TODO: WTF IS THIS????
   issue_full_serializer = IssueFullSerializer(new_issue)
   cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
@@ -166,9 +167,10 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   updating_issue.save()
 
-  issue_serializer = IssueCacheSerializer(updating_issue)
+  issue_serializer = IssueSerializer(updating_issue)
   cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
+  # TODO: WTF IS THIS????
   issue_full_serializer = IssueFullSerializer(updating_issue)
   cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
