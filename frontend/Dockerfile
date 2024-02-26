@@ -19,3 +19,6 @@ COPY --from=builder /app .
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
+
+# Install curl for health checking
+RUN apk --no-cache add curl

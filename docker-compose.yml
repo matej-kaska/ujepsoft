@@ -15,6 +15,12 @@ services:
       - postgresql_initdb:/docker-entrypoint-initdb.d
     ports:
       - '127.0.0.1:5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   ## Redis
   redis:
@@ -26,6 +32,12 @@ services:
       - redis:/data
     ports:
       - '6379:6379'
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   ## Backend
   backend:
@@ -58,6 +70,12 @@ services:
       - REDIS-TIMEOUT=15
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   ## Frontend
   frontend:
@@ -75,13 +93,19 @@ services:
     environment:
       - NODE_ENV=development
       - VITE_GITHUB_USERNAME=matej-kaska
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   ## NGINX
   edge:
     image: nginx:latest
     container_name: ujepsoft-edge
     ports:
-      - '8080:8080'
+      - '8081:8080'
     volumes:
       - ./edge/ujepsoft.conf:/etc/nginx/conf.d/default.conf:ro
       - ./backend/media:/app/media
@@ -89,6 +113,12 @@ services:
     depends_on:
       - frontend
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   node_modules:
