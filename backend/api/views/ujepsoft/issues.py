@@ -34,7 +34,6 @@ class IssuesList(generics.ListAPIView):
         break
 
     if len(response) > 0:
-      print("getting issues from cache")
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
       page = self.paginate_queryset(response)
       if page is not None:
@@ -59,14 +58,12 @@ class IssuesList(generics.ListAPIView):
         repo = Repo.objects.get(author=fetched_issue["user"]["login"], name=fetched_issue["repo"])
 
         create_issue(new_issue, repo, fetched_issue["user"]["login"], fetched_issue["repo"])
-        print(f"creating new issue {fetched_issue['number']}")
 
         issue = Issue.objects.get(gh_id=fetched_issue["id"])
 
       # Getting updated issue
       if issue and datetime.strptime(fetched_issue["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
-        print(f"updating issue {issue.number}")
         continue
 
       issue_serializer = IssueSerializer(issue)
@@ -76,11 +73,9 @@ class IssuesList(generics.ListAPIView):
       cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
       response.append(issue)
-      print(f"getting issue {issue.number} from db")
 
     if len(issue_ids) > 0:
       Issue.objects.filter(gh_id__in=issue_ids).delete()
-      print(f"removing issue {issue_ids}")
 
     response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
 
@@ -221,7 +216,6 @@ class IssueCreate(APIView):
         print(f"Label {label} does not exist! Not Creating it!")
 
     # Add issue to cache
-    # TODO: full serializer???
     issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
     cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 

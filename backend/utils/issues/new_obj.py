@@ -97,7 +97,6 @@ def create_issue(issue, associated_repo, user, repo):
   issue_serializer = IssueSerializer(new_issue)
   cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  # TODO: WTF IS THIS????
   issue_full_serializer = IssueFullSerializer(new_issue)
   cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
@@ -150,7 +149,6 @@ def update_issue(issue_pk, new_issue, user, repo):
     # Creating new comment
     if comment is None:
       create_comment(fetched_comment, updating_issue)
-      print(f"creating new comment {fetched_comment['id']}")
       continue
 
     comments_ids.remove(str(comment.number))
@@ -158,19 +156,16 @@ def update_issue(issue_pk, new_issue, user, repo):
     # Updating comment
     if datetime.datetime.strptime(fetched_comment["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc) != comment.updated_at:
       update_comment(fetched_comment, updating_issue)
-      print(f"updating comment {fetched_comment['id']}")
       continue
   
   if len(comments_ids) > 0:
     Comment.objects.filter(number__in=comments_ids).delete()
-    print(f"removing comments {comments_ids}")
 
   updating_issue.save()
 
   issue_serializer = IssueSerializer(updating_issue)
   cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  # TODO: WTF IS THIS????
   issue_full_serializer = IssueFullSerializer(updating_issue)
   cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
