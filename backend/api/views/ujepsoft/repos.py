@@ -93,8 +93,6 @@ class RepoAdd(APIView):
       create_issue(issue, new_repo, user, repo)
 
     repo_serializer = RepoFullSerializer(new_repo)
-
-    cache.set("repo-" + str(new_repo.pk), json.dumps(repo_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     
     return Response(repo_serializer.data,status=status.HTTP_201_CREATED)
   
