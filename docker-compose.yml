@@ -8,7 +8,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ujepsoft 
+      - POSTGRES_DB=ujepsoft
     volumes:
       - postgresql_data:/bitnami/postgresql
       - postgresql_pre_initdb:/docker-entrypoint-preinitdb.d
@@ -22,7 +22,7 @@ services:
     container_name: ujepsoft-redis
     restart: always
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --dir /data
-    volumes: 
+    volumes:
       - redis:/data
     ports:
       - '6379:6379'
@@ -78,17 +78,17 @@ services:
 
   ## NGINX
   edge:
-    image: bitnami/nginx:latest
+    image: nginx:latest
     container_name: ujepsoft-edge
     ports:
       - '8080:8080'
     volumes:
-      - ./edge/ujepsoft.conf:/opt/bitnami/nginx/conf/server_blocks/ujepsoft.conf:ro
+      - ./edge/ujepsoft.conf:/etc/nginx/conf.d/default.conf:ro
       - ./backend/media:/app/media
       - ./backend/staticfiles:/app/static
     depends_on:
       - frontend
-      - backend  
+      - backend
 
 volumes:
   node_modules:
