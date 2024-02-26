@@ -1,6 +1,3 @@
-import json
-import os
-
 from api.models import Repo
 from api.serializers.serializers import RepoSerializer, RepoFullSerializer, RepoSerializerSmall
 from rest_framework import status, permissions, generics
