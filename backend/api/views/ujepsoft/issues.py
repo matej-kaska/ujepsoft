@@ -39,10 +39,10 @@ class IssuesList(generics.ListAPIView):
 
       page = self.paginate_queryset(response)
       if page is not None:
-        serializer = self.get_serializer(page, many=True)
+        serializer = IssueSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
       
-      serializer = self.get_serializer(response, many=True)
+      serializer = IssueSerializer(response, many=True)
       return Response(serializer.data,status=status.HTTP_200_OK)
 
     fetched_issues = GitHubAPIService.get_all_issues()
