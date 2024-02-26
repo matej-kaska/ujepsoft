@@ -1,7 +1,7 @@
 type ProfileBadgeProps = {
 	name: string;
 	profilePicture: string;
-	authorUjepsoft: string;
+	authorUjepsoft?: string;
 };
 
 const ProfileBadge = ({ name, profilePicture, authorUjepsoft }: ProfileBadgeProps) => {
@@ -10,9 +10,11 @@ const ProfileBadge = ({ name, profilePicture, authorUjepsoft }: ProfileBadgeProp
 			<img src={profilePicture} className="picture" alt="profile" id="profilePicture" />
 			<label className="name" htmlFor="profilePicture" id="profileName">
 				{name}
-				<label className="ujepsoft-email" htmlFor="profileName">
-					{name === import.meta.env.VITE_GITHUB_USERNAME && authorUjepsoft !== "" && `(${authorUjepsoft})`}
-				</label>
+				{authorUjepsoft && (
+					<label className="ujepsoft-email" htmlFor="profileName">
+						{name === import.meta.env.VITE_GITHUB_USERNAME && authorUjepsoft !== "" && `(${authorUjepsoft})`}
+					</label>
+				)}
 			</label>
 		</section>
 	);
