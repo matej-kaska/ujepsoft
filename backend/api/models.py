@@ -125,15 +125,17 @@ class IssueFile(models.Model):
   file = models.FileField(upload_to='issue_files')
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='files')
   file_type = models.CharField(max_length=5, choices=[('file', 'file'), ('image', 'image')])
-  remote_url = models.CharField(max_length=1024, blank=True, null=True, validators=[URLValidator()])
+  remote_url = models.CharField(max_length=1024, blank=True, validators=[URLValidator()])
+
+  def __str__(self):
+    return repr(self)
   
   def save(self, *args, **kwargs):
     if self.remote_url:
       self.file = None
+    else:
+      self.remote_url = ""
     super(IssueFile, self).save(*args, **kwargs)
-
-  def __str__(self):
-    return repr(self)
   
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
@@ -143,15 +145,17 @@ class CommentFile(models.Model):
   file = models.FileField(upload_to='comment_files', blank=True, null=True)
   comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='files')
   file_type = models.CharField(max_length=5, choices=[('file', 'file'), ('image', 'image')])
-  remote_url = models.CharField(max_length=1024, blank=True, null=True, validators=[URLValidator()])
-
-  def save(self, *args, **kwargs):
-    if self.remote_url:
-      self.file = None
-    super(CommentFile, self).save(*args, **kwargs)
+  remote_url = models.CharField(max_length=1024, blank=True, validators=[URLValidator()])
 
   def __str__(self):
     return repr(self)
+  
+  def save(self, *args, **kwargs):
+    if self.remote_url:
+      self.file = None
+    else:
+      self.remote_url = ""
+    super(CommentFile, self).save(*args, **kwargs)
   
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
