@@ -69,10 +69,12 @@ class IssuesList(generics.ListAPIView):
         print(f"updating issue {issue.number}")
         continue
 
-      # Getting issue from database
       issue_serializer = IssueSerializer(issue)
       cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
-      # TODO: full serializer???
+      
+      issue_full_serializer = IssueFullSerializer(issue)
+      cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
       response.append(issue)
       print(f"getting issue {issue.number} from db")
 
@@ -222,6 +224,9 @@ class IssueCreate(APIView):
     # TODO: full serializer???
     issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
     cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=new_issue.pk))
+    cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response({
       "id": new_issue.pk
@@ -399,8 +404,10 @@ class IssueDetail(APIView):
     issue.save()
 
     # Add issue to cache
-    # TODO: Maybe full?
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response(status=status.HTTP_200_OK)
