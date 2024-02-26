@@ -70,12 +70,6 @@ services:
       - REDIS-TIMEOUT=15
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
 
   ## Frontend
   frontend:

@@ -15,6 +15,3 @@ EXPOSE 8000
 
 ENTRYPOINT ["/backend/entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-
-# Install curl for health checking
-RUN apk --no-cache add curl
