@@ -1,5 +1,3 @@
-import { number } from "yup";
-
 export type Issue = {
 	id: number;
 	number: number;
@@ -20,6 +18,7 @@ export type Issue = {
 export type Attachment = {
 	name: string;
 	file: string;
+	file_type: "image" | "file";
 };
 
 type Repo = {

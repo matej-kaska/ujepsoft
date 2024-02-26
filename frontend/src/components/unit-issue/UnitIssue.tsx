@@ -6,6 +6,7 @@ import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { Link } from "react-router-dom";
 import { Issue } from "types/issue";
 import { htmlToPlainText } from "utils/htmlToPlainText";
+import { removeFooterFromBody } from "utils/plainTextToHtml";
 
 type UnitIssueProps = {
 	issue: Issue;
@@ -20,12 +21,14 @@ const UnitIssue = ({ issue }: UnitIssueProps) => {
 			</h2>
 			<h3>{issue.repo.name}</h3>
 			<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} authorUjepsoft={issue.author_ujepsoft} />
-			<section className="unit-labels">
-				{issue.labels.map((label, index) => {
-					return <Label label={label} key={index} />;
-				})}
-			</section>
-			<p className="unit-description">{issue.body && htmlToPlainText(issue.body)}</p>
+			{issue.labels.length > 0 && (
+				<section className="unit-labels">
+					{issue.labels.map((label, index) => {
+						return <Label label={label} key={index} />;
+					})}
+				</section>
+			)}
+			<p className="unit-description">{issue.body && htmlToPlainText(removeFooterFromBody(issue.body))}</p>
 			<div className="unit-footer">
 				<span className="unit-comments">Počet komentářů: {issue.comments}</span>
 				<span className="unit-date">Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>

@@ -88,3 +88,10 @@ class GitHubAPIService:
     url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}"
     response = cls.session.patch(url, json=data)
     return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def delete_issue(cls, user, repo_name, issue_number):
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}"
+    data = {'state': 'closed'}
+    response = cls.session.patch(url, json=data)
+    return response.json() if response.status_code == 200 else None

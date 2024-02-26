@@ -42,3 +42,150 @@ body {
 
 $color-primary: #70587C;
 $color-secondary: #91859f;
+
+
+.html-inner {
+  h1,h2,h3,h4,h5,h6 {
+    margin-bottom: 1rem;
+  }
+
+  a {
+    color: #007bff !important;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &>ul, &>ol, &>menu, &>il, &>p {
+    margin-bottom: 1rem !important;
+    margin: initial;
+    padding: initial;
+  }
+
+  ul>li {
+    list-style: disc;
+    margin-left: 20px;
+  }
+  ul>ul {
+    li {
+      list-style: circle;
+      margin-left: calc(20px + 1rem);
+    }
+    ul>li {
+      list-style: square;
+      margin-left: calc(20px + 2rem);
+    }
+    &>ul>ul {
+      li {
+        list-style: square;
+        margin-left: calc(20px + 3rem);
+      }
+      ul>li {
+        list-style: square;
+        margin-left: calc(20px + 4rem);
+      }
+    }
+  }
+
+  ol>li {
+    list-style: decimal;
+    margin-left: 20px;
+  }
+  ol>ol {
+    li {
+      list-style: decimal;
+      margin-left: calc(20px + 1rem);
+    }
+    ol>li {
+      list-style: decimal;
+      margin-left: calc(20px + 2rem);
+    }
+  }
+
+  ol>li {
+    list-style: decimal;
+    margin-left: 20px;
+  }
+  ol>ol {
+    li {
+      list-style: decimal;
+      margin-left: calc(20px + 1rem);
+    }
+    ol>li {
+      list-style: decimal;
+      margin-left: calc(20px + 2rem);
+    }
+    &>ol>ol {
+      li {
+        list-style: decimal;
+        margin-left: calc(20px + 3rem);
+      }
+      ol>li {
+        list-style: decimal;
+        margin-left: calc(20px + 4rem);
+      }
+    }
+  }
+}
+
+.rdw-editor-wrapper {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #CCCCCC;
+  min-height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+
+  &.focused {
+    border-color: gray;
+    outline: 0px;
+  }
+
+  .rdw-editor-toolbar {
+    margin: -1px;
+
+    .rdw-dropdown-optionwrapper {
+      width: inherit;
+    }
+  }
+
+  .rdw-dropdown-selectedtext {
+    color: black;
+  }
+
+  .rdw-dropdown-optionwrapper {
+    position: absolute;
+    width: auto;
+  }
+
+  .rdw-emoji-modal {
+    position: absolute;
+    height: 150px;
+  }
+
+  .editorClassName {
+    display: flex;
+    flex: 1 1;
+    cursor: text;
+
+    .DraftEditor-root {
+      min-width: 12px;
+      width: 100%;
+      height: unset;
+
+      .DraftEditor-editorContainer {
+        height: 100%;
+        overflow: hidden;
+
+        div {
+          span, strong, i, del {
+            font-family: 'Roboto' !important;
+          }
+        }
+      }
+    }
+  }
+}

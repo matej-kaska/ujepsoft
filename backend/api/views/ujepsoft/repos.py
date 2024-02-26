@@ -38,6 +38,9 @@ class RepoAdd(APIView):
         "cz": "Špatný URL odkaz"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if url.endswith('/'):
+      url = url[:-1]
+
     user, repo = url.split('/')[-2:]
 
     is_collaborant = check_collaborant(user, repo)

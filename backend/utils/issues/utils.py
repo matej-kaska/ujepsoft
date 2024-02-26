@@ -1,8 +1,10 @@
+import re
 from api.models import Label
 from datetime import datetime,timezone
 
 from django.conf import settings
 from api import IMAGES_EXTENSIONS
+from utils import GITHUB_EXTENSIONS
 
 def get_label_names_by_ids(label_ids):
   labels = Label.objects.filter(id__in=label_ids)
@@ -60,6 +62,69 @@ def get_ujepsoft_author(description: str) -> str:
   h2_end = last_p_content.find('</h2>')
   h2_content = last_p_content[h2_start:h2_end]
   return h2_content.replace("Autor Issue: ", "") if "Autor Issue: " in h2_content else ""
+
+# TODO: Možná smazat? Idk jestli se to potřebuju
+def get_files_from_description_from_ujepsoft(description: str) -> list:
+  images_alts = []
+  files_hrefs = []
+
+  if "<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft</h3>" not in description:
+      return images_alts, files_hrefs
+
+  description = description.replace("\n", "")
+
+  attachments_pos = description.rfind("<h1>Přílohy:</h1>")
+  if attachments_pos == -1:
+      return images_alts, files_hrefs
+
+  description = description[attachments_pos:]
+
+  images_pos = description.find("<h2>Obrázky:</h2>")
+  files_pos = description.find("<h2>Soubory:</h2>")
+
+  if images_pos != -1:
+      images_html = description[images_pos:files_pos if files_pos != -1 else None]
+
+      img_pos = images_html.find("<img")
+      while img_pos != -1:
+          start_alt = images_html.find('alt="', img_pos) + 5
+          end_alt = images_html.find('"', start_alt)
+          images_alts.append(images_html[start_alt:end_alt])
+
+          img_pos = images_html.find("<img", end_alt)
+
+  if files_pos != -1:
+      files_html = description[files_pos:]
+
+      a_pos = files_html.find("<a")
+      while a_pos != -1:
+          start_href = files_html.find('href="', a_pos) + 6
+          end_href = files_html.find('"', start_href)
+          files_hrefs.append(files_html[start_href:end_href].replace(settings.MEDIA_URL, ""))
+
+          a_pos = files_html.find("<a", end_href)
+
+  return images_alts, files_hrefs
+
+def extract_files_from_github(body):
+    images_alts = []
+    videos_and_files = []
+
+    # Regex for Markdown image syntax
+    image_pattern = re.compile(r'!\[(.*?)\]\((.*?)\)')
+    # Regex for Markdown link syntax
+    link_pattern = re.compile(r'\[(.*?)\]\((.*?)\)')
+
+    for match in image_pattern.finditer(body):
+      alt_text, url = match.groups()
+      images_alts.append((alt_text, url))
+
+    for match in link_pattern.finditer(body):
+      link_text, url = match.groups()
+      if any(url.lower().endswith(f".{ext}") for ext in GITHUB_EXTENSIONS):
+        videos_and_files.append((link_text, url))
+
+    return images_alts, videos_and_files
 
 def add_ujepsoft_author(description: str, author: str) -> str:
   """

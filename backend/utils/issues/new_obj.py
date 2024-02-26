@@ -1,12 +1,12 @@
 import datetime
-from api.models import Comment, Issue, Label, ReactionsComment, ReactionsIssue
+from api.models import Comment, CommentFile, Issue, IssueFile, Label, ReactionsComment, ReactionsIssue
 from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from api.services import GitHubAPIService
 import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import find_comment_by_id, get_ujepsoft_author
+from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author
 
 def create_issue(issue, associated_repo, user, repo):
   try:
@@ -42,6 +42,26 @@ def create_issue(issue, associated_repo, user, repo):
       new_issue.labels.add(label_obj)
     except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
+
+  images, files = extract_files_from_github(issue.get('body', '') or '')
+
+  for file in files:
+    new_issue_file = IssueFile.objects.create(
+      name=file[0],
+      file_type='file',
+      remote_url=file[1],
+      issue=new_issue
+    )
+    new_issue.files.add(new_issue_file)
+
+  for image in images:
+    new_issue_file = IssueFile.objects.create(
+      name=image[0],
+      file_type='image',
+      remote_url=image[1],
+      issue=new_issue
+    )
+    new_issue.files.add(new_issue_file)
 
   for reaction_type, count in issue['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -79,6 +99,26 @@ def create_issue(issue, associated_repo, user, repo):
           updated_at=comment['updated_at'],
           author_ujepsoft=author_ujepsoft
         )
+
+        images, files = extract_files_from_github(comment.get('body', '') or '')
+
+        for file in files:
+          new_comment_file = CommentFile.objects.create(
+            name=file[0],
+            file_type='file',
+            remote_url=file[1],
+            comment=new_comment
+          )
+          new_comment.files.add(new_comment_file)
+
+        for image in images:
+          new_comment_image = CommentFile.objects.create(
+            name=image[0],
+            file_type='image',
+            remote_url=image[1],
+            comment=new_comment
+          )
+          new_comment.files.add(new_comment_image)
       
       for reaction_type, count in comment['reactions'].items():
         if reaction_type in ['url', 'total_count'] or count == 0:
@@ -113,6 +153,9 @@ def update_issue(issue_pk, new_issue, user, repo):
   updating_issue.author_profile_pic = new_issue["user"]["avatar_url"]
   updating_issue.labels.clear()
 
+  if updating_issue.body is None:
+    updating_issue.body = ""
+
   for label in new_issue['labels']:
     label_name = label['name']
     try:
@@ -122,6 +165,29 @@ def update_issue(issue_pk, new_issue, user, repo):
     except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
 
+  images, files = extract_files_from_github(new_issue.get('body', '') or '')
+
+  for file in files:
+    try:
+      IssueFile.objects.get(name=file[0], remote_url=file[1])
+    except IssueFile.DoesNotExist:
+      IssueFile.objects.create(
+        name=file[0],
+        file_type='file',
+        remote_url=file[1],
+        issue=updating_issue
+      )
+
+  for image in images:
+    try:
+      IssueFile.objects.get(name=image[0], remote_url=image[1])
+    except IssueFile.DoesNotExist:
+      IssueFile.objects.create(
+        name=image[0],
+        file_type='image',
+        remote_url=image[1],
+        issue=updating_issue
+      )
 
   for reaction_type, count in new_issue['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -169,7 +235,7 @@ def update_issue(issue_pk, new_issue, user, repo):
   issue_full_serializer = IssueFullSerializer(updating_issue)
   cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  return updating_issue
+  return issue_full_serializer.data
 
 def update_comment(comment, associated_issue):
   new_comment = Comment.objects.get(number=comment['id'], issue=associated_issue)
@@ -177,6 +243,7 @@ def update_comment(comment, associated_issue):
   new_comment.updated_at = comment['updated_at']
   new_comment.author_profile_pic=comment['user']['avatar_url'],
   new_comment.save()
+  # TODO: Add author_ujepsoft
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -209,6 +276,8 @@ def create_comment(comment, associated_issue):
     updated_at=comment['updated_at'],
     author_ujepsoft=author_ujepsoft
   )
+
+  # TODO: Add author_ujepsoft
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:

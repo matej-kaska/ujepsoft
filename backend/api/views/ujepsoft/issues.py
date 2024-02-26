@@ -11,6 +11,7 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.pagination import IssuePagination
+from api import IMAGES_EXTENSIONS
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_footer_from_body
@@ -172,10 +173,16 @@ class IssueCreate(APIView):
     # Create files
     issue_files = []
     for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
       new_issue_file = IssueFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        issue=new_issue
+        issue=new_issue,
+        file_type=file_type
       )
       issue_files.append(new_issue_file)
 
@@ -193,7 +200,7 @@ class IssueCreate(APIView):
     check_labels(associated_repo.author, associated_repo.name)
 
     response = GitHubAPIService.post_issue(associated_repo.author, associated_repo.name, name, description, labels)
-
+    
     # Create issue in database from response
     Issue.objects.filter(pk=new_issue.pk).update(
       number=response.get("number"),
@@ -243,7 +250,18 @@ class IssueDetail(APIView):
     if cached_issue:
       return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
     
-    # Get issue from Github and compare updated_at
+    response = GitHubAPIService.get_issue(issue.repo.author, issue.repo.name, issue.number)
+    if response is None:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if datetime.strptime(response["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
+      updated_issue = update_issue(issue.pk, response, issue.repo.author, issue.repo.name)
+      if updated_issue:
+        return Response(updated_issue, status=status.HTTP_200_OK)
+
     serializer = self.serializer_class(issue)
     cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -257,13 +275,31 @@ class IssueDetail(APIView):
         "cz": "Issue nebyl nalezen"
       }, status=status.HTTP_404_NOT_FOUND)
     
+    try:
+      associated_repo = Repo.objects.get(pk=issue.repo.pk)
+    except Repo.DoesNotExist:
+      return Response({
+        "en": "Repository does not exists",
+        "cz": "Repozitář neexistuje"
+      })
+    
     if (request.user != issue.author and not request.user.is_staff):
       return Response({
         "en": "You are not the author of this issue",
         "cz": "Nejste autorem tohoto issue"
       }, status=status.HTTP_403_FORBIDDEN)
     
+    print(associated_repo.author, associated_repo.name, issue.number)
+    response = GitHubAPIService.delete_issue(associated_repo.author, associated_repo.name, issue.number)
+
+    if response is None:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+
     issue.delete()
+
     return Response(status=status.HTTP_204_NO_CONTENT)
   
   def put(self, request, pk):
@@ -331,7 +367,7 @@ class IssueDetail(APIView):
           "en": "Label " + label + " does not exist",
           "cz": "Označení " + label + " neexistuje"
         }, status=status.HTTP_400_BAD_REQUEST)
- 
+
     total_files_size = 0
     
     for uploaded_file in request.FILES.getlist('files'):
@@ -348,12 +384,18 @@ class IssueDetail(APIView):
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
 
-    # Upload new files
+    # Upload new files    
     for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
       IssueFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        issue=issue
+        issue=issue,
+        file_type=file_type
       )
 
     # Delete non Existing files

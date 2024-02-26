@@ -1,7 +1,7 @@
 from utils.issues.utils import get_label_names_by_ids
 from users.serializers.serializers import UserPublicSerializer
 from rest_framework import serializers
-from api.models import Offer, Keyword, OfferFile, Repo, Issue, Comment, ReactionsIssue, ReactionsComment
+from api.models import IssueFile, Offer, Keyword, OfferFile, Repo, Issue, Comment, ReactionsIssue, ReactionsComment
 
 class KeywordSerializer(serializers.ModelSerializer):
   class Meta:
@@ -11,7 +11,12 @@ class KeywordSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
   class Meta:
     model = OfferFile
-    fields = ['name', 'file']
+    fields = ['name', 'file', 'file_type']
+
+class FileIssueSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = IssueFile
+    fields = ['name', 'file', 'file_type', 'remote_url']
 
 class OfferSerializer(serializers.ModelSerializer):
   keywords = serializers.SerializerMethodField()
@@ -33,7 +38,7 @@ class RepoForIssueSerializer(serializers.ModelSerializer):
   
 class CommentFullSerializer(serializers.ModelSerializer):
   reactions = serializers.SerializerMethodField()
-  files = FileSerializer(many=True, read_only=True)
+  files = FileIssueSerializer(many=True, read_only=True)
 
   class Meta:
     model = Comment
@@ -48,7 +53,7 @@ class IssueFullSerializer(serializers.ModelSerializer):
   labels = serializers.SerializerMethodField()
   reactions = serializers.SerializerMethodField()
   comments = CommentFullSerializer(many=True, read_only=True)
-  files = FileSerializer(many=True, read_only=True)
+  files = FileIssueSerializer(many=True, read_only=True)
   repo = RepoForIssueSerializer()
 
   class Meta:
@@ -90,7 +95,7 @@ class IssueSerializer(serializers.ModelSerializer):
   labels = serializers.SerializerMethodField()
   repo = RepoForIssueSerializer()
   comments = serializers.SerializerMethodField()
-  files = FileSerializer(many=True, read_only=True)
+  files = FileIssueSerializer(many=True, read_only=True)
 
   class Meta:
     model = Issue

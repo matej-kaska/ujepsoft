@@ -1,7 +1,7 @@
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Attachment from "components/attachment/Attachment";
+import Comment from "components/comment/Comment";
+import Files from "components/files/Files";
 import GeneralModal from "components/general-modal/GeneralModal";
+import Images from "components/images/Images";
 import Label from "components/label/Label";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
@@ -15,7 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { FullIssue } from "types/issue";
 import axios from "utils/axios";
-import { formatDescription } from "utils/plainTextToHtml";
+import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 
@@ -28,7 +28,6 @@ const IssuePage = () => {
 	const reload = useSelector((state: any) => state.reload);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [issue, setIssue] = useState<FullIssue>({} as FullIssue);
-	const [filesOpen, setFilesOpen] = useState<boolean>(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -47,8 +46,8 @@ const IssuePage = () => {
 			const response = await axios.get(`/api/issue/${id}`);
 			if (!response.data) return;
 			response.data.body = removeFooterFromBody(response.data.body);
-			console.log(response.data);
 			setIssue(response.data);
+			console.log(response.data);
 			setLoading(false);
 		} catch {
 			navigate("/");
@@ -67,16 +66,6 @@ const IssuePage = () => {
 		}
 	};
 
-	const removeFooterFromBody = (body: string) => {
-		const lastPClose = body.lastIndexOf("</p>");
-		if (lastPClose === -1) return body;
-
-		const lastPOpen = body.substring(0, lastPClose).lastIndexOf("<p");
-		if (lastPOpen === -1) return body;
-
-		return body.substring(0, lastPOpen) + body.substring(lastPClose + 4);
-	};
-
 	return (
 		<>
 			<Navbar />
@@ -91,7 +80,7 @@ const IssuePage = () => {
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
-										<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat issue?"} actionOnClick={removeIssue} />)} />
+										<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} />)} />
 									</>
 								)}
 							</div>
@@ -100,30 +89,32 @@ const IssuePage = () => {
 								Aplikace: {issue.repo.name} <span className="repo-author">({issue.repo.author})</span>
 							</h2>
 						</header>
-						<div className="labels">
-							{issue.labels.map((label, index) => {
-								return <Label label={label} key={index} />;
-							})}
+						{issue.labels.length > 0 && (
+							<div className="labels">
+								{issue.labels.map((label, index) => {
+									return <Label label={label} key={index} />;
+								})}
+							</div>
+						)}
+						<div className="dates">
+							<span>Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>
+							<span>Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
 						</div>
 						<section className="description-wrapper">
 							<h2>Popis Issue:</h2>
-							<div className="description" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "") || "<p></p>" }} />
+							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "") || "<p><span class='no-description'>Není zde popis</span></p>" }} />
 						</section>
-						{issue.files.length > 0 && (
-							<section className="files-wrapper">
-								<div className="show-more" onClick={() => setFilesOpen(!filesOpen)}>
-									<span>Zobrazit přílohy ({issue.files.length})</span>
-									{filesOpen ? <FontAwesomeIcon icon={faArrowUp} /> : <FontAwesomeIcon icon={faArrowDown} />}
-								</div>
-								{filesOpen && (
-									<div className="files">
-										{issue.files.map((file, index) => {
-											return <Attachment attachment={file} key={index} />;
-										})}
-									</div>
-								)}
-							</section>
-						)}
+						<Files files={issue.files.filter((file) => file.file_type === "file")} />
+						<Images images={issue.files.filter((file) => file.file_type === "image")} />
+						<section className="comments-wrapper">
+							<h2>Komentáře:</h2>
+							{issue.comments.map((comment, index) => {
+								return <Comment key={index} {...comment} />;
+							})}
+						</section>
+						<section className="new-comment-wrapper">
+							<div>add comment</div>
+						</section>
 					</>
 				)}
 			</div>

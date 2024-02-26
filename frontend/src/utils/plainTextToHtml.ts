@@ -15,6 +15,22 @@ export const formatDescription = (description: string) => {
 			.replace(/<em>/g, "<i>")
 			.replace(/<\/em>/g, "</i>")
 			.replace(/\\"/g, '"')
-			.replace(/\\n/g, ""),
+			.replace(/\\n/g, "")
+			.replace(/!\[.*?\]\(.*?\)/g, "")
+			.replace(/\[.*?\]\(.*?\)/g, ""),
 	);
+};
+
+export const removeFooterFromBody = (body: string) => {
+	let new_body = body.replace(/!\[.*?\]\(.*?\)/g, "").replace(/\[.*?\]\(.*?\)/g, "");
+
+	const lastPClose = new_body.lastIndexOf("</p>");
+	if (lastPClose === -1) return new_body;
+
+	const lastPOpen = new_body.substring(0, lastPClose).lastIndexOf("<p");
+	if (lastPOpen === -1) return new_body;
+
+	new_body = new_body.substring(0, lastPOpen) + new_body.substring(lastPClose + 4);
+
+	return new_body;
 };
