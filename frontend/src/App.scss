@@ -57,7 +57,23 @@ $color-secondary: #91859f;
     }
   }
 
-  &>ul, &>ol, &>menu, &>il, &>p {
+  blockquote {
+    padding: 0.5em 1em !important;
+    border-left: 4px solid #ddd;
+    background-color: #f6f8fa;
+  }
+
+  pre {
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    padding: 1em !important;
+    overflow: auto;
+    white-space: pre-wrap; 
+    word-wrap: break-word;
+  }
+
+  &>ul, &>ol, &>menu, &>il, &>p, &>pre, &>blockquote {
     margin-bottom: 1rem !important;
     margin: initial;
     padding: initial;
