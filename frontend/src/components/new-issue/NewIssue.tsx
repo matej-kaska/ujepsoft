@@ -256,6 +256,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						defaultClasses={false}
 						menuClasses="options"
 						noArrow={true}
+						disabled={issue ? true : false}
 					>
 						{repos.map((repo: RepoSelect, index: number) => {
 							return (
@@ -265,7 +266,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 							);
 						})}
 					</Dropdown>
-					<FontAwesomeIcon icon={faChevronDown} className="arrow" />
+					<FontAwesomeIcon icon={faChevronDown} className={`arrow ${issue ? "arrow-disabled" : ""}`} />
 					<p className={`${errors.repo ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.repo?.message}!</p>
 					<div className="labels-wrapper">
 						<h2>Označení </h2>

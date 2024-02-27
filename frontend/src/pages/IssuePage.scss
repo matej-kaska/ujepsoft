@@ -30,7 +30,7 @@
         margin-right: 2px;
       }
 
-      .edit-icon, .remove-icon {
+      .edit-icon, .done-icon {
         width: 30px;
         height: 30px;
         min-width: 30px;
@@ -48,10 +48,10 @@
         }
       }
 
-      .remove-icon {
-        background-color: #FCE8E8;
+      .done-icon {
+        background-color: #ddd3ee;
         &:hover {
-          background-color: #F8C9C9;
+          background-color: #cfc1e7;
         }
       }
     }

@@ -16,8 +16,8 @@ import { setReload } from "redux/reloadSlice";
 import { FullIssue } from "types/issue";
 import axios from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
+import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
-import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 
 const IssuePage = () => {
 	const { id } = useParams();
@@ -35,7 +35,7 @@ const IssuePage = () => {
 	}, [id]);
 
 	useEffect(() => {
-		if (!reload.location || reload.location !== "issuepage") return;
+		if (!reload.location) return;
 		getIssue();
 		dispatch(setReload(""));
 	}, [reload]);
@@ -47,6 +47,7 @@ const IssuePage = () => {
 			if (!response.data) return;
 			response.data.body = removeFooterFromBody(response.data.body);
 			setIssue(response.data);
+			console.log("HERE");
 			console.log(response.data);
 			setLoading(false);
 		} catch {
@@ -80,7 +81,7 @@ const IssuePage = () => {
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
-										<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} />)} />
+										<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} />
 									</>
 								)}
 							</div>

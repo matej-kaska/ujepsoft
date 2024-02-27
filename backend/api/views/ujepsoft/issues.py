@@ -14,7 +14,7 @@ from api.pagination import IssuePagination
 from api import IMAGES_EXTENSIONS
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_footer_from_body
+from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -311,13 +311,12 @@ class IssueDetail(APIView):
         "cz": "Issue nebyl nalezen"
       }, status=status.HTTP_404_NOT_FOUND)
     
-    # TODO: Maybe email? and ujepsoft_author
-    if (request.user != issue.author and not request.user.is_staff):
+    if (request.user.email != issue.author_ujepsoft and not request.user.is_staff):
       return Response({
         "en": "You are not the author of this issue",
         "cz": "Nejste autorem tohoto issue"
       }, status=status.HTTP_403_FORBIDDEN)
-    
+
     name = request.POST.get('name', None)
     repo = request.POST.get('repo', None)
     labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
@@ -329,19 +328,19 @@ class IssueDetail(APIView):
         "en": "All required fields must be specified",
         "cz": "Všechna povinná pole musí být specifikována"
       }, status=status.HTTP_400_BAD_REQUEST)
-    
+
     try:
-      associated_repo = Repo.objects.filter(pk=repo)
-      if associated_repo.pk != repo:
+      associated_repo = Repo.objects.get(pk=repo)
+      if associated_repo.pk != int(repo):
         return Response({
           "en": "You cannot change repository",
           "cz": "Nemůžete změnit repozitář"
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)
     except Repo.DoesNotExist:
       return Response({
         "en": "Repository does not exists",
         "cz": "Repozitář neexistuje"
-      })
+      }, status=status.HTTP_400_BAD_REQUEST)
     
     if len(labels) == 0:
       return Response({
@@ -383,21 +382,7 @@ class IssueDetail(APIView):
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
-
-    # Upload new files    
-    for uploaded_file in request.FILES.getlist('files'):
-      _, file_extension = os.path.splitext(uploaded_file.name)
-      file_extension = file_extension.lower()[1:]
-
-      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
-
-      IssueFile.objects.create(
-        name=uploaded_file.name,
-        file=uploaded_file,
-        issue=issue,
-        file_type=file_type
-      )
-
+    
     # Delete non Existing files
     for file in IssueFile.objects.filter(issue=issue):
       file_found = False
@@ -408,12 +393,26 @@ class IssueDetail(APIView):
       if not file_found:
         file.delete()
 
+    # Upload new files    
+    for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
+      issue_file = IssueFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        issue=issue,
+        file_type=file_type
+      )
+
+      issue.files.add(issue_file)
+
     # Get all files in this issue
     issue_files = IssueFile.objects.filter(issue=issue)
     
     # Format description
-    description = remove_footer_from_body(description)
-
     description = description + "\n<p>"
     
     description = add_files_to_description(description, issue_files)
@@ -422,14 +421,14 @@ class IssueDetail(APIView):
     description = description + "\n</p>\n"
 
     # GITHUB request for edit
-    response = GitHubAPIService.update_issue(associated_repo.author, associated_repo.name, issue.gh_id, name, description, labels)
+    response = GitHubAPIService.update_issue(associated_repo.author, associated_repo.name, issue.number, name, description, labels)
 
     # Update Issue from response 
-    issue.name = response.get("title")
+    issue.title = response.get("title")
     issue.body = response.get("body")
     issue.updated_at = response.get("updated_at")
 
-    issue.labels = []
+    issue.labels.clear()
     for label in labels:
       try:
         label_obj = Label.objects.get(name=label)

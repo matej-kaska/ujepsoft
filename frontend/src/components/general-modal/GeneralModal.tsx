@@ -7,9 +7,10 @@ export interface GeneralModalProps {
 	actionOnClick?: (() => void) | undefined;
 	input?: string;
 	actionOnClickWparam?: (inputValue: string) => void;
+	submitText?: string;
 }
 
-const GeneralModal = ({ text, actionOnClick, input, actionOnClickWparam }: GeneralModalProps) => {
+const GeneralModal = ({ text, actionOnClick, input, actionOnClickWparam, submitText }: GeneralModalProps) => {
 	const { closeModal } = useModal();
 	const [inputValue, setInputValue] = useState<string>("");
 
@@ -32,7 +33,7 @@ const GeneralModal = ({ text, actionOnClick, input, actionOnClickWparam }: Gener
 					</Button>
 				) : (
 					<Button color="primary" className="remove-button" onClick={actionOnClick}>
-						Smazat
+						{submitText ? submitText : "Smazat"}
 					</Button>
 				)}
 			</div>
