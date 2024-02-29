@@ -1,6 +1,7 @@
 import re
 from api.models import Label
 from datetime import datetime,timezone
+import markdown
 
 from django.conf import settings
 from api import IMAGES_EXTENSIONS
@@ -161,3 +162,35 @@ def add_files_to_description(description: str, files) -> str:
     formatted_description = formatted_description + "<h2>Soubory:</h2>\n" + files_description
 
   return formatted_description
+
+def markdown_to_html(description: str) -> str:
+  proccessed_md = insert_div_after_lists(description)
+  html = markdown.markdown(proccessed_md,  extensions=['extra', 'nl2br'])
+  html = re.sub(r'<code>(.*?)</code>', r'<pre>\1</pre>', html, flags=re.DOTALL)
+  return html
+
+def insert_div_after_lists(md_content: str) -> str:
+  """
+  This method inserts a div after every list in the markdown content, must
+  be done, because when there are two lists in a row, they are not separated
+  """
+  lines = md_content.split('\n')
+  new_lines = []
+  in_list = False
+
+  for line in lines:
+    stripped_line = line.strip()
+    if stripped_line.startswith(('-', '*', '1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.')):
+      in_list = True
+      new_lines.append(line)
+    elif in_list and not stripped_line:
+      in_list = False
+      new_lines.append('<div></div>')
+      new_lines.append('') 
+    else:
+      new_lines.append(line)
+
+  if in_list:
+    new_lines.append('<div></div>')
+
+  return '\n'.join(new_lines)

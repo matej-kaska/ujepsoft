@@ -49,6 +49,31 @@ $color-secondary: #91859f;
     margin-bottom: 1rem;
   }
 
+  h1 {
+    font-size: 2.5rem;
+    border-bottom: 1px solid ghostwhite;
+  }
+
+  h2 {
+    font-size: 2rem !important;
+  }
+
+  h3 {
+    font-size: 1.75rem !important;
+  }
+
+  h4 {
+    font-size: 1.5rem !important;
+  }
+
+  h5 {
+    font-size: 1.25rem !important;
+  }
+
+  h6 {
+    font-size: 1rem !important;
+  }
+
   a {
     color: #007bff !important;
     text-decoration: underline;
@@ -61,6 +86,10 @@ $color-secondary: #91859f;
     padding: 0.5em 1em !important;
     border-left: 4px solid #ddd;
     background-color: #f6f8fa;
+  }
+
+  blockquote + blockquote {
+    margin-top: -1rem;
   }
 
   pre {
@@ -200,6 +229,30 @@ $color-secondary: #91859f;
           span, strong, i, del {
             font-family: 'Roboto' !important;
           }
+        }
+
+        h1 {
+          font-size: 2.5rem !important;
+        }
+
+        h2 {
+          font-size: 2rem !important;
+        }
+
+        h3 {
+          font-size: 1.75rem !important;
+        }
+
+        h4 {
+          font-size: 1.5rem !important;
+        }
+
+        h5 {
+          font-size: 1.25rem !important;
+        }
+
+        h6 {
+          font-size: 1rem !important;
         }
       }
     }

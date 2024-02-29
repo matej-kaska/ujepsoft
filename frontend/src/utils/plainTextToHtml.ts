@@ -3,11 +3,13 @@ const linkify = (text: string) => {
 	return text.replace(urlRegex, (url) => `<a href="${url.match(/^https?:/) ? url : `//${url}`}" target="_blank" rel="noreferrer">${url}</a>`);
 };
 
-export const formatDescription = (description: string) => {
+export const formatDescription = (description: string, skipParag = false) => {
 	if (!description) return;
 	let newDescription: string | null = description;
-	if (!newDescription.startsWith("<p>")) newDescription = `<p>${newDescription}`;
-	if (!newDescription.endsWith("</p>/n")) newDescription = `${newDescription}</p>`;
+	if (!skipParag) {
+		if (!newDescription.startsWith("<p>")) newDescription = `<p>${newDescription}`;
+		if (!newDescription.endsWith("</p>/n")) newDescription = `${newDescription}</p>`;
+	}
 	return linkify(
 		newDescription
 			.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")

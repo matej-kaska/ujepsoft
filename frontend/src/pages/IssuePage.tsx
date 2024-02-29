@@ -78,7 +78,7 @@ const IssuePage = () => {
 						<header>
 							<div className="header-buttons">
 								<h1>{issue.title}</h1>
-								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
+								{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
 										<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} />
@@ -103,15 +103,21 @@ const IssuePage = () => {
 						</div>
 						<section className="description-wrapper">
 							<h2>Popis Issue:</h2>
-							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "") || "<p><span class='no-description'>Není zde popis</span></p>" }} />
+							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "", true) || "<p><span class='no-description'>Není zde popis</span></p>" }} />
 						</section>
 						<Files files={issue.files.filter((file) => file.file_type === "file")} />
 						<Images images={issue.files.filter((file) => file.file_type === "image")} />
 						<section className="comments-wrapper">
 							<h2>Komentáře:</h2>
-							{issue.comments.map((comment, index) => {
-								return <Comment key={index} {...comment} />;
-							})}
+							{issue.comments
+								.sort((a, b) => {
+									const dateA = new Date(a.created_at);
+									const dateB = new Date(b.created_at);
+									return dateA.getTime() - dateB.getTime();
+								})
+								.map((comment) => {
+									return <Comment key={comment.id} {...comment} />;
+								})}
 						</section>
 						<section className="new-comment-wrapper">
 							<div>add comment</div>

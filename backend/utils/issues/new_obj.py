@@ -6,7 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author
+from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html
 
 def create_issue(issue, associated_repo, user, repo):
   try:
@@ -20,6 +20,11 @@ def create_issue(issue, associated_repo, user, repo):
       author_ujepsoft = get_ujepsoft_author(issue['body'])
     else:
       author_ujepsoft = ""
+
+    raw_body = issue.get('body', '') or ''
+
+    if not author_ujepsoft and issue.get('body', ''):
+      issue['body'] = markdown_to_html(issue['body'])
 
     new_issue = Issue.objects.create(
       number=issue['number'],
@@ -43,7 +48,7 @@ def create_issue(issue, associated_repo, user, repo):
     except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
 
-  images, files = extract_files_from_github(issue.get('body', '') or '')
+  images, files = extract_files_from_github(raw_body or '')
 
   for file in files:
     new_issue_file = IssueFile.objects.create(
@@ -88,6 +93,9 @@ def create_issue(issue, associated_repo, user, repo):
           author_ujepsoft = get_ujepsoft_author(comment['body'])
         else:
           author_ujepsoft = ""
+
+        if not author_ujepsoft and comment.get('body', ''):
+          comment['body'] = markdown_to_html(comment['body'])
 
         new_comment = Comment.objects.create(
           number=comment['id'],
@@ -152,6 +160,11 @@ def update_issue(issue_pk, new_issue, user, repo):
   updating_issue.updated_at = new_issue["updated_at"]
   updating_issue.author_profile_pic = new_issue["user"]["avatar_url"]
   updating_issue.labels.clear()
+  
+  if not get_ujepsoft_author(new_issue['body']) and new_issue.get('body', ''):
+    updating_issue.body = markdown_to_html(new_issue['body'])
+  else:
+    updating_issue.body = new_issue['body']
 
   if updating_issue.body is None:
     updating_issue.body = ""
@@ -166,6 +179,12 @@ def update_issue(issue_pk, new_issue, user, repo):
       print(f"Label {label_name} does not exist! Not Creating it!")
 
   images, files = extract_files_from_github(new_issue.get('body', '') or '')
+
+  # Delete old files
+  old_files = IssueFile.objects.filter(issue=updating_issue)
+  for old_file in old_files:
+    if old_file.name not in [file[0] for file in files]:
+      old_file.delete()
 
   for file in files:
     try:
@@ -239,11 +258,23 @@ def update_issue(issue_pk, new_issue, user, repo):
 
 def update_comment(comment, associated_issue):
   new_comment = Comment.objects.get(number=comment['id'], issue=associated_issue)
-  new_comment.body = comment['body']
   new_comment.updated_at = comment['updated_at']
-  new_comment.author_profile_pic=comment['user']['avatar_url'],
+  new_comment.author_profile_pic=comment['user']['avatar_url']
+
+  # TODO: DELETE THIS
+  if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+    author_ujepsoft = get_ujepsoft_author(comment['body'])
+  else:
+    author_ujepsoft = ""
+
+  new_comment.author_ujepsoft = author_ujepsoft
+  
+  if not get_ujepsoft_author(comment['body']) and comment.get('body', ''):
+    new_comment.body = markdown_to_html(comment['body'])
+  else:
+    new_comment.body = comment['body']
+  
   new_comment.save()
-  # TODO: Add author_ujepsoft
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
