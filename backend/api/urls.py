@@ -16,4 +16,5 @@ urlpatterns = [
     path("repo/<int:pk>", repo_views.RepoDelete.as_view(), name="api_repo_detail"),
     path("issue/list", issue_views.IssuesList.as_view(), name="api_issue_list"),
     path("issue", issue_views.IssueCreate.as_view(), name="api_issue_create"),
+    path("issue/<int:pk>", issue_views.IssueDetail.as_view(), name="api_issue_detail"),
 ]

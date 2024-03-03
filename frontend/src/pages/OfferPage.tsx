@@ -1,7 +1,6 @@
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Attachment from "components/attachment/Attachment";
+import Files from "components/files/Files";
 import GeneralModal from "components/general-modal/GeneralModal";
+import Images from "components/images/Images";
 import Keyword from "components/keyword/Keyword";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
@@ -14,6 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { Offer } from "types/offer";
 import axios from "utils/axios";
+import { formatDescription } from "utils/plainTextToHtml";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 
@@ -26,7 +26,6 @@ const OfferPage = () => {
 	const reload = useSelector((state: any) => state.reload);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [offer, setOffer] = useState<Offer>({} as Offer);
-	const [filesOpen, setFilesOpen] = useState<boolean>(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -49,27 +48,6 @@ const OfferPage = () => {
 		} catch {
 			navigate("/");
 		}
-	};
-
-	const linkify = (text: string) => {
-		const urlRegex = /(\b((https?|ftp|file):\/\/|www\.)[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
-		return text.replace(urlRegex, (url) => `<a href="${url.match(/^https?:/) ? url : `//${url}`}" target="_blank" rel="noreferrer">${url}</a>`);
-	};
-
-	const formatDescription = (description: string) => {
-		if (!description) return;
-		let newDescription: string | null = description;
-		if (!newDescription.startsWith("<p>")) newDescription = `<p>${newDescription}`;
-		if (!newDescription.endsWith("</p>/n")) newDescription = `${newDescription}</p>`;
-		return linkify(
-			newDescription
-				.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-				.replace(/<p>\s?<\/p>/g, "<br>")
-				.replace(/<em>/g, "<i>")
-				.replace(/<\/em>/g, "</i>")
-				.replace(/\\"/g, '"')
-				.replace(/\\n/g, ""),
-		);
 	};
 
 	const removeOffer = async () => {
@@ -110,25 +88,12 @@ const OfferPage = () => {
 								return <Keyword keyword={keyword} key={index} />;
 							})}
 						</div>
-						{offer.files.length > 0 && (
-							<section className="files-wrapper">
-								<div className="show-more" onClick={() => setFilesOpen(!filesOpen)}>
-									<span>Zobrazit přílohy ({offer.files.length})</span>
-									{filesOpen ? <FontAwesomeIcon icon={faArrowUp} /> : <FontAwesomeIcon icon={faArrowDown} />}
-								</div>
-								{filesOpen && (
-									<div className="files">
-										{offer.files.map((file, index) => {
-											return <Attachment attachment={file} key={index} />;
-										})}
-									</div>
-								)}
-							</section>
-						)}
+						<Files files={offer.files.filter((file) => file.file_type === "file")} />
 						<section className="description-wrapper">
 							<h2>Popis nabídky:</h2>
-							<div className="description" dangerouslySetInnerHTML={{ __html: formatDescription(offer.description) || "<p></p>" }} />
+							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(offer.description) || "<p></p>" }} />
 						</section>
+						<Images images={offer.files.filter((file) => file.file_type === "image")} />
 					</>
 				)}
 			</div>

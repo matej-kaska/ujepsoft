@@ -1,6 +1,3 @@
-import json
-import os
-
 from api.models import Repo
 from api.serializers.serializers import RepoSerializer, RepoFullSerializer, RepoSerializerSmall
 from rest_framework import status, permissions, generics
@@ -41,6 +38,9 @@ class RepoAdd(APIView):
         "cz": "Špatný URL odkaz"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if url.endswith('/'):
+      url = url[:-1]
+
     user, repo = url.split('/')[-2:]
 
     is_collaborant = check_collaborant(user, repo)
@@ -93,8 +93,6 @@ class RepoAdd(APIView):
       create_issue(issue, new_repo, user, repo)
 
     repo_serializer = RepoFullSerializer(new_repo)
-
-    cache.set("repo-" + str(new_repo.pk), json.dumps(repo_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
     
     return Response(repo_serializer.data,status=status.HTTP_201_CREATED)
   

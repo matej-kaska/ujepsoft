@@ -1,11 +1,12 @@
-.offer-page {
+.issue-page {
   background-color: white;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-height: calc(100svh - 223px);
   padding-inline: 3rem;
-  gap: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 
   .loading-screen {
     width: 100%;
@@ -29,7 +30,7 @@
         margin-right: 2px;
       }
 
-      .edit-icon, .remove-icon {
+      .edit-icon, .done-icon {
         width: 30px;
         height: 30px;
         min-width: 30px;
@@ -47,32 +48,45 @@
         }
       }
 
-      .remove-icon {
-        background-color: #FCE8E8;
+      .done-icon {
+        background-color: #ddd3ee;
         &:hover {
-          background-color: #F8C9C9;
+          background-color: #cfc1e7;
         }
       }
     }
 
 
 
-    h2 {
+    .repo {
       font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .repo-author {
+        font-size: 16px;
+      }
     }
   }
 
-  .keywords {
+  .labels {
     max-width: 100%;
     display: flex;
     align-items: center;
     flex-direction: row;
     gap: 0.25rem;
     flex-wrap: wrap;
+  }
 
-    .keywords-span {
-      margin-right: 0.25rem;
-    }
+  .dates {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    color: #6E6E6E;
+    user-select: none;
   }
 
   .description-wrapper {
@@ -85,6 +99,19 @@
 
     .description {
       margin-top: 2px;
+
+      .no-description {
+        font-style: italic;
+        color: gray;
+      }    
+    }
+  }
+
+  .comments-wrapper {
+    width: 100%;
+
+    h2 {
+      font-size: 18px;
     }
   }
 }

@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from api.models import Issue, Label, Repo, IssueFile
-from api.serializers.serializers import IssueCacheSerializer, IssueSerializer
+from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +11,7 @@ from django.core.cache import cache
 
 from api.services import GitHubAPIService
 from api.pagination import IssuePagination
+from api import IMAGES_EXTENSIONS
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
@@ -34,16 +35,12 @@ class IssuesList(generics.ListAPIView):
         break
 
     if len(response) > 0:
-      print("getting issues from cache")
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
-
       page = self.paginate_queryset(response)
       if page is not None:
-        serializer = self.get_serializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(response)
       
-      serializer = self.get_serializer(response, many=True)
-      return Response(serializer.data,status=status.HTTP_200_OK)
+      return Response(response,status=status.HTTP_200_OK)
 
     fetched_issues = GitHubAPIService.get_all_issues()
     issue_ids = [str(issue.gh_id) for issue in issues]
@@ -62,26 +59,24 @@ class IssuesList(generics.ListAPIView):
         repo = Repo.objects.get(author=fetched_issue["user"]["login"], name=fetched_issue["repo"])
 
         create_issue(new_issue, repo, fetched_issue["user"]["login"], fetched_issue["repo"])
-        print(f"creating new issue {fetched_issue['number']}")
 
         issue = Issue.objects.get(gh_id=fetched_issue["id"])
 
       # Getting updated issue
       if issue and datetime.strptime(fetched_issue["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
-        print(f"updating issue {issue.number}")
         continue
 
-      # Getting issue from database
-      issue_serializer = IssueCacheSerializer(issue)
+      issue_serializer = IssueSerializer(issue)
       cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
-      # TODO: full serializer
+      
+      issue_full_serializer = IssueFullSerializer(issue)
+      cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
       response.append(issue)
-      print(f"getting issue {issue.number} from db")
 
     if len(issue_ids) > 0:
       Issue.objects.filter(gh_id__in=issue_ids).delete()
-      print(f"removing issue {issue_ids}")
 
     response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
 
@@ -94,6 +89,7 @@ class IssuesList(generics.ListAPIView):
     return Response(serializer.data,status=status.HTTP_200_OK)
   
 class IssueCreate(APIView):
+  permission_classes = (permissions.IsAuthenticated,)
 
   def post(self, request):
     name = request.POST.get('name', None)
@@ -177,10 +173,16 @@ class IssueCreate(APIView):
     # Create files
     issue_files = []
     for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
       new_issue_file = IssueFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        issue=new_issue
+        issue=new_issue,
+        file_type=file_type
       )
       issue_files.append(new_issue_file)
 
@@ -198,7 +200,7 @@ class IssueCreate(APIView):
     check_labels(associated_repo.author, associated_repo.name)
 
     response = GitHubAPIService.post_issue(associated_repo.author, associated_repo.name, name, description, labels)
-
+    
     # Create issue in database from response
     Issue.objects.filter(pk=new_issue.pk).update(
       number=response.get("number"),
@@ -221,9 +223,226 @@ class IssueCreate(APIView):
         print(f"Label {label} does not exist! Not Creating it!")
 
     # Add issue to cache
-    issue_serializer = IssueCacheSerializer(Issue.objects.get(pk=new_issue.pk))
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
     cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=new_issue.pk))
+    cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response({
       "id": new_issue.pk
     }, status=status.HTTP_201_CREATED)
+
+class IssueDetail(APIView):
+  serializer_class = IssueFullSerializer
+  permission_classes = (permissions.IsAuthenticated,)
+
+  def get(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    cached_issue = cache.get("issue-full-" + str(issue.pk))
+    if cached_issue:
+      return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
+    
+    response = GitHubAPIService.get_issue(issue.repo.author, issue.repo.name, issue.number)
+    if response is None:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if datetime.strptime(response["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
+      updated_issue = update_issue(issue.pk, response, issue.repo.author, issue.repo.name)
+      if updated_issue:
+        return Response(updated_issue, status=status.HTTP_200_OK)
+
+    serializer = self.serializer_class(issue)
+    cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    return Response(serializer.data, status=status.HTTP_200_OK)
+  
+  def delete(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    try:
+      associated_repo = Repo.objects.get(pk=issue.repo.pk)
+    except Repo.DoesNotExist:
+      return Response({
+        "en": "Repository does not exists",
+        "cz": "Repozitář neexistuje"
+      })
+    
+    if (request.user != issue.author and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    print(associated_repo.author, associated_repo.name, issue.number)
+    response = GitHubAPIService.delete_issue(associated_repo.author, associated_repo.name, issue.number)
+
+    if response is None:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+
+    issue.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+  
+  def put(self, request, pk):
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user.email != issue.author_ujepsoft and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+
+    name = request.POST.get('name', None)
+    repo = request.POST.get('repo', None)
+    labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
+    description = request.POST.get('description', None)
+    existing_files = json.loads(request.POST.get('existingFiles')) if request.POST.get('existingFiles') else []
+    
+    if name is None or labels is None or description is None or repo is None:
+      return Response({
+        "en": "All required fields must be specified",
+        "cz": "Všechna povinná pole musí být specifikována"
+      }, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+      associated_repo = Repo.objects.get(pk=repo)
+      if associated_repo.pk != int(repo):
+        return Response({
+          "en": "You cannot change repository",
+          "cz": "Nemůžete změnit repozitář"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Repo.DoesNotExist:
+      return Response({
+        "en": "Repository does not exists",
+        "cz": "Repozitář neexistuje"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(labels) == 0:
+      return Response({
+        "en": "At least one keyword must be specified",
+        "cz": "Musí být specifikován alespoň jeden klíčový výraz"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(name) < 6 or len(name) > 100:
+      return Response({
+        "en": "Name must be between 6 and 100 characters long",
+        "cz": "Název musí být dlouhý 6 až 100 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(description) < 32 or len(description) > 8192:
+      return Response({
+        "en": "Description must be between 32 and 8192 characters long",
+        "cz": "Popis musí být dlouhý 32 až 8192 znaků"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    for label in labels:
+      if not Label.objects.filter(name=label).exists():
+        return Response({
+          "en": "Label " + label + " does not exist",
+          "cz": "Označení " + label + " neexistuje"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Delete non Existing files
+    for file in IssueFile.objects.filter(issue=issue):
+      file_found = False
+      for existing_file in existing_files:
+        if file.name == existing_file:
+          file_found = True
+          break
+      if not file_found:
+        file.delete()
+
+    # Upload new files    
+    for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
+      issue_file = IssueFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        issue=issue,
+        file_type=file_type
+      )
+
+      issue.files.add(issue_file)
+
+    # Get all files in this issue
+    issue_files = IssueFile.objects.filter(issue=issue)
+    
+    # Format description
+    description = description + "\n<p>"
+    
+    description = add_files_to_description(description, issue_files)
+    description = add_ujepsoft_author(description, request.user.email)
+
+    description = description + "\n</p>\n"
+
+    # GITHUB request for edit
+    response = GitHubAPIService.update_issue(associated_repo.author, associated_repo.name, issue.number, name, description, labels)
+
+    # Update Issue from response 
+    issue.title = response.get("title")
+    issue.body = response.get("body")
+    issue.updated_at = response.get("updated_at")
+
+    issue.labels.clear()
+    for label in labels:
+      try:
+        label_obj = Label.objects.get(name=label)
+        issue.labels.add(label_obj)
+      except Label.DoesNotExist:
+        print(f"Label {label} does not exist! Not Creating it!")
+
+    issue.save()
+
+    # Add issue to cache
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    return Response(status=status.HTTP_200_OK)

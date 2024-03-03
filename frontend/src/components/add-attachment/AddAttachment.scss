@@ -1,0 +1,72 @@
+.attachment-wrapper {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  height: 36px;
+  max-height: 36px;
+  overflow: hidden;
+  margin-top: 9px;
+  margin-bottom: 4px;
+
+  &:hover {
+    border-color: gray;
+  }
+
+  input {
+    color: transparent;
+    z-index: 99;
+    margin-top: 0 !important;
+    border: 0 !important;
+    cursor: pointer;
+    position: relative;
+    bottom: 1px;
+
+    &::file-selector-button {
+      display: none;
+    }
+  }
+
+  span {
+    cursor: pointer;
+    z-index: 1;
+    position: relative;
+    top: -28px;
+    right: -14px;
+    color: #999;
+  }
+}
+
+.attachment-added {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  overflow: hidden;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0.5rem;
+
+  &:hover {
+    border-color: darken($color-darkgray, 10%);
+    background-color: darken(white, 5%);
+  }
+
+  span {
+    width: 100%;
+    margin-left: 8px;
+  }
+
+  svg {
+    height: 18px;
+    width: 18px;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    margin-right: 0.5rem;
+
+    &:hover {
+      color: dimgray;
+    }
+  }
+}

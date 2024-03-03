@@ -1,0 +1,33 @@
+.files-wrapper {
+    width: 100%;
+
+    .show-more {
+      font-size: 20px;
+      width: fit-content;
+      user-select: none;
+      cursor: pointer;
+      span {
+        margin-right: 0.5rem;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+
+    .files {
+      margin-top: 0.5rem;
+      gap: 0.5rem;
+      display: flex;
+      flex-direction: column;
+
+      .file {
+        a {
+          text-decoration: none !important;
+        }
+      }
+      a:hover {
+        text-decoration: none !important;
+      }
+    }
+  }

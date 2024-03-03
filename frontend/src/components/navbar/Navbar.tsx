@@ -1,5 +1,6 @@
 import Login from "components/authetication/Login";
 import Button from "components/buttons/Button";
+import { useAuth } from "contexts/AuthProvider";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import { useSelector } from "react-redux";
@@ -13,12 +14,18 @@ const Navbar = () => {
 	const { openSnackbar } = useSnackbar();
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const navigate = useNavigate();
+	const { checkIsLoggedIn } = useAuth();
 
 	const handleLogout = () => {
 		navigate("/");
 		store.dispatch(removeUser());
 		axios.defaults.headers.common.Authorization = "";
 		openSnackbar("Byl jste úspěšně odhlášen!");
+	};
+
+	const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+		checkIsLoggedIn(Boolean(userInfo.id));
+		if (!userInfo.id) e.preventDefault();
 	};
 
 	return (
@@ -39,14 +46,20 @@ const Navbar = () => {
 						<Link to={"/"}>Nabídky</Link>
 					</li>
 					<li>
-						<Link to={"/issues"}>Pohledávky</Link>
+						<Link to={"/issues"} onClick={handleLinkClick}>
+							Pohledávky
+						</Link>
 					</li>
 					<li>
-						<Link to={"/guides"}>Návody</Link>
+						<Link to={"/guides"} onClick={handleLinkClick}>
+							Návody
+						</Link>
 					</li>
 					{userInfo.is_staff && (
 						<li>
-							<Link to={"/repo-administration"}>Administrace</Link>
+							<Link to={"/repo-administration"} onClick={handleLinkClick}>
+								Administrace
+							</Link>
 						</li>
 					)}
 				</ul>

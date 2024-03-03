@@ -23,7 +23,7 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
 	const navigateLink = useSelector((state: RootState) => state.navigator.link);
 
 	useEffect(() => {
-		const redirectUrls = ["/guides", "/issues"];
+		const redirectUrls = ["/guides", "/issues", "/repo-administration", "/issue"];
 		if (redirectLoggedUser) {
 			nativNavigate("/");
 			return;

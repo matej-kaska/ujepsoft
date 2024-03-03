@@ -74,6 +74,7 @@ services:
       - redis
     environment:
       - NODE_ENV=development
+      - VITE_GITHUB_USERNAME=matej-kaska
 
   ## NGINX
   edge:
