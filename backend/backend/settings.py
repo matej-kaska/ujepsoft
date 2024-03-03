@@ -104,15 +104,32 @@ DATABASES = {
 
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
+        "BACKEND": "api.caching_logging.LoggingRedisCache",
         "LOCATION": os.environ.get("DJANGO_REDIS_LOCATION", "redis://localhost:6379/1"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": os.environ.get("REDIS_PASSWORD", "t2N7Cie2601CMPVgWMj7IY9ZdlK6K5uf"),
+            "PASSWORD": os.environ.get("REDIS_PASSWORD"),
         }
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'api.caching_logging': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
 
 # Custom user model
 

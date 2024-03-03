@@ -1,0 +1,17 @@
+.comment {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid #E5E5E5;
+  padding-block: 0.5rem;
+  flex-direction: column;
+  
+  .footer {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    font-size: clamp(0.6rem, 1.5vw, 1rem);
+    color: #6E6E6E;
+    user-select: none;
+  }
+}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import URLValidator
 
 from users.models import User
 
@@ -27,12 +28,13 @@ class OfferFile(models.Model):
   name = models.CharField(max_length=255)
   file = models.FileField(upload_to='offer_files')
   offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name='files')
+  file_type = models.CharField(max_length=5, choices=[('file', 'file'), ('image', 'image')])
 
   def __str__(self):
     return repr(self)
   
   def __repr__(self):
-    return f"[{self.pk}] {self.name}"
+    return f"[{self.pk}] ({self.type}) {self.name}"
   
 class Repo(models.Model):
   name = models.CharField(max_length=255)
@@ -122,20 +124,38 @@ class IssueFile(models.Model):
   name = models.CharField(max_length=255)
   file = models.FileField(upload_to='issue_files')
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='files')
+  file_type = models.CharField(max_length=5, choices=[('file', 'file'), ('image', 'image')])
+  remote_url = models.CharField(max_length=1024, blank=True, validators=[URLValidator()])
 
   def __str__(self):
     return repr(self)
+  
+  def save(self, *args, **kwargs):
+    if self.remote_url:
+      self.file = None
+    else:
+      self.remote_url = ""
+    super(IssueFile, self).save(*args, **kwargs)
   
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
   
 class CommentFile(models.Model):
   name = models.CharField(max_length=255)
-  file = models.FileField(upload_to='comment_files')
+  file = models.FileField(upload_to='comment_files', blank=True, null=True)
   comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='files')
+  file_type = models.CharField(max_length=5, choices=[('file', 'file'), ('image', 'image')])
+  remote_url = models.CharField(max_length=1024, blank=True, validators=[URLValidator()])
 
   def __str__(self):
     return repr(self)
+  
+  def save(self, *args, **kwargs):
+    if self.remote_url:
+      self.file = None
+    else:
+      self.remote_url = ""
+    super(CommentFile, self).save(*args, **kwargs)
   
   def __repr__(self):
     return f"[{self.pk}] {self.name}"

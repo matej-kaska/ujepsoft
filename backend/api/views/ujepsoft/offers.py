@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from api import IMAGES_EXTENSIONS
+
 class OfferUpload(APIView):
   permission_classes = (permissions.IsAuthenticated,)
   parser_classes = [MultiPartParser, FormParser]
@@ -70,12 +72,18 @@ class OfferUpload(APIView):
       except Keyword.DoesNotExist:
         kw = Keyword.objects.create(name=keyword)
       of.keywords.add(kw)
-
+    
     for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
       OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        offer=of
+        offer=of,
+        file_type=file_type
       )
 
     return Response({
@@ -106,6 +114,7 @@ class OfferDetail(APIView):
     return Response(self.serializer_class(offer).data, status=status.HTTP_200_OK)
   
   def put(self, request, pk):
+    # TODO: Check for files -> if file has remote_url and it is deleted, then delete it from body
     offer = Offer.objects.get(pk=pk)
 
     if (self.request.user != offer.author and not self.request.user.is_staff):
@@ -173,10 +182,16 @@ class OfferDetail(APIView):
         file.delete()
 
     for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
       OfferFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        offer=offer
+        offer=offer,
+        file_type=file_type
       )
 
     offer.save()

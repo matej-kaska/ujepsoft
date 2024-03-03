@@ -9,3 +9,4 @@ django-active-link==0.1.8
 django-redis==5.4.0
 requests==2.31.0
 ruff==0.2.1
+markdown==3.5.2

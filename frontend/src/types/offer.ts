@@ -6,6 +6,8 @@ type Author = {
 export type Attachment = {
 	name: string;
 	file: string;
+	file_type: "image" | "file";
+	remote_url?: string;
 };
 
 export type Offer = {

@@ -1,6 +1,7 @@
 import { faCheck, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { yupResolver } from "@hookform/resolvers/yup";
+import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
 import Dropdown from "components/dropdown/Dropdown";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
@@ -15,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { editorLabels } from "static/wysiwyg";
-import { Issue } from "types/issue";
+import { FullIssue } from "types/issue";
 import { Attachment } from "types/offer";
 import { RepoSelect } from "types/repo";
 import { timeout } from "utils/timeout";
@@ -23,7 +24,6 @@ import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } fr
 import * as yup from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 import { useModal } from "../../contexts/ModalProvider";
-import { ReactComponent as CloseIcon } from "../../images/close.svg";
 import axios from "../../utils/axios";
 
 type Form = {
@@ -35,7 +35,7 @@ type Form = {
 };
 
 type NewIssueProps = {
-	issue?: Issue;
+	issue?: FullIssue;
 };
 
 const NewIssue = ({ issue }: NewIssueProps) => {
@@ -177,62 +177,6 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		}
 	};
 
-	const onFileCloseButtonClick = (index: number) => {
-		setFiles((prev: File[]) => {
-			return prev.filter((_file: File, fileIndex: number) => fileIndex !== index);
-		});
-	};
-
-	const onUploadedFileCloseButtonClick = (index: number) => {
-		setUploadedFiles((prev: Attachment[]) => {
-			return prev.filter((_file: Attachment, fileIndex: number) => fileIndex !== index);
-		});
-	};
-
-	const validateSize = (file: File) => {
-		if (file.size > 134217728) {
-			openErrorSnackbar("Soubor nesmí být větší než 128 MB!");
-			return false;
-		}
-		let totalSize = 0;
-		for (const file of files) {
-			totalSize += file.size;
-		}
-		if (totalSize + file.size > 536870912) {
-			openErrorSnackbar("Soubory nesmí být větší než 512 MB!");
-			return false;
-		}
-		if (files.length > 49) {
-			openErrorSnackbar("Nesmíte nahrát více jak 50 souborů");
-			return false;
-		}
-		return true;
-	};
-
-	const addFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files) return;
-		const file = e.target.files[0];
-		if (!file) return;
-		if (!validateSize(file)) {
-			e.target.files = null;
-			return;
-		}
-		setFiles((prev: File[]) => {
-			return [...prev, file];
-		});
-	};
-
-	const handleDrop = (e: React.DragEvent<HTMLSpanElement>) => {
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-			const file = e.dataTransfer.files[0];
-			if (!validateSize(file)) return;
-			setFiles((prev: File[]) => [...prev, file]);
-		}
-	};
-
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
 		if (data.name.trim() === "") {
@@ -312,6 +256,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						defaultClasses={false}
 						menuClasses="options"
 						noArrow={true}
+						disabled={issue ? true : false}
 					>
 						{repos.map((repo: RepoSelect, index: number) => {
 							return (
@@ -321,7 +266,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 							);
 						})}
 					</Dropdown>
-					<FontAwesomeIcon icon={faChevronDown} className="arrow" />
+					<FontAwesomeIcon icon={faChevronDown} className={`arrow ${issue ? "arrow-disabled" : ""}`} />
 					<p className={`${errors.repo ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.repo?.message}!</p>
 					<div className="labels-wrapper">
 						<h2>Označení </h2>
@@ -382,29 +327,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						}}
 					/>
 					<p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
-					<label className="attachments">Přílohy</label>
-					<div className="attachment-wrapper">
-						<input type="file" className="dropzone" onChange={addFile} id={"dropzone"} />
-						<span onClick={() => document.getElementById("dropzone")?.click()} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()} onDragEnter={(e) => e.preventDefault()}>
-							Sem klikněte nebo přetáhněte soubor...
-						</span>
-					</div>
-					{files.map((file: File, index: number) => {
-						return (
-							<div className="attachment" key={index}>
-								<span>{file.name}</span>
-								<CloseIcon className="close-icon" onClick={() => onFileCloseButtonClick(index)} />
-							</div>
-						);
-					})}
-					{uploadedFiles.map((file: Attachment, index: number) => {
-						return (
-							<div className="attachment" key={index}>
-								<span>{file.name}</span>
-								<CloseIcon className="close-icon" onClick={() => onUploadedFileCloseButtonClick(index)} />
-							</div>
-						);
-					})}
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>

@@ -8,7 +8,7 @@ type AttachmentProps = {
 
 const Keyword = ({ attachment }: AttachmentProps) => {
 	return (
-		<a href={`${attachment.file}`} target="_blank" rel="noreferrer" className="attachment">
+		<a href={`${attachment.file ? attachment.file : attachment.remote_url}`} target="_blank" rel="noreferrer" className="attachment">
 			<FontAwesomeIcon icon={faFile} />
 			{attachment.name}
 		</a>
