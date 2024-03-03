@@ -105,7 +105,7 @@ services:
     image: bitnami/nginx:latest
     container_name: ujepsoft-edge
     ports:
-      - '8081:8080'
+      - '8080:8080'
     volumes:
       - ./edge/ujepsoft.conf:/opt/bitnami/nginx/conf/server_blocks/ujepsoft.conf:ro
       - ./backend/media:/app/media
