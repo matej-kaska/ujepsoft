@@ -102,12 +102,12 @@ services:
 
   ## NGINX
   edge:
-    image: nginx:latest
+    image: bitnami/nginx:latest
     container_name: ujepsoft-edge
     ports:
       - '8081:8080'
     volumes:
-      - ./edge/ujepsoft.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./edge/ujepsoft.conf:/opt/bitnami/nginx/conf/server_blocks/ujepsoft.conf:ro
       - ./backend/media:/app/media
       - ./backend/staticfiles:/app/static
     depends_on:
