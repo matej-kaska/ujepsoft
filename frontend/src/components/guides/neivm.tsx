@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-const LookAtIssues = () => {
+const navod = () => {
 	const [open, setOpen] = useState(false);
 
 	return (
 		<div className={`guide ${open ? "open" : ""}`}>
-			<h2 onClick={() => setOpen(!open)}>Jak zkontrolovat pohledávky/issues?</h2>
+			<h2 onClick={() => setOpen(!open)}></h2>
 			{open && (
 				<ol>
 					<li></li>
