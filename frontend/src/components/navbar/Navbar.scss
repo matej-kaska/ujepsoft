@@ -30,12 +30,15 @@
     .img-wrapper {
       width: 50%;
       display: flex;
-      justify-content: center;
+      justify-content: right;
 
       img {
         max-height: 70px;
         max-width: 350px;
         cursor: pointer;  
+      }
+      a {
+        justify-content: right;
       }
     }
   }
