@@ -262,12 +262,12 @@ def update_comment(comment, associated_issue):
   new_comment.author_profile_pic=comment['user']['avatar_url']
 
   # TODO: DELETE THIS
-  if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
-    author_ujepsoft = get_ujepsoft_author(comment['body'])
-  else:
-    author_ujepsoft = ""
+  #if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+  #  author_ujepsoft = get_ujepsoft_author(comment['body'])
+  #else:
+  #  author_ujepsoft = ""
 
-  new_comment.author_ujepsoft = author_ujepsoft
+  #new_comment.author_ujepsoft = author_ujepsoft
   
   if not get_ujepsoft_author(comment['body']) and comment.get('body', ''):
     new_comment.body = markdown_to_html(comment['body'])

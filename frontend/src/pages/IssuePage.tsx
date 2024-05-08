@@ -59,7 +59,7 @@ const IssuePage = () => {
 		closeModal();
 		try {
 			await axios.delete(`/api/issue/${id}`);
-			openSuccessSnackbar("Issue byl úspěšně smazán!");
+			openSuccessSnackbar("Issue byl úspěšně uzavřen!");
 			navigate("/");
 		} catch (error) {
 			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
@@ -81,7 +81,11 @@ const IssuePage = () => {
 								{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
-										<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} />
+										{issue.state !== "closed" ? 
+											<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}/>
+										:
+											<span className="closed">(uzavřené)</span>
+										}
 									</>
 								)}
 							</div>
