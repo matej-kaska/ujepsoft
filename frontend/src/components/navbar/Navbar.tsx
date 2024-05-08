@@ -11,7 +11,7 @@ import axios from "utils/axios";
 
 const Navbar = () => {
 	const { showModal } = useModal();
-	const { openSnackbar } = useSnackbar();
+	const { openSuccessSnackbar } = useSnackbar();
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const navigate = useNavigate();
 	const { checkIsLoggedIn } = useAuth();
@@ -20,7 +20,7 @@ const Navbar = () => {
 		navigate("/");
 		store.dispatch(removeUser());
 		axios.defaults.headers.common.Authorization = "";
-		openSnackbar("Byl jste úspěšně odhlášen!");
+		openSuccessSnackbar("Byl jste úspěšně odhlášen!");
 	};
 
 	const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {

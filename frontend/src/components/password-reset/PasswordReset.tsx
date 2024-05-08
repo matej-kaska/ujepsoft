@@ -15,7 +15,7 @@ type Form = {
 
 const PasswordReset = () => {
 	const { showModal, closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 
 	const formSchema = yup.object().shape({
 		email: emailSchema,
@@ -40,7 +40,7 @@ const PasswordReset = () => {
 				email: data.email,
 			})
 			.then(() => {
-				openSnackbar("E-mail byl úspěšně odeslán!");
+				openSuccessSnackbar("E-mail byl úspěšně odeslán!");
 				closeModal();
 			})
 			.catch((err) => {

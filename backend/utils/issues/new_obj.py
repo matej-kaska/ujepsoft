@@ -254,7 +254,7 @@ def update_issue(issue_pk, new_issue, user, repo):
   issue_full_serializer = IssueFullSerializer(updating_issue)
   cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  return issue_full_serializer.data
+  return updating_issue
 
 def update_comment(comment, associated_issue):
   new_comment = Comment.objects.get(number=comment['id'], issue=associated_issue)

@@ -259,8 +259,9 @@ class IssueDetail(APIView):
     
     if datetime.strptime(response["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
       updated_issue = update_issue(issue.pk, response, issue.repo.author, issue.repo.name)
+      serializer = self.serializer_class(updated_issue)
       if updated_issue:
-        return Response(updated_issue, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     serializer = self.serializer_class(issue)
     cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))

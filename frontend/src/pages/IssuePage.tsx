@@ -22,7 +22,7 @@ import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
 const IssuePage = () => {
 	const { id } = useParams();
 	const { showModal, closeModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const dispatch = useDispatch();
 	const reload = useSelector((state: any) => state.reload);
@@ -59,7 +59,7 @@ const IssuePage = () => {
 		closeModal();
 		try {
 			await axios.delete(`/api/issue/${id}`);
-			openSnackbar("Issue byl úspěšně smazán!");
+			openSuccessSnackbar("Issue byl úspěšně smazán!");
 			navigate("/");
 		} catch (error) {
 			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");

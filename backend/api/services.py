@@ -57,6 +57,9 @@ class GitHubAPIService:
 
     for repo in repos:
       issues = cls.get_repo_issues(repo.author, repo.name)
+      if issues is None:
+        Repo.objects.filter(pk=repo.pk).delete()
+        continue
       if len(issues) == 0:
         continue
       for issue in issues:

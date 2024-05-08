@@ -50,7 +50,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const { closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const [labels, setLabels] = useState<string[]>([]);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -207,7 +207,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			try {
 				await axios.put(`/api/issue/${issue.id}`, formData);
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně upravena!");
+				openSuccessSnackbar("Pohledávka byla úspěšně upravena!");
 				closeModal();
 				dispatch(setReload("issuepage"));
 			} catch (error) {
@@ -223,7 +223,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			try {
 				const response = await axios.post("/api/issue", formData);
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně vytvořena!");
+				openSuccessSnackbar("Pohledávka byla úspěšně vytvořena!");
 				closeModal();
 				dispatch(setReload("issue"));
 				navigate(`/issue/${response.data.id}`);

@@ -28,7 +28,7 @@ const AdministrationPage = () => {
 	const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const navigate = useNavigate();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const { showModal, closeModal } = useModal();
 
 	useEffect(() => {
@@ -85,7 +85,7 @@ const AdministrationPage = () => {
 		closeModal();
 		try {
 			await axios.delete(`/api/repo/${repoId}`);
-			openSnackbar("Repozitář byl úspěšně smazán z databáze!");
+			openSuccessSnackbar("Repozitář byl úspěšně smazán z databáze!");
 			loadRepos();
 		} catch (error: any) {
 			console.error(error);

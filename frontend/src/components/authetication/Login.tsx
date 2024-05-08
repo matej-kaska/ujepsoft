@@ -26,7 +26,7 @@ type LoginProps = {
 
 const Login = ({ token }: LoginProps) => {
 	const { showModal, closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const [rememberMe, setRememberMe] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -41,14 +41,14 @@ const Login = ({ token }: LoginProps) => {
 		axios
 			.post("/api/users/register/validate", { token: token })
 			.then(() => {
-				openSnackbar("Účet byl úspěšně aktivován!");
+				openSuccessSnackbar("Účet byl úspěšně aktivován!");
 				setLoading(false);
 			})
 			.catch((response: any) => {
 				if (response.response.data.cz) {
-					openErrorSnackbar(`${response.response.data.cz}!`, true, true);
+					openErrorSnackbar(`${response.response.data.cz}!`, true);
 				} else {
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!", true, true);
+					openErrorSnackbar("Někde nastala chyba zkuste to znovu!", true);
 				}
 			});
 		setLoading(false);
@@ -86,7 +86,7 @@ const Login = ({ token }: LoginProps) => {
 					}),
 				);
 				getUserInfo();
-				openSnackbar("Jste úspěšně přihlášen!");
+				openSuccessSnackbar("Jste úspěšně přihlášen!");
 				closeModal();
 			})
 			.catch((err) => {
