@@ -2,8 +2,8 @@ import json
 import os
 from datetime import datetime, timezone
 
-from api.models import Issue, Label, Repo, IssueFile
-from api.serializers.serializers import IssueFullSerializer, IssueSerializer
+from api.models import Issue, Label, Repo, IssueFile, Comment, CommentFile
+from api.serializers.serializers import CommentFullSerializer, IssueFullSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -408,6 +408,7 @@ class IssueDetail(APIView):
         file_type=file_type
       )
 
+      # TODO: WTF IS THIS?
       issue.files.add(issue_file)
 
     # Get all files in this issue
@@ -447,3 +448,239 @@ class IssueDetail(APIView):
     cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
     return Response(status=status.HTTP_200_OK)
+
+class IssueAddComment(APIView):
+  permission_classes = (permissions.IsAuthenticated,)
+
+  def post(self, request, pk):
+    comment_body = request.POST.get('body', None)
+    print(comment_body)
+
+    try:
+      issue = Issue.objects.get(pk=pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if comment_body is None or len(comment_body) == 0:
+      return Response({
+        "en": "Comment body must be specified",
+        "cz": "Tělo komentáře musí být specifikováno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+
+    new_comment = Comment.objects.create(
+      number='temp__number',
+      body='temp__body',
+      issue=issue,
+      author='temp__author',
+      author_profile_pic='temp__author_profile_pic',
+      created_at=datetime.now().replace(tzinfo=timezone.utc),
+      updated_at=datetime.now().replace(tzinfo=timezone.utc),
+    )
+  
+    # Create files
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Upload new files
+    comment_files = []
+    for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
+      new_file = CommentFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        comment=new_comment,
+        file_type=file_type
+      )
+
+      comment_files.append(new_file)
+
+    # Format description
+    description = comment_body + "\n<p>"
+    
+    description = add_files_to_description(description, comment_files)
+    description = add_ujepsoft_author(description, request.user.email)
+
+    description = description + "\n</p>\n"
+
+    # Create Comment on Github
+    response_comment = GitHubAPIService.post_comment(issue.repo.author, issue.repo.name, issue.number, description)
+
+    # Update Comment from response
+    new_comment.number = response_comment.get("id")
+    new_comment.body = response_comment.get("body")
+    new_comment.author = response_comment.get("user").get("login")
+    new_comment.author_profile_pic = response_comment.get("user").get("avatar_url")
+    new_comment.created_at = response_comment.get("created_at")
+    new_comment.updated_at = response_comment.get("updated_at")
+    new_comment.save()
+
+    # Add to to cache
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    return Response({
+      "id": new_comment.pk
+    }, status=status.HTTP_201_CREATED)
+
+class EditComment(APIView):
+  permission_classes = (permissions.IsAuthenticated,)
+
+  def put(self, request, issue_pk, comment_pk):
+    body = request.POST.get('body', None)
+    existing_files = json.loads(request.POST.get('existingFiles')) if request.POST.get('existingFiles') else []
+
+    try:
+      issue = Issue.objects.get(pk=issue_pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user.email != issue.author_ujepsoft and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+      comment = Comment.objects.get(pk=comment_pk)
+    except Comment.DoesNotExist:
+      return Response({
+        "en": "Comment not found",
+        "cz": "Komentář nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+
+    # Create files
+    total_files_size = 0
+    
+    for uploaded_file in request.FILES.getlist('files'):
+      if uploaded_file.size > int(os.environ.get("MAX_FILE_SIZE", 134217728)):
+        return Response({
+          "en": "File size exceeds the maximum limit of 128 MB",
+          "cz": "Velikost souboru překračuje maximální limit 128 MB"
+        }, status=status.HTTP_400_BAD_REQUEST)
+      total_files_size += uploaded_file.size
+
+    if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
+      return Response({
+        "en": "Total files size exceeds the maximum limit of 512 MB",
+        "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Delete non Existing files
+    for file in IssueFile.objects.filter(issue=issue):
+      file_found = False
+      for existing_file in existing_files:
+        if file.name == existing_file:
+          file_found = True
+          break
+      if not file_found:
+        file.delete()
+
+    # Upload new files
+    comment_files = [] 
+    for uploaded_file in request.FILES.getlist('files'):
+      _, file_extension = os.path.splitext(uploaded_file.name)
+      file_extension = file_extension.lower()[1:]
+
+      file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
+
+      issue_file = IssueFile.objects.create(
+        name=uploaded_file.name,
+        file=uploaded_file,
+        issue=issue,
+        file_type=file_type
+      )
+
+      comment_files.append(issue_file)
+
+    # Format description
+    description = body + "\n<p>"
+
+    description = add_files_to_description(description, comment_files)
+    description = add_ujepsoft_author(description, request.user.email)
+
+    description = description + "\n</p>\n"
+
+    # GITHUB request for edit
+    response = GitHubAPIService.update_comment(issue.repo.author, issue.repo.name, comment.number, description)
+
+    # Update Comment from response
+    comment.body = response.get("body")
+    comment.updated_at = response.get("updated_at")
+    comment.save()
+  
+    # Add to to cache
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    return Response(status=status.HTTP_200_OK)
+  
+  def delete(self, request, issue_pk, comment_pk):
+    try:
+      issue = Issue.objects.get(pk=issue_pk)
+    except Issue.DoesNotExist:
+      return Response({
+        "en": "Issue not found",
+        "cz": "Issue nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user.email != issue.author_ujepsoft and not request.user.is_staff):
+      return Response({
+        "en": "You are not the author of this issue",
+        "cz": "Nejste autorem tohoto issue"
+      }, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+      comment = Comment.objects.get(pk=comment_pk)
+    except Comment.DoesNotExist:
+      return Response({
+        "en": "Comment not found",
+        "cz": "Komentář nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+    
+    response = GitHubAPIService.delete_comment(issue.repo.author, issue.repo.name, comment.number)
+
+    if response is None:
+      return Response({
+        "en": "Comment not found",
+        "cz": "Komentář nebyl nalezen"
+      }, status=status.HTTP_404_NOT_FOUND)
+
+    comment.delete()
+
+    # Add to to cache
+    issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+
+    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT'))) 
+
+    return Response(status=status.HTTP_204_NO_CONTENT)

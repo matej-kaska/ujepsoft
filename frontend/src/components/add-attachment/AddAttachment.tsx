@@ -5,8 +5,8 @@ import { ReactComponent as CloseIcon } from "../../images/close.svg";
 type AddAttachmentProps = {
 	files: File[];
 	setFiles: React.Dispatch<React.SetStateAction<File[]>>;
-	uploadedFiles: Attachment[];
-	setUploadedFiles: React.Dispatch<React.SetStateAction<Attachment[]>>;
+	uploadedFiles?: Attachment[];
+	setUploadedFiles?: React.Dispatch<React.SetStateAction<Attachment[]>>;
 };
 
 const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: AddAttachmentProps) => {
@@ -19,6 +19,7 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 	};
 
 	const onUploadedFileCloseButtonClick = (index: number) => {
+		if (!setUploadedFiles) return;
 		setUploadedFiles((prev: Attachment[]) => {
 			return prev.filter((_file: Attachment, fileIndex: number) => fileIndex !== index);
 		});
@@ -84,7 +85,7 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 					</div>
 				);
 			})}
-			{uploadedFiles.map((file: Attachment, index: number) => {
+			{uploadedFiles?.map((file: Attachment, index: number) => {
 				return (
 					<div className="attachment-added" key={index}>
 						<span>{file.name}</span>

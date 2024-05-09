@@ -4,6 +4,14 @@
   border-bottom: 1px solid #E5E5E5;
   padding-block: 0.5rem;
   flex-direction: column;
+
+  .comment-header {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+  }
   
   .footer {
     display: flex;

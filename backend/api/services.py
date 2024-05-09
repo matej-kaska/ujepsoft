@@ -109,3 +109,27 @@ class GitHubAPIService:
     data = {'state': 'closed'}
     response = cls.session.patch(url, json=data)
     return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def post_comment(cls, user, repo_name, issue_number, body):
+    data = {
+      "body": body
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}/comments"
+    response = cls.session.post(url, json=data)
+    return response.json() if response.status_code == 201 else None
+
+  @classmethod
+  def update_comment(cls, user, repo_name, comment_id, body):
+    data = {
+      "body": body
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/comments/{comment_id}"
+    response = cls.session.patch(url, json=data)
+    return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def delete_comment(cls, user, repo_name, comment_id):
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/comments/{comment_id}"
+    response = cls.session.delete(url)
+    return response.json() if response.status_code == 204 else None

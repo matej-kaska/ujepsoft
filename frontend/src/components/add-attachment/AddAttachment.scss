@@ -10,6 +10,10 @@
 
   &:hover {
     border-color: gray;
+
+    span {
+      color: gray;
+    }
   }
 
   input {
@@ -30,8 +34,8 @@
     cursor: pointer;
     z-index: 1;
     position: relative;
-    top: -28px;
-    right: -14px;
+    bottom: 75%;
+    right: -10px;
     color: #999;
   }
 }

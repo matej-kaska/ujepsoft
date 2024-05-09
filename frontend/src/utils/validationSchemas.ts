@@ -41,3 +41,5 @@ export const labelsSchema = yup
 	.max(3, "Nesmíte vybrat více než 3 označení");
 
 export const repoSelectSchema = yup.number().required("Toto pole je povinné").min(1, "Musíte vybrat repozitář");
+
+export const commentSchema = yup.string().required("Toto pole je povinné").min(9, "Toto pole je povinné").max(8192, "Komentář nesmí být delší než raw 8192 znaků");

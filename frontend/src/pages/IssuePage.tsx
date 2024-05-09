@@ -18,6 +18,7 @@ import axios from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
+import NewComment from "components/new-comment/NewComment";
 
 const IssuePage = () => {
 	const { id } = useParams();
@@ -123,9 +124,7 @@ const IssuePage = () => {
 									return <Comment key={comment.id} {...comment} />;
 								})}
 						</section>
-						<section className="new-comment-wrapper">
-							<div>add comment</div>
-						</section>
+						<NewComment issueId={issue.id}/>
 					</>
 				)}
 			</div>
