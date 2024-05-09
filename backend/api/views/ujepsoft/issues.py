@@ -593,7 +593,7 @@ class EditComment(APIView):
       }, status=status.HTTP_400_BAD_REQUEST)
     
     # Delete non Existing files
-    for file in IssueFile.objects.filter(issue=issue):
+    for file in CommentFile.objects.filter(comment=comment):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
@@ -610,14 +610,14 @@ class EditComment(APIView):
 
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
-      issue_file = IssueFile.objects.create(
+      comment_file = CommentFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        issue=issue,
+        comment=comment,
         file_type=file_type
       )
 
-      comment_files.append(issue_file)
+      comment_files.append(comment_file)
 
     # Format description
     description = body + "\n<p>"

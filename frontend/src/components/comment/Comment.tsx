@@ -11,6 +11,7 @@ import { useSnackbar } from "contexts/SnackbarProvider";
 import { setReload } from "redux/reloadSlice";
 import Files from "components/files/Files";
 import Images from "components/images/Images";
+import EditComment from "components/edit-comment/EditComment";
 
 type CommentProps = TComment & {
 	issueId: number;
@@ -44,7 +45,7 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 				<ProfileBadge name={author} profilePicture={author_profile_pic} authorUjepsoft={author_ujepsoft} />
 				{((userInfo.is_staff && author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === author_ujepsoft) && (
 					<>
-						<EditIcon className="edit-icon" onClick={() => showModal(<GeneralModal text="replaceMe"/>)} />
+						<EditIcon className="edit-icon" onClick={() => showModal(<EditComment id={id} issueId={issueId} body={body} files={files} />)} />
 						<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}/>
 					</>
 				)}
