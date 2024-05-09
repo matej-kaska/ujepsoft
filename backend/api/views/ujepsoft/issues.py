@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from api.models import Issue, Label, Repo, IssueFile, Comment, CommentFile
-from api.serializers.serializers import CommentFullSerializer, IssueFullSerializer, IssueSerializer
+from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
