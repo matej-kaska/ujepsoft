@@ -77,6 +77,7 @@ const NewComment = ({issueId}: NewCommentProps) => {
       openSuccessSnackbar("Komentář byl úspěšně přidán!");
       dispatch(setReload("issue"));
       setCommentEditorState(EditorState.createEmpty());
+      setFiles([]);
       setValidate(false);
     } catch (error: any) {
       if (error.response && error.response.status === 500) {

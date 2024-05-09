@@ -9,12 +9,14 @@ import GeneralModal from "components/general-modal/GeneralModal";
 import axios from "utils/axios";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import { setReload } from "redux/reloadSlice";
+import Files from "components/files/Files";
+import Images from "components/images/Images";
 
 type CommentProps = TComment & {
 	issueId: number;
 };
 
-const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at, updated_at, id, issueId }: CommentProps) => {
+const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at, updated_at, id, issueId, files }: CommentProps) => {
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const { showModal, closeModal } = useModal();
 	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
@@ -48,6 +50,8 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 				)}
 			</div>
 			<div className="body html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(author_ujepsoft ? removeFooterFromBody(body) : body, true) || "" }} />
+			<Files files={files.filter((file) => file.file_type === "file")} />
+			<Images images={files.filter((file) => file.file_type === "image")} />
 			<div className="footer">
 				<span>Vytvořeno: {new Date(created_at).toLocaleDateString("cs-CZ")}</span>
 				<span>Naposledy aktualizováno: {new Date(updated_at).toLocaleDateString("cs-CZ")}</span>
