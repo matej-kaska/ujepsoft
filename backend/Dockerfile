@@ -17,5 +17,5 @@ EXPOSE 8000
 ENTRYPOINT ["/backend/entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # Add a health check
-HEALTHCHECK --interval=30s --timeout=10s \
+HEALTHCHECK --interval=5m --timeout=10s \
   CMD curl -f http://localhost:8000/api/test || exit 1
