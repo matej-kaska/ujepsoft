@@ -42,7 +42,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const { closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -147,7 +147,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 			try {
 				await axios.put(`/api/offer/${offer.id}`, formData);
 				setLoading(false);
-				openSnackbar("Nabídka byla úspěšně upravena!");
+				openSuccessSnackbar("Nabídka byla úspěšně upravena!");
 				closeModal();
 				dispatch(setReload("offerpage"));
 			} catch (error) {
@@ -163,7 +163,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 			try {
 				const response = await axios.post("/api/offer", formData);
 				setLoading(false);
-				openSnackbar("Nabídka byla úspěšně vytvořena!");
+				openSuccessSnackbar("Nabídka byla úspěšně vytvořena!");
 				closeModal();
 				dispatch(setReload("offer"));
 				navigate(`/offer/${response.data.id}`);

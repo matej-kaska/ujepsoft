@@ -20,7 +20,7 @@ import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 const OfferPage = () => {
 	const { id } = useParams();
 	const { showModal, closeModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const dispatch = useDispatch();
 	const reload = useSelector((state: any) => state.reload);
@@ -54,7 +54,7 @@ const OfferPage = () => {
 		closeModal();
 		try {
 			await axios.delete(`/api/offer/${id}`);
-			openSnackbar("Nabídka byla úspěšně smazána!");
+			openSuccessSnackbar("Nabídka byla úspěšně smazána!");
 			navigate("/");
 		} catch (error) {
 			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");

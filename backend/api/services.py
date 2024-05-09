@@ -39,6 +39,16 @@ class GitHubAPIService:
     return response.json() if response.status_code == 200 else None
   
   @classmethod
+  def update_profile_picture(cls, user, repo_name, repo):
+    url = f"https://api.github.com/repos/{user}/{repo_name}"
+    response = cls.session.get(url)
+    if response.status_code == 200:
+      parsed_response = response.json()
+      if repo.author_profile_pic != parsed_response.get("owner").get("avatar_url"):
+        repo.author_profile_pic = parsed_response.get("owner").get("avatar_url")
+        repo.save()
+  
+  @classmethod
   def post_repo_labels(cls, user, repo_name, data):
     url = f"https://api.github.com/repos/{user}/{repo_name}/labels"
     response = cls.session.post(url, data=data)
@@ -57,6 +67,10 @@ class GitHubAPIService:
 
     for repo in repos:
       issues = cls.get_repo_issues(repo.author, repo.name)
+      if issues is None:
+        Repo.objects.filter(pk=repo.pk).delete()
+        continue
+      cls.update_profile_picture(repo.author, repo.name, repo)
       if len(issues) == 0:
         continue
       for issue in issues:
@@ -95,3 +109,27 @@ class GitHubAPIService:
     data = {'state': 'closed'}
     response = cls.session.patch(url, json=data)
     return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def post_comment(cls, user, repo_name, issue_number, body):
+    data = {
+      "body": body
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/{issue_number}/comments"
+    response = cls.session.post(url, json=data)
+    return response.json() if response.status_code == 201 else None
+
+  @classmethod
+  def update_comment(cls, user, repo_name, comment_id, body):
+    data = {
+      "body": body
+    }
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/comments/{comment_id}"
+    response = cls.session.patch(url, json=data)
+    return response.json() if response.status_code == 200 else None
+  
+  @classmethod
+  def delete_comment(cls, user, repo_name, comment_id):
+    url = f"https://api.github.com/repos/{user}/{repo_name}/issues/comments/{comment_id}"
+    response = cls.session.delete(url)
+    return response.json() if response.status_code == 204 else None

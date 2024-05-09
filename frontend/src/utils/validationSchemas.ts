@@ -19,7 +19,7 @@ export const confirmPasswordSchema = yup
 
 export const gdprSchema = yup.boolean().required().oneOf([true], "Musíte souhlasit se zpracováním osobních údajů");
 
-export const offerNameSchema = yup.string().required("Toto pole je povinné").min(6, "Název nabídky musí být minimálně 6 znaků dlouhý").max(100, "Název nabídky nesmí být delší než 100 znaků");
+export const offerNameSchema = yup.string().required("Toto pole je povinné").min(6, "Název musí být minimálně 6 znaků dlouhý").max(100, "Název nesmí být delší než 100 znaků");
 
 export const offerKeywordsSchema = yup
 	.array(yup.string().required("Toto pole je povinné").max(63, "Klíčové slovo nesmí být delší než 63 znaků").min(1, "Klíčové slovo musí být minimálně 1 znak dlouhé"))
@@ -27,7 +27,7 @@ export const offerKeywordsSchema = yup
 	.min(1, "Musíte zadat alespoň jedno klíčové slovo")
 	.max(20, "Nesmíte zadat více než 20 klíčových slov");
 
-export const descriptionSchema = yup.string().required("Toto pole je povinné").min(32, "Popis nabídky musí být minimálně raw 32 znaků dlouhý").max(8192, "Název nabídky nesmí být delší než raw 8192 znaků");
+export const descriptionSchema = yup.string().required("Toto pole je povinné").min(32, "Popis musí být minimálně raw 32 znaků dlouhý").max(8192, "Název nesmí být delší než raw 8192 znaků");
 
 export const urlGithubSchema = yup
 	.string()
@@ -41,3 +41,5 @@ export const labelsSchema = yup
 	.max(3, "Nesmíte vybrat více než 3 označení");
 
 export const repoSelectSchema = yup.number().required("Toto pole je povinné").min(1, "Musíte vybrat repozitář");
+
+export const commentSchema = yup.string().required("Toto pole je povinné").min(9, "Toto pole je povinné").max(8192, "Komentář nesmí být delší než raw 8192 znaků");

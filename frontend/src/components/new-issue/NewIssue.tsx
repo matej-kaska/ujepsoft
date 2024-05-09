@@ -50,7 +50,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const { closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const [labels, setLabels] = useState<string[]>([]);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -149,32 +149,14 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	};
 
 	const changeLabel = (label: string) => {
-		let labels = getValues("labels");
-		if (!labels) labels = [];
-		if (validate) {
-			if (labels?.includes(label)) {
-				setValue(
-					"labels",
-					labels.filter((l: string) => l !== label),
-					{ shouldValidate: true },
-				);
-				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
-			} else {
-				setValue("labels", [...labels, label], { shouldValidate: true });
-				setLabels([...labels, label]);
-			}
-		} else {
-			if (labels?.includes(label)) {
-				setValue(
-					"labels",
-					labels.filter((l: string) => l !== label),
-				);
-				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
-			} else {
-				setValue("labels", [...labels, label]);
-				setLabels([...labels, label]);
-			}
-		}
+    let labels = getValues("labels") || [];
+    const labelExists = labels.includes(label);
+    const updatedLabels = labelExists ? labels.filter(l => l !== label) : [...labels, label];
+
+    const updateOptions = validate ? { shouldValidate: true } : undefined;
+
+    setValue("labels", updatedLabels, updateOptions);
+    setLabels(updatedLabels);
 	};
 
 	const handlePostIssue = async (data: Form) => {
@@ -207,7 +189,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			try {
 				await axios.put(`/api/issue/${issue.id}`, formData);
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně upravena!");
+				openSuccessSnackbar("Pohledávka byla úspěšně upravena!");
 				closeModal();
 				dispatch(setReload("issuepage"));
 			} catch (error) {
@@ -223,7 +205,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			try {
 				const response = await axios.post("/api/issue", formData);
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně vytvořena!");
+				openSuccessSnackbar("Pohledávka byla úspěšně vytvořena!");
 				closeModal();
 				dispatch(setReload("issue"));
 				navigate(`/issue/${response.data.id}`);

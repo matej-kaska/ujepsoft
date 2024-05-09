@@ -21,7 +21,7 @@ type Form = {
 const Register = () => {
 	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 	const { showModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 
 	const formSchema = yup.object().shape({
 		email: emailSchema,
@@ -60,7 +60,7 @@ const Register = () => {
 			})
 			.then(() => {
 				setIsSuccessfullySubmitted(true);
-				openSnackbar("Zkontrolujte svůj e-mail pro potvrzení.");
+				openSuccessSnackbar("Zkontrolujte svůj e-mail pro potvrzení.");
 			})
 			.catch((err) => {
 				if (!err.response.data.en) {

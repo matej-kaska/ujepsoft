@@ -21,7 +21,7 @@ type Form = {
 
 const ChangePassword = ({ token }: ChangePasswordProps) => {
 	const { closeModal, showModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 
 	const formSchema = yup.object().shape({
@@ -46,7 +46,7 @@ const ChangePassword = ({ token }: ChangePasswordProps) => {
 				code: token,
 			})
 			.then(() => {
-				openSnackbar("Heslo bylo úspěšně změněno!");
+				openSuccessSnackbar("Heslo bylo úspěšně změněno!");
 				setIsSuccessfullySubmitted(true);
 				setTimeout(() => {
 					showModal(<Login />);

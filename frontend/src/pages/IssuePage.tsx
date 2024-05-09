@@ -18,11 +18,12 @@ import axios from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
+import NewComment from "components/new-comment/NewComment";
 
 const IssuePage = () => {
 	const { id } = useParams();
 	const { showModal, closeModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const dispatch = useDispatch();
 	const reload = useSelector((state: any) => state.reload);
@@ -59,7 +60,7 @@ const IssuePage = () => {
 		closeModal();
 		try {
 			await axios.delete(`/api/issue/${id}`);
-			openSnackbar("Issue byl úspěšně smazán!");
+			openSuccessSnackbar("Issue byl úspěšně uzavřen!");
 			navigate("/");
 		} catch (error) {
 			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
@@ -81,7 +82,11 @@ const IssuePage = () => {
 								{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
-										<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} />
+										{issue.state !== "closed" ? 
+											<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}/>
+										:
+											<span className="closed">(uzavřené)</span>
+										}
 									</>
 								)}
 							</div>
@@ -119,9 +124,7 @@ const IssuePage = () => {
 									return <Comment key={comment.id} {...comment} />;
 								})}
 						</section>
-						<section className="new-comment-wrapper">
-							<div>add comment</div>
-						</section>
+						<NewComment issueId={issue.id}/>
 					</>
 				)}
 			</div>
