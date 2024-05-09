@@ -42,7 +42,7 @@ const IssuePage = () => {
 	}, [reload]);
 
 	const getIssue = async () => {
-		setLoading(true);
+		if (Object.keys(issue).length === 0) setLoading(true);
 		try {
 			const response = await axios.get(`/api/issue/${id}`);
 			if (!response.data) return;
@@ -121,7 +121,7 @@ const IssuePage = () => {
 									return dateA.getTime() - dateB.getTime();
 								})
 								.map((comment) => {
-									return <Comment key={comment.id} {...comment} />;
+									return <Comment key={comment.id} issueId={issue.id} {...comment} />;
 								})}
 						</section>
 						<NewComment issueId={issue.id}/>

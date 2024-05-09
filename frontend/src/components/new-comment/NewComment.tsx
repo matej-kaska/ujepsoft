@@ -10,9 +10,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { editorLabels } from "static/wysiwyg";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import axios from "utils/axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "components/buttons/Button";
 import AddAttachment from "components/add-attachment/AddAttachment";
+import { setReload } from "redux/reloadSlice";
 
 type Form = {
 	comment: string;
@@ -28,9 +29,9 @@ const NewComment = ({issueId}: NewCommentProps) => {
   const [commentEditorState, setCommentEditorState] = useState(EditorState.createEmpty());
   const [commentFocus, setCommentFocus] = useState<boolean>(false);
 	const [files, setFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [validate, setValidate] = useState<boolean>(false);
   const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
 
 	useEffect(() => {
 		const editorElement = document.querySelector(".public-DraftEditor-content");
@@ -73,11 +74,11 @@ const NewComment = ({issueId}: NewCommentProps) => {
 
     try {
       await axios.post(`/api/issue/${issueId}/comment/new`, formData);
-      setLoading(false);
       openSuccessSnackbar("Komentář byl úspěšně přidán!");
-      //dispatch(setReload("issue"));
+      dispatch(setReload("issue"));
+      setCommentEditorState(EditorState.createEmpty());
+      setValidate(false);
     } catch (error: any) {
-      setLoading(false);
       if (error.response && error.response.status === 500) {
 				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
 			} else {

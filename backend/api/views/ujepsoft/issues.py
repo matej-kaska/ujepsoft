@@ -530,6 +530,7 @@ class IssueAddComment(APIView):
     new_comment.body = response_comment.get("body")
     new_comment.author = response_comment.get("user").get("login")
     new_comment.author_profile_pic = response_comment.get("user").get("avatar_url")
+    new_comment.author_ujepsoft = request.user.email
     new_comment.created_at = response_comment.get("created_at")
     new_comment.updated_at = response_comment.get("updated_at")
     new_comment.save()
