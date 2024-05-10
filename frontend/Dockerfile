@@ -7,15 +7,20 @@ COPY package*.json ./
 
 RUN npm ci && rm -rf ./node_modules/.cache
 
+# Install curl for health checking
+RUN apk update && apk --no-cache add curl
+
 COPY . .
 
 # Runtime stage
 FROM node:20.8.0-alpine
 
-# Install curl for health checking
-RUN apk update && apk --no-cache add curl
-
+# Create the app directory and change ownership upfront
 WORKDIR /app
+RUN adduser -D ujepsoft && chown -R ujepsoft:ujepsoft /app
+
+# Use the non-root user
+USER ujepsoft
 
 COPY --from=builder /app .
 
