@@ -7,6 +7,7 @@
   overflow: hidden;
   margin-top: 9px;
   margin-bottom: 4px;
+  position: relative;
 
   &:hover {
     border-color: gray;
@@ -23,7 +24,8 @@
     border: 0 !important;
     cursor: pointer;
     position: relative;
-    bottom: 1px;
+    width: 100%;
+    height: 100%;
 
     &::file-selector-button {
       display: none;
@@ -33,10 +35,11 @@
   span {
     cursor: pointer;
     z-index: 1;
-    position: relative;
-    bottom: 75%;
+    position: absolute;
+    bottom: 20%;
     right: -10px;
     color: #999;
+    width: 100%;
   }
 }
 

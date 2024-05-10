@@ -132,4 +132,4 @@ class GitHubAPIService:
   def delete_comment(cls, user, repo_name, comment_id):
     url = f"https://api.github.com/repos/{user}/{repo_name}/issues/comments/{comment_id}"
     response = cls.session.delete(url)
-    return response.json() if response.status_code == 204 else None
+    return True if response.status_code == 204 else None

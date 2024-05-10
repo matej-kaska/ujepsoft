@@ -1,0 +1,23 @@
+.edit-comment {
+  display: flex;
+  justify-content: left;
+  flex-direction: column;
+  align-items: flex-start;
+  width: clamp(300px, 50vw, 1000px);
+  user-select: none;
+
+  h1 {
+    margin-left: 2px;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .buttons {
+    margin-top: 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

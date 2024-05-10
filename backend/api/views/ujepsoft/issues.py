@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timezone
 
 from api.models import Issue, Label, Repo, IssueFile, Comment, CommentFile
-from api.serializers.serializers import CommentFullSerializer, IssueFullSerializer, IssueSerializer
+from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -530,6 +530,7 @@ class IssueAddComment(APIView):
     new_comment.body = response_comment.get("body")
     new_comment.author = response_comment.get("user").get("login")
     new_comment.author_profile_pic = response_comment.get("user").get("avatar_url")
+    new_comment.author_ujepsoft = request.user.email
     new_comment.created_at = response_comment.get("created_at")
     new_comment.updated_at = response_comment.get("updated_at")
     new_comment.save()
@@ -592,7 +593,7 @@ class EditComment(APIView):
       }, status=status.HTTP_400_BAD_REQUEST)
     
     # Delete non Existing files
-    for file in IssueFile.objects.filter(issue=issue):
+    for file in CommentFile.objects.filter(comment=comment):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
@@ -609,14 +610,14 @@ class EditComment(APIView):
 
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
-      issue_file = IssueFile.objects.create(
+      comment_file = CommentFile.objects.create(
         name=uploaded_file.name,
         file=uploaded_file,
-        issue=issue,
+        comment=comment,
         file_type=file_type
       )
 
-      comment_files.append(issue_file)
+      comment_files.append(comment_file)
 
     # Format description
     description = body + "\n<p>"
