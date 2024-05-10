@@ -48,7 +48,7 @@ const IssuePage = () => {
 		if (!response.success) {
 			openErrorSnackbar(response.message.cz);
 			console.error("Error getting issue:", response.message.cz);
-			navigate("/");
+			navigate("/issues");
 			return;
 		}
 		if (response.data.body) response.data.body = removeFooterFromBody(response.data.body);
@@ -65,7 +65,7 @@ const IssuePage = () => {
 			return;
 		}
 		openSuccessSnackbar("Issue byl úspěšně uzavřen!");
-		navigate("/");
+		navigate("/issues");
 	};
 
 	return (
