@@ -8,7 +8,6 @@ import SuccessSnackbar from "./SuccessSnackbar";
 type SnackbarContextType = {
 	openSuccessSnackbar: (msg: string, long?: boolean) => void;
 	openErrorSnackbar: (msg: string, long?: boolean) => void;
-	openInfoSnackbar: (msg: string, long?: boolean) => void;
 	closeSnackbar: () => void;
 	forceCloseSnackbar: () => void;
 };
@@ -33,8 +32,6 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
 		if (reduxSnackbarState.open) {
 			if (reduxSnackbarState.type === "success") {
 				openSuccessSnackbar(reduxSnackbarState.message);
-			} else if (reduxSnackbarState.type === "info") {
-				openInfoSnackbar(reduxSnackbarState.message);
 			} else {
 				openErrorSnackbar(reduxSnackbarState.message);
 			}
@@ -60,10 +57,6 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
 
 	const openErrorSnackbar = (msg: string, long?: boolean) => {
 		openSnackbar(msg, "error", long);
-	};
-
-	const openInfoSnackbar = (msg: string, long?: boolean) => {
-		openSnackbar(msg, "info", long);
 	};
 
 	const openSuccessSnackbar = (msg: string, long?: boolean) => {
@@ -100,7 +93,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	return (
-		<SnackbarContext.Provider value={{ openSuccessSnackbar, openErrorSnackbar, openInfoSnackbar, closeSnackbar, forceCloseSnackbar }}>
+		<SnackbarContext.Provider value={{ openSuccessSnackbar, openErrorSnackbar, closeSnackbar, forceCloseSnackbar }}>
 			{children}
 			{open && (type === "success" ? <SuccessSnackbar message={message} closeSnackbar={forceCloseSnackbar} fade={fade} /> : type === "error" ? <ErrorSnackbar message={message} closeSnackbar={forceCloseSnackbar} fade={fade} /> : <SuccessSnackbar message={message} closeSnackbar={forceCloseSnackbar} fade={fade} />)}
 		</SnackbarContext.Provider>

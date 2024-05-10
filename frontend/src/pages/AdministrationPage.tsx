@@ -10,8 +10,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { RootState } from "redux/store";
 import { Repo } from "types/repo";
-import axios from "utils/axios";
+import axiosRequest from "utils/axios";
 import { urlGithubSchema } from "utils/validationSchemas";
 import * as yup from "yup";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
@@ -22,14 +23,14 @@ type AddRepoForm = {
 };
 
 const AdministrationPage = () => {
-	const [successfullySubmitted, setSuccessfullySubmitted] = useState<boolean>(false);
-	const [loadedRepos, setLoadedRepos] = useState<Repo[]>([]);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const navigate = useNavigate();
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const { showModal, closeModal } = useModal();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const [loadedRepos, setLoadedRepos] = useState<Repo[]>([]);
+	const [successfullySubmitted, setSuccessfullySubmitted] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!userInfo.is_staff) navigate("/");
@@ -50,51 +51,42 @@ const AdministrationPage = () => {
 	});
 
 	const loadRepos = async () => {
-		try {
-			const response = await axios.get("/api/repo/list");
-			setLoadedRepos(response.data);
-			setLoading(false);
-		} catch {
-			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
+		const response = await axiosRequest<Repo[]>("GET", "/api/repo/list");
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error loading repos:", response.message.cz);
 			navigate("/");
+			return;
 		}
+		setLoadedRepos(response.data);
+		setLoading(false);
 	};
 
 	const addRepo = async (data: AddRepoForm) => {
 		setSuccessfullySubmitted(false);
 		setLoadingAdd(true);
-		await axios
-			.post("/api/repo", { url: data.url })
-			.then(() => {
-				setSuccessfullySubmitted(true);
-				setLoadingAdd(false);
-				loadRepos();
-			})
-			.catch((error: any) => {
-				setLoadingAdd(false);
-				console.error(error);
-				if (error.response.data.cz) {
-					setError("apiError", { type: "server", message: error.response.data.cz });
-				} else {
-					setError("apiError", { type: "server", message: "Někde nastala chyba zkuste to znovu" });
-				}
-			});
+		const response = await axiosRequest("POST", "/api/repo", { url: data.url });
+		if (!response.success) {
+			setLoadingAdd(false);
+			setError("apiError", { type: "server", message: response.message.cz });
+			console.error("Error adding repo:", response.message.cz);
+			return;
+		}
+		setSuccessfullySubmitted(true);
+		setLoadingAdd(false);
+		loadRepos();
 	};
 
 	const removeRepo = async (repoId: number) => {
 		closeModal();
-		try {
-			await axios.delete(`/api/repo/${repoId}`);
-			openSuccessSnackbar("Repozitář byl úspěšně smazán z databáze!");
-			loadRepos();
-		} catch (error: any) {
-			console.error(error);
-			if (error.response.data.cz) {
-				openErrorSnackbar(error.response.data.cz);
-			} else {
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-			}
+		const response = await axiosRequest("DELETE", `/api/repo/${repoId}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error deleting repo:", response.message.cz);
+			return;
 		}
+		openSuccessSnackbar("Repozitář byl úspěšně smazán z databáze!");
+		loadRepos();
 	};
 
 	return (

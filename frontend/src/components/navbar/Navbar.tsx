@@ -6,20 +6,20 @@ import { useSnackbar } from "contexts/SnackbarProvider";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "redux/authSlice";
-import { store } from "redux/store";
-import axios from "utils/axios";
+import { RootState, store } from "redux/store";
+import { clearAxiosAuthorization } from "utils/axios";
 
 const Navbar = () => {
+	const navigate = useNavigate();
 	const { showModal } = useModal();
 	const { openSuccessSnackbar } = useSnackbar();
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const navigate = useNavigate();
 	const { checkIsLoggedIn } = useAuth();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 
 	const handleLogout = () => {
 		navigate("/");
 		store.dispatch(removeUser());
-		axios.defaults.headers.common.Authorization = "";
+		clearAxiosAuthorization();
 		openSuccessSnackbar("Byl jste úspěšně odhlášen!");
 	};
 

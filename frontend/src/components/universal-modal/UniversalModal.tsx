@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { useModal } from "../../contexts/ModalProvider";
 import useWindowSize from "../../utils/useWindowSize";
 
-const UniversalModal = (props: any) => {
+type UniversalModalProps = {
+	children: ReactNode;
+};
+
+const UniversalModal = ({ children }: UniversalModalProps) => {
 	const { closeModal } = useModal();
-	const ref = useRef<HTMLDivElement>(null);
 	const windowSize = useWindowSize();
+	const ref = useRef<HTMLDivElement>(null);
 	const [height, setHeight] = useState<number>(0);
 
 	const handleOutsideContentClick = () => {
@@ -13,8 +17,6 @@ const UniversalModal = (props: any) => {
 		if (activeElement && activeElement.tagName === "INPUT") return;
 		if (activeElement && activeElement.tagName === "TEXTAREA") return;
 		if (activeElement?.className.includes("DraftEditor")) return;
-		const saveButton = document.querySelector<HTMLButtonElement>("#saveButton");
-		if (saveButton) saveButton.click();
 
 		closeModal();
 	};
@@ -51,7 +53,7 @@ const UniversalModal = (props: any) => {
 	return (
 		<aside className={`universal-modal ${height > windowSize?.[1] ? "flex-start" : ""}`} onClick={handleOutsideContentClick}>
 			<div className="modal-content" onClick={(e) => e.stopPropagation()} ref={ref}>
-				{props.children}
+				{children}
 			</div>
 		</aside>
 	);

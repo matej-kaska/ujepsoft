@@ -1,13 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "components/buttons/Button";
+import { useModal } from "contexts/ModalProvider";
+import { useSnackbar } from "contexts/SnackbarProvider";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import axiosRequest from "utils/axios";
+import { confirmPasswordSchema, emailSchema, gdprSchema, passwordSchema } from "utils/validationSchemas";
 import * as yup from "yup";
-import { useModal } from "../../contexts/ModalProvider";
-import { useSnackbar } from "../../contexts/SnackbarProvider";
-import axios from "../../utils/axios";
-import { confirmPasswordSchema, emailSchema, gdprSchema, passwordSchema } from "../../utils/validationSchemas";
 import Login from "./Login";
 
 type Form = {
@@ -19,9 +19,9 @@ type Form = {
 };
 
 const Register = () => {
-	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 	const { showModal } = useModal();
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
+	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 
 	const formSchema = yup.object().shape({
 		email: emailSchema,
@@ -39,11 +39,8 @@ const Register = () => {
 		resolver: yupResolver(formSchema),
 	});
 
-	const handleLogin = () => {
-		showModal(<Login />);
-	};
-
-	const handleRegister = (data: Form) => {
+	const handleRegister = async (data: Form) => {
+		// TODO: DELETE THIS
 		if (!(data.email.endsWith("@ujep.cz") || data.email.endsWith("@gmail.com"))) {
 			setError("email", {
 				type: "server",
@@ -52,42 +49,33 @@ const Register = () => {
 			openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz!");
 			return;
 		}
-		axios
-			.post("/api/users/register", {
-				email: data.email,
-				password: data.password,
-				password_again: data.confirmPwd,
-			})
-			.then(() => {
-				setIsSuccessfullySubmitted(true);
-				openSuccessSnackbar("Zkontrolujte svůj e-mail pro potvrzení.");
-			})
-			.catch((err) => {
-				if (!err.response.data.en) {
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				} else if (err.response.data.en.includes("already taken")) {
-					setError("email", {
-						type: "server",
-						message: "Tento e-mail je již používán",
-					});
-				} else if (err.response.data.en.includes("Invalid email")) {
-					setError("email", {
-						type: "server",
-						message: "Tento e-mail nemá doménu @ujep.cz",
-					});
-					openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz!");
-				} else {
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				}
-			});
+		const response = await axiosRequest("POST", "/api/users/register", {
+			email: data.email,
+			password: data.password,
+			password_again: data.confirmPwd,
+		});
+		if (!response.success) {
+			if (response.message.en.includes("already taken")) {
+				setError("email", {
+					type: "server",
+					message: "Tento e-mail je již používán",
+				});
+			} else if (response.message.en.includes("Invalid email")) {
+				setError("email", {
+					type: "server",
+					message: "Tento e-mail nemá doménu @ujep.cz",
+				});
+			} else {
+				setError("apiError", {
+					type: "server",
+					message: "Někde nastala chyba zkuste to znovu",
+				});
+			}
+			openErrorSnackbar(response.message.cz);
+			console.error("Error registering:", response.message.cz);
+		}
+		setIsSuccessfullySubmitted(true);
+		openSuccessSnackbar("Zkontrolujte svůj e-mail pro potvrzení.");
 	};
 
 	return (
@@ -115,7 +103,7 @@ const Register = () => {
 			{isSuccessfullySubmitted && <p className="ml-0.5 font-medium text-sm text-green-600">Zkontrolujte svůj e-mail pro potvrzení.</p>}
 			{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 			<div className="buttons">
-				<Button color="secondary" type="button" onClick={handleLogin}>
+				<Button color="secondary" type="button" onClick={() => showModal(<Login />)}>
 					Přihlásit se
 				</Button>
 				<Button type="submit">Zaregistrovat se</Button>

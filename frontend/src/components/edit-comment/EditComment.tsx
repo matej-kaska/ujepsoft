@@ -2,23 +2,24 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
+import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { editorLabels } from "static/wysiwyg";
 import { Attachment } from "types/offer";
+import axiosRequest from "utils/axios";
+import { removeFooterFromBody } from "utils/plainTextToHtml";
 import { commentSchema } from "utils/validationSchemas";
 import * as yup from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import { useModal } from "../../contexts/ModalProvider";
-import axios from "../../utils/axios";
-import { removeFooterFromBody } from "utils/plainTextToHtml";
 
 type Form = {
 	body: string;
@@ -33,18 +34,18 @@ type EditCommentProps = {
 };
 
 const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentProps) => {
-	const [commentEditorState, setCommentEditorState] = useState(EditorState.createEmpty());
-	const [validate, setValidate] = useState<boolean | null>(null);
-	const [commentFocus, setCommentFocus] = useState<boolean>(false);
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const [files, setFiles] = useState<File[]>([]);
-	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
+	const dispatch = useDispatch();
 	const { closeModal } = useModal();
 	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
-	const dispatch = useDispatch();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const [commentEditorState, setCommentEditorState] = useState(EditorState.createEmpty());
+	const [files, setFiles] = useState<File[]>([]);
+	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
+	const [validate, setValidate] = useState<boolean | null>(null);
+	const [commentFocus, setCommentFocus] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!issueId) return;
 		const stripedBody = removeFooterFromBody(body);
 		const editorState = EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(stripedBody || "<p></p>").contentBlocks));
@@ -71,7 +72,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 	}, []);
 
 	const formSchema = yup.object().shape({
-		body: commentSchema
+		body: commentSchema,
 	});
 
 	const {
@@ -85,7 +86,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
-    setValidate(true);
+		setValidate(true);
 		const formData = new FormData();
 		formData.append("body", data.body);
 
@@ -102,27 +103,21 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
 
-		console.log(JSON.stringify(Object.fromEntries(formData)));
-		try {
-      await axios.put(`/api/issue/${issueId}/comment/${id}`, formData);
-      openSuccessSnackbar("Komentář byl úspěšně změněn!");
-      dispatch(setReload("issue"));
-      setCommentEditorState(EditorState.createEmpty());
-      setFiles([]);
-      setValidate(false);
-			closeModal();
-    } catch (error: any) {
-      if (error.response && error.response.status === 500) {
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-			} else {
-				openErrorSnackbar(error.response.data.en);
-        setError("apiError", {
-          type: "server",
-          message: error.response.data.en,
-        });
-			}
-      console.error("Error editing comment:", error);
-    }
+		const response = await axiosRequest("PUT", `/api/issue/${issueId}/comment/${id}`, formData);
+		if (!response.success) {
+			setLoading(false);
+			openErrorSnackbar(response.message.cz);
+			setError("apiError", { type: "server", message: response.message.cz });
+			console.error("Error editing comment:", response.message.cz);
+			return;
+		}
+		setLoading(false);
+		openSuccessSnackbar("Komentář byl úspěšně změněn!");
+		dispatch(setReload("issuepage"));
+		setCommentEditorState(EditorState.createEmpty());
+		setFiles([]);
+		setValidate(false);
+		closeModal();
 	};
 
 	return (

@@ -45,6 +45,8 @@ $color-secondary: #91859f;
 
 
 .html-inner {
+  margin-bottom: 1rem;
+
   h1,h2,h3,h4,h5,h6 {
     margin-bottom: 1rem;
   }
@@ -171,6 +173,10 @@ $color-secondary: #91859f;
         margin-left: calc(20px + 4rem);
       }
     }
+  }
+  
+  p:last-of-type {
+    margin-bottom: 0 !important;
   }
 }
 

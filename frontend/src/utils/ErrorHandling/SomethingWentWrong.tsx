@@ -6,7 +6,6 @@ const SomethingWentWrong = () => (
 		<ul className="list-disc list-inside text-left mb-4 px-4">
 			<li>Zkontrolujte své připojení k internetu</li>
 			<li>Zkuste obnovit stránku</li>
-			<li>Pokud všechno ostatní selže, možná budete chtít kontaktovat náš tým podpory</li>
 		</ul>
 	</div>
 );

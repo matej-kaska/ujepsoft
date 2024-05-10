@@ -1,22 +1,22 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
 import Login from "components/authetication/Login";
 import Button from "components/buttons/Button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import axiosRequest from "utils/axios";
 import { confirmPasswordSchema, passwordSchema } from "utils/validationSchemas";
 import * as yup from "yup";
 import { useModal } from "../../contexts/ModalProvider";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 
-type ChangePasswordProps = {
-	token: string;
-};
-
 type Form = {
 	password: string;
 	passwordConf: string;
 	apiError?: any;
+};
+
+type ChangePasswordProps = {
+	token: string;
 };
 
 const ChangePassword = ({ token }: ChangePasswordProps) => {
@@ -38,44 +38,22 @@ const ChangePassword = ({ token }: ChangePasswordProps) => {
 		resolver: yupResolver(formSchema),
 	});
 
-	const handleChange = (data: Form) => {
-		axios
-			.post("/api/users/reset-password", {
-				new_password: data.password,
-				new_password_again: data.passwordConf,
-				code: token,
-			})
-			.then(() => {
-				openSuccessSnackbar("Heslo bylo úspěšně změněno!");
-				setIsSuccessfullySubmitted(true);
-				setTimeout(() => {
-					showModal(<Login />);
-				}, 750);
-			})
-			.catch((err) => {
-				if (!err.response.data) {
-					console.error(err);
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				} else if (err.response.status === 404) {
-					setError("apiError", {
-						type: "server",
-						message: "Tento odkaz již není platný",
-					});
-					openErrorSnackbar("Tento odkaz již není platný!");
-					closeModal();
-				} else {
-					console.error(err);
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				}
-			});
+	const handleChange = async (data: Form) => {
+		const response = await axiosRequest("POST", "/api/users/reset-password", {
+			new_password: data.password,
+			new_password_again: data.passwordConf,
+			code: token,
+		});
+		if (!response.success) {
+			setError("apiError", { type: "server", message: response.message.cz });
+			openErrorSnackbar(response.message.cz);
+			console.error("Error changing password:", response.message.cz);
+		}
+		openSuccessSnackbar("Heslo bylo úspěšně změněno!");
+		setIsSuccessfullySubmitted(true);
+		setTimeout(() => {
+			showModal(<Login />);
+		}, 750);
 	};
 
 	return (

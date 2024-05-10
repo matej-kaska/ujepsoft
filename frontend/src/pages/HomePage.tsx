@@ -6,36 +6,40 @@ import NewOffer from "components/new-offer/NewOffer";
 import ChangePassword from "components/password-reset/ChangePassword";
 import UnitOffer from "components/unit-offer/UnitOffer";
 import { useModal } from "contexts/ModalProvider";
-import { useEffect, useState } from "react";
+import { useSnackbar } from "contexts/SnackbarProvider";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { Offer } from "types/offer";
-import axios from "utils/axios";
+import axiosRequest from "utils/axios";
 import { getOffersRowAmount } from "utils/getUnitsRowAmount";
+
+type OffersResponse = {
+	next: string;
+	results: Offer[];
+};
 
 const HomePage = () => {
 	const [searchParams] = useSearchParams();
-	const { showModal } = useModal();
-	const [loaded, setLoaded] = useState<boolean>(false);
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const [offers, setOffers] = useState<Offer[]>([]);
 	const dispatch = useDispatch();
-	const reload = useSelector((state: any) => state.reload);
+	const { openErrorSnackbar } = useSnackbar();
+	const { showModal } = useModal();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const reload = useSelector((state: RootState) => state.reload);
+	const [offers, setOffers] = useState<Offer[]>([]);
 	const [next, setNext] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(true);
+	const [loaded, setLoaded] = useState<boolean>(false);
 
-	const [connection, setConnection] = useState<string>("Click for check connection to backend...");
-	const [connectionRedis, setConnectionRedis] = useState<string>("Click for check connection to Redis...");
-	const [connectionSQL, setConnectionSQL] = useState<string>("Click for check connection to SQL...");
-
-	useEffect(() => {
+	useLayoutEffect(() => {
 		setLoaded(true);
 		getOffers();
 	}, []);
 
 	useEffect(() => {
-		if (!reload.location || reload.location !== "offer") return;
+		if (!reload.location || reload.location !== "offers") return;
 		getOffers();
 		dispatch(setReload(""));
 	}, [reload]);
@@ -43,8 +47,12 @@ const HomePage = () => {
 	const getOffers = async () => {
 		setLoading(true);
 		const pageAmount = getOffersRowAmount() * 2;
-		const response = await axios.get(`/api/offer/list?page-size=${pageAmount}`);
-		if (!response.data) return;
+		const response = await axiosRequest<OffersResponse>("GET", `/api/offer/list?page-size=${pageAmount}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error loading offers:", response.message.cz);
+			return;
+		}
 		setOffers(response.data.results);
 		setNext(response.data.next);
 		setLoading(false);
@@ -52,7 +60,12 @@ const HomePage = () => {
 
 	const getMoreOffers = async () => {
 		setLoading(true);
-		const response = await axios.get(next);
+		const response = await axiosRequest<OffersResponse>("GET", next);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error loading more offers:", response.message.cz);
+			return;
+		}
 		setOffers((prev) => [...prev, ...response.data.results]);
 		setNext(response.data.next);
 		setLoading(false);
@@ -66,33 +79,6 @@ const HomePage = () => {
 		if (!registration) return;
 		showModal(<Login token={registration} />);
 	}, [loaded]);
-
-	const checkConnection = async () => {
-		try {
-			const response = await axios.get("/api/test");
-			setConnection(response.data.message);
-		} catch {
-			setConnection("Error");
-		}
-	};
-
-	const checkConnectionRedis = async () => {
-		try {
-			const response = await axios.get("/api/redis");
-			setConnectionRedis(response.data.message);
-		} catch {
-			setConnectionRedis("Error");
-		}
-	};
-
-	const checkConnectionSQL = async () => {
-		try {
-			const response = await axios.get("/api/sql");
-			setConnectionSQL(response.data.message);
-		} catch {
-			setConnectionSQL("Error");
-		}
-	};
 
 	return (
 		<>
@@ -127,18 +113,6 @@ const HomePage = () => {
 						)}
 					</>
 				)}
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
-				<p>{connection}</p>
-				<Button onClick={checkConnection}>Check</Button>
-				<p>{connectionRedis}</p>
-				<Button onClick={checkConnectionRedis}>Check</Button>
-				<p>{connectionSQL}</p>
-				<Button onClick={checkConnectionSQL}>Check</Button>
 			</div>
 		</>
 	);
