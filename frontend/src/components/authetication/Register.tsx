@@ -40,7 +40,7 @@ const Register = () => {
 	});
 
 	const handleRegister = async (data: Form) => {
-		// TODO: DELETE THIS
+		// TODO: DELETE THIS on Production
 		if (!(data.email.endsWith("@ujep.cz") || data.email.endsWith("@gmail.com"))) {
 			setError("email", {
 				type: "server",

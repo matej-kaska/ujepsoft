@@ -1,5 +1,4 @@
 .unit-issue {
-  max-height: 17.125rem;
   border: solid 1px $color-darkgray;
   border-radius: 28px;
   max-width: unset;
@@ -64,8 +63,8 @@
     display: -webkit-box;
     -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
-    min-height: 56px;
-    max-height: 56px;
+    min-height: 4.5rem;
+    max-height: 4.5rem;
     overflow: hidden;
     overflow-wrap: anywhere;
   }

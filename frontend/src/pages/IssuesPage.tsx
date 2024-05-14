@@ -51,7 +51,6 @@ const IssuesPage = () => {
 		setIssues(response.data.results);
 		setNext(response.data.next);
 		setLoading(false);
-		console.log(response.data);
 	};
 
 	const getMoreIssues = async () => {
@@ -72,8 +71,8 @@ const IssuesPage = () => {
 			<Navbar />
 			<div className="issues-page">
 				<header>
-					<h1>Pohledávky (Issues)</h1>
-					<p>XXX</p>
+					<h1>Problémy/Úkoly (Issues)</h1>
+					<p>Sekce Problémy/Úkoly (dále jen Issues) slouží k evidenci a správě různých úkolů, chyb, nápadů a dalších záležitostí v rámci softwaru spravovaného univerzitou UJEP. Pokud potřebujete vytvořit nový podnět k některému ze softwarů, klikněte na tlačítko "Přidat Issue".</p>
 					<div className="footer-header">
 						<div className="switch-wrapper">
 							<label className="switch" htmlFor="toggle">
@@ -83,13 +82,13 @@ const IssuesPage = () => {
 							<span className="text">Nezobrazovat uzavřené</span>
 						</div>
 						<Button color="accent" onClick={() => showModal(<NewIssue />)}>
-							+ Přidat pohledávku
+							+ Přidat issue
 						</Button>
 						<div className="spacer" />
 					</div>
 				</header>
 				{(issues.length === 0 || (!closed ? issues.filter((issue) => issue.state === "closed").length === issues.length : issues.filter((issue) => issue.state === "open").length === issues.length)) && !loading ? (
-					<span className="mt-4 text-gray-600 italic">Nejsou zde žádné pohledávky</span>
+					<span className="mt-4 text-gray-600 italic">Nejsou zde žádné issues</span>
 				) : (
 					<section className="issues-container">
 						{issues?.map((issue: Issue, index: number) => {

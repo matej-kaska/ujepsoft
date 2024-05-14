@@ -47,7 +47,7 @@ const Navbar = () => {
 					</li>
 					<li>
 						<Link to={"/issues"} onClick={handleLinkClick}>
-							Pohledávky
+							Problémy/Úkoly (Issues)
 						</Link>
 					</li>
 					<li>

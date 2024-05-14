@@ -105,7 +105,7 @@ class OfferDetail(APIView):
 
   def get_permissions(self):
     if self.request.method in ['PUT', 'DELETE']:
-        return [permissions.IsAuthenticated()]
+      return [permissions.IsAuthenticated()]
     return []
 
   def get(self, request, pk):

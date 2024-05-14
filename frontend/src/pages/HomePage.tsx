@@ -85,7 +85,7 @@ const HomePage = () => {
 			<Navbar />
 			<div className="homepage">
 				<header>
-					<h1>Nabídky pro Vývoj Softwaru na UJEP</h1>
+					<h1>Nabídky pro vývoj softwaru na UJEP</h1>
 					<p>Personál UJEP má možnost navrhovat softwarové projekty, které potřebují vyvinout. Studenti mohou na tyto nabídky reagovat a zapojit se do vývoje, posíláním svých nápadů na uvedený e-mail. Skvělá příležitost pro praktické zkušenosti a spolupráci mezi studenty a personálem.</p>
 					{userInfo?.id && (
 						<Button color="accent" onClick={() => showModal(<NewOffer />)}>

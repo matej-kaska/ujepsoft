@@ -8,29 +8,35 @@ from api import IMAGES_EXTENSIONS
 from utils import GITHUB_EXTENSIONS
 
 def get_label_names_by_ids(label_ids):
+  """
+  Get label names by their ids
+  """
   labels = Label.objects.filter(id__in=label_ids)
 
   return [label.name for label in labels]
 
-def find_obj_by_id(objs, id):
-  for obj in objs:
-    if "id" in obj and str(obj['id']) == id:
-      return obj
-  return None
-
 def find_issue_by_id(objs, id):
+  """
+  Find issue object by id
+  """
   for obj in objs:
     if str(obj.gh_id) == str(id):
       return obj
   return None
 
 def find_comment_by_id(objs, id):
+  """
+  Find comment object by id
+  """
   for obj in objs:
     if str(obj.number) == str(id):
       return obj
   return None
 
 def get_datetime(updated_at):
+  """
+  Get datetime from string
+  """
   if isinstance(updated_at, str):
     return datetime.strptime(updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
   return updated_at
@@ -64,50 +70,10 @@ def get_ujepsoft_author(description: str) -> str:
   h2_content = last_p_content[h2_start:h2_end]
   return h2_content.replace("Autor Issue: ", "") if "Autor Issue: " in h2_content else ""
 
-# TODO: Možná smazat? Idk jestli se to potřebuju
-def get_files_from_description_from_ujepsoft(description: str) -> list:
-  images_alts = []
-  files_hrefs = []
-
-  if "<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft</h3>" not in description:
-      return images_alts, files_hrefs
-
-  description = description.replace("\n", "")
-
-  attachments_pos = description.rfind("<h1>Přílohy:</h1>")
-  if attachments_pos == -1:
-      return images_alts, files_hrefs
-
-  description = description[attachments_pos:]
-
-  images_pos = description.find("<h2>Obrázky:</h2>")
-  files_pos = description.find("<h2>Soubory:</h2>")
-
-  if images_pos != -1:
-      images_html = description[images_pos:files_pos if files_pos != -1 else None]
-
-      img_pos = images_html.find("<img")
-      while img_pos != -1:
-          start_alt = images_html.find('alt="', img_pos) + 5
-          end_alt = images_html.find('"', start_alt)
-          images_alts.append(images_html[start_alt:end_alt])
-
-          img_pos = images_html.find("<img", end_alt)
-
-  if files_pos != -1:
-      files_html = description[files_pos:]
-
-      a_pos = files_html.find("<a")
-      while a_pos != -1:
-          start_href = files_html.find('href="', a_pos) + 6
-          end_href = files_html.find('"', start_href)
-          files_hrefs.append(files_html[start_href:end_href].replace(settings.MEDIA_URL, ""))
-
-          a_pos = files_html.find("<a", end_href)
-
-  return images_alts, files_hrefs
-
 def extract_files_from_github(body):
+    """
+    Get images and files from the body of the issue/comment
+    """
     images_alts = []
     videos_and_files = []
 
@@ -164,6 +130,9 @@ def add_files_to_description(description: str, files) -> str:
   return formatted_description
 
 def markdown_to_html(description: str) -> str:
+  """
+  Convert markdown to html
+  """
   proccessed_md = insert_div_after_lists(description)
   html = markdown.markdown(proccessed_md,  extensions=['extra', 'nl2br'])
   html = re.sub(r'<code>(.*?)</code>', r'<pre>\1</pre>', html, flags=re.DOTALL)

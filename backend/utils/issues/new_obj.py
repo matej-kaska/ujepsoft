@@ -9,6 +9,9 @@ from django.core.cache import cache
 from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html
 
 def create_issue(issue, associated_repo, user, repo):
+  """
+  Create issue object with all related objects
+  """
   try:
     new_issue = Issue.objects.get(number=issue['number'], repo=associated_repo)
   except Issue.DoesNotExist:
@@ -149,6 +152,9 @@ def create_issue(issue, associated_repo, user, repo):
   cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
 def update_issue(issue_pk, new_issue, user, repo):
+  """
+  Update issue object with all related objects
+  """
   try:
     updating_issue = Issue.objects.get(pk=issue_pk)
   except Issue.DoesNotExist:
@@ -257,17 +263,12 @@ def update_issue(issue_pk, new_issue, user, repo):
   return updating_issue
 
 def update_comment(comment, associated_issue):
+  """
+  Update comment object
+  """
   new_comment = Comment.objects.get(number=comment['id'], issue=associated_issue)
   new_comment.updated_at = comment['updated_at']
   new_comment.author_profile_pic=comment['user']['avatar_url']
-
-  # TODO: DELETE THIS
-  #if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
-  #  author_ujepsoft = get_ujepsoft_author(comment['body'])
-  #else:
-  #  author_ujepsoft = ""
-
-  #new_comment.author_ujepsoft = author_ujepsoft
   
   if not get_ujepsoft_author(comment['body']) and comment.get('body', ''):
     new_comment.body = markdown_to_html(comment['body'])
@@ -291,7 +292,9 @@ def update_comment(comment, associated_issue):
       reaction_obj.save()
 
 def create_comment(comment, associated_issue):
-
+  """
+  Create comment object
+  """
   if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
     author_ujepsoft = get_ujepsoft_author(comment['body'])
   else:
@@ -307,8 +310,6 @@ def create_comment(comment, associated_issue):
     updated_at=comment['updated_at'],
     author_ujepsoft=author_ujepsoft
   )
-
-  # TODO: Add author_ujepsoft
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:

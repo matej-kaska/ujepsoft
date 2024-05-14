@@ -14,7 +14,7 @@ class Keyword(models.Model):
 
 class Offer(models.Model):
   name = models.CharField(max_length=100)
-  description = models.CharField(max_length=8192)
+  description = models.CharField(max_length=8191)
   keywords = models.ManyToManyField(Keyword, related_name='offers', blank=True)
   author = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
 
@@ -38,7 +38,7 @@ class OfferFile(models.Model):
   
 class Repo(models.Model):
   name = models.CharField(max_length=255)
-  description = models.CharField(max_length=8192, blank=True)
+  description = models.CharField(max_length=8191, blank=True)
   url = models.CharField(max_length=255)
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)
@@ -66,7 +66,7 @@ class Issue(models.Model):
   number = models.CharField()
   gh_id = models.CharField()
   title = models.CharField(max_length=255)
-  body = models.CharField(max_length=8192, blank=True)
+  body = models.CharField(max_length=8191, blank=True)
   state = models.CharField(max_length=15)
   labels = models.ManyToManyField(Label, related_name='issues')
   repo = models.ForeignKey(Repo, on_delete=models.CASCADE, related_name='issues')
@@ -84,7 +84,7 @@ class Issue(models.Model):
 
 class Comment(models.Model):
   number = models.CharField()
-  body = models.CharField(max_length=8192)
+  body = models.CharField(max_length=8191)
   issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
   author = models.CharField(max_length=255)
   author_profile_pic = models.CharField(max_length=1023)

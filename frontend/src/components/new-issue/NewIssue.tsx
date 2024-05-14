@@ -168,7 +168,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
 		if (data.name.trim() === "") {
-			alert("Název pohledávky nesmí být prázdný!");
+			alert("Název issue nesmí být prázdný!");
 			return;
 		}
 		const formData = new FormData();
@@ -200,7 +200,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 				return;
 			}
 			setLoading(false);
-			openSuccessSnackbar("Pohledávka byla úspěšně vytvořena!");
+			openSuccessSnackbar("Issue byla úspěšně vytvořena!");
 			closeModal();
 			dispatch(setReload("issuepage"));
 		} else {
@@ -213,7 +213,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 				return;
 			}
 			setLoading(false);
-			openSuccessSnackbar("Pohledávka byla úspěšně vytvořena!");
+			openSuccessSnackbar("Issue byla úspěšně vytvořena!");
 			closeModal();
 			dispatch(setReload("issues"));
 			navigate(`/issue/${response.data.id}`);
@@ -226,9 +226,9 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 				<LoadingScreen modal />
 			) : (
 				<form className="new-issue" onSubmit={handleSubmit(handlePostIssue)}>
-					<h1>{issue ? "Změnit pohledávku (issue)" : "Vytvořit pohledávku (issue)"}</h1>
+					<h1>{issue ? "Změnit issue" : "Vytvořit issue"}</h1>
 					<label className="name">Název</label>
-					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název pohledávky..." {...register("name")} maxLength={100} />
+					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
 					<label className="repo">Aplikace</label>
 					<Dropdown
@@ -277,7 +277,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 					</div>
 					<p className={`${errors.labels ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.labels?.message || errors.labels?.[0]?.message}!</p>
 					<label className="description" htmlFor="description">
-						Popis poptávky
+						Popis issue
 					</label>
 					<WysiwygEditor
 						stripPastedStyles={true}
@@ -312,7 +312,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>
-							{issue ? "Změnit pohledávku" : "Vytvořit pohledávku"}
+							{issue ? "Změnit issue" : "Vytvořit issue"}
 						</Button>
 					</div>
 				</form>

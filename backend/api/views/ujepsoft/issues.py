@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from django.core.cache import cache
 
 from api.services import GitHubAPIService
-from api.pagination import IssuePagination
+from api.pagination import StandardPagination
 from api import IMAGES_EXTENSIONS
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
@@ -19,7 +19,7 @@ from utils.issues.utils import add_files_to_description, add_ujepsoft_author, fi
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
   permission_classes = (permissions.IsAuthenticated,)
-  pagination_class = IssuePagination
+  pagination_class = StandardPagination
 
   def list(self, request, *args, **kwargs):
     issues = Issue.objects.all()
@@ -290,7 +290,6 @@ class IssueDetail(APIView):
         "cz": "Nejste autorem tohoto issue"
       }, status=status.HTTP_403_FORBIDDEN)
     
-    print(associated_repo.author, associated_repo.name, issue.number)
     response = GitHubAPIService.delete_issue(associated_repo.author, associated_repo.name, issue.number)
 
     if response is None:
@@ -408,9 +407,6 @@ class IssueDetail(APIView):
         file_type=file_type
       )
 
-      # TODO: WTF IS THIS?
-      issue.files.add(issue_file)
-
     # Get all files in this issue
     issue_files = IssueFile.objects.filter(issue=issue)
     
@@ -454,8 +450,7 @@ class IssueAddComment(APIView):
 
   def post(self, request, pk):
     comment_body = request.POST.get('body', None)
-    print(comment_body)
-
+    
     try:
       issue = Issue.objects.get(pk=pk)
     except Issue.DoesNotExist:

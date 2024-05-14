@@ -31,7 +31,6 @@ class OfferSerializer(serializers.ModelSerializer):
     return [keyword.name for keyword in obj.keywords.all()]
   
 class RepoForIssueSerializer(serializers.ModelSerializer):
-
   class Meta:
     model = Repo
     fields = ['id', 'name', 'author']
