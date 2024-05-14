@@ -114,7 +114,6 @@ class OfferDetail(APIView):
     return Response(self.serializer_class(offer).data, status=status.HTTP_200_OK)
   
   def put(self, request, pk):
-    # TODO: Check for files -> if file has remote_url and it is deleted, then delete it from body
     offer = Offer.objects.get(pk=pk)
 
     if (self.request.user != offer.author and not self.request.user.is_staff):
