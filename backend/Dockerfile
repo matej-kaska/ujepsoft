@@ -1,14 +1,13 @@
 FROM python:alpine3.19
 
 ENV PYTHONDONTWRITEBYTECODE=1
+
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /backend
 
-# First, ensure the requirements file is present
 COPY requirements.txt .
 
-# Install dependencies
 RUN apk --no-cache add curl=8.5.0-r0 && \
   pip install --no-cache-dir -r requirements.txt
 

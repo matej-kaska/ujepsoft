@@ -9,9 +9,13 @@ WORKDIR /backend
 COPY . .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apk --no-cache add curl=8.5.0-r0 && \
+  pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
 
 ENTRYPOINT ["/backend/entrypoint.prod.sh"]
 CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "backend.wsgi:application"]
+
+HEALTHCHECK --interval=5m --timeout=10s \
+  CMD curl -f http://localhost:8000/api/test || exit 1
