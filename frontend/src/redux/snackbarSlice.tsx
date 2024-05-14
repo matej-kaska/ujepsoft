@@ -21,11 +21,6 @@ const snackbarSlice = createSlice({
 			state.message = action.payload;
 			state.type = "success";
 		},
-		openInfoSnackbar: (state, action: PayloadAction<string>) => {
-			state.open = true;
-			state.message = action.payload;
-			state.type = "info";
-		},
 		openErrorSnackbar: (state, action: PayloadAction<string>) => {
 			state.open = true;
 			state.message = action.payload;
@@ -39,6 +34,6 @@ const snackbarSlice = createSlice({
 	},
 });
 
-export const { openSuccessSnackbar, openInfoSnackbar, openErrorSnackbar, closeSnackbar } = snackbarSlice.actions;
+export const { openSuccessSnackbar, openErrorSnackbar, closeSnackbar } = snackbarSlice.actions;
 
 export default snackbarSlice.reducer;

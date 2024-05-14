@@ -58,5 +58,6 @@ export type Comment = {
 	number: number;
 };
 
-// biome-ignore lint: Maybe will be added
-export type Reaction = {};
+export type Reaction = {
+	[key: string]: number;
+};

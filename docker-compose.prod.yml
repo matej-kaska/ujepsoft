@@ -1,7 +1,7 @@
 services:
   ## Postgres
   postgresql:
-    container_name: ujepsoft-postgresql
+    container_name: ujepsoft-postgresql-prod
     image: 'bitnami/postgresql:latest'
     environment:
       - POSTGRES_USER=postgres
@@ -13,38 +13,30 @@ services:
       - postgresql_initdb:/docker-entrypoint-initdb.d
     ports:
       - '127.0.0.1:5432:5432'
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5m
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    restart: always
 
   ## Redis
   redis:
     build: redis
-    container_name: ujepsoft-redis
-    restart: always
+    container_name: ujepsoft-redis-prod
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --dir /data
-    volumes:
+    volumes: 
       - redis:/data
     ports:
       - '6379:6379'
-    healthcheck:
-      test: [ "CMD-SHELL", "redis-cli ping" ]
-      interval: 5m
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    restart: always
 
   ## Backend
   backend:
-    build: backend
-    container_name: ujepsoft-backend
+    build:
+      context: backend
+      dockerfile: Dockerfile.prod
+    container_name: ujepsoft-backend-prod
     volumes:
       - ./backend:/backend
     environment:
-      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16
+      - DJANGO_PRODUCTION=true
+      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16,backend
       - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8080
       - DJANGO_MEDIA_URL=http://localhost:8080/backend/media/
       - DJANGO_STATIC_URL=http://localhost:8080/backend/static/
@@ -65,43 +57,29 @@ services:
       - DJANGO_SECRET=${DJANGO_SECRET}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - GITHUB_USERNAME=matej-kaska
-      - REDIS-TIMEOUT=15
+      - REDIS-TIMEOUT=15 # TODO CHANGE THIS ON PRODUCTION
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/test" ]
-      interval: 5m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    restart: always
 
   ## Frontend
   frontend:
-    build: frontend
-    container_name: ujepsoft-frontend
-    volumes:
-      - ./frontend:/app
-      - node_modules:/app/node_modules
-    # Just for the dev server ws
-    ports:
-      - '3000:3000'
+    build:
+      context: frontend
+      dockerfile: Dockerfile.prod
+    container_name: ujepsoft-frontend-prod
     depends_on:
       - backend
       - redis
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - VITE_GITHUB_USERNAME=matej-kaska
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
-      interval: 5m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    restart: always
 
   ## NGINX
   edge:
-    build: edge
-    container_name: ujepsoft-edge
+    image: bitnami/nginx:latest
+    container_name: ujepsoft-edge-prod
     ports:
       - '8080:8080'
     volumes:
@@ -110,17 +88,10 @@ services:
       - ./backend/staticfiles:/app/static
     depends_on:
       - frontend
-      - backend
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080" ]
-      interval: 5m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - backend  
+    restart: always
 
 volumes:
-  node_modules:
-    driver: local
   postgresql_data:
     driver: local
   postgresql_initdb:

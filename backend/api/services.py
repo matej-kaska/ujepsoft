@@ -4,6 +4,9 @@ import requests
 from api.models import Repo
 
 class GitHubAPIService:
+  """
+  Service class for GitHub API calls
+  """
   session = requests.Session()
   token = os.getenv('GITHUB_TOKEN')
   session.headers.update({'Authorization': f'Bearer {token}'})

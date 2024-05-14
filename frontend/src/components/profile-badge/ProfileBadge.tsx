@@ -7,7 +7,7 @@ type ProfileBadgeProps = {
 const ProfileBadge = ({ name, profilePicture, authorUjepsoft }: ProfileBadgeProps) => {
 	return (
 		<section className="profile-badge">
-			<img src={profilePicture} className="picture" alt="profile" id="profilePicture" />
+			<img src={profilePicture + "&s=40"} className="picture" alt="profile" id="profilePicture" />
 			<label className="name" htmlFor="profilePicture" id="profileName">
 				{name}
 				{authorUjepsoft && (

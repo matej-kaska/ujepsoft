@@ -68,6 +68,7 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 			setFiles((prev: File[]) => [...prev, file]);
 		}
 	};
+
 	return (
 		<>
 			<label className="attachments">Přílohy</label>

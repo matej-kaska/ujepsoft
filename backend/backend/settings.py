@@ -113,6 +113,7 @@ CACHES = {
     }
 }
 
+# TODO: Disable Logging on Production
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

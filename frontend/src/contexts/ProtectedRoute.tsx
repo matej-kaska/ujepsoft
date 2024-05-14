@@ -9,14 +9,13 @@ import { openErrorSnackbar } from "../redux/snackbarSlice";
 import { RootState, store } from "../redux/store";
 
 type ProtectedRouteProps = {
-	allowedRoles?: string[];
 	userIsNeeded?: boolean;
 	redirectLoggedUser?: boolean;
 	children: JSX.Element;
 	userIsStaff?: boolean;
 };
 
-const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser = false, children, userIsStaff = false }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ userIsNeeded = false, redirectLoggedUser = false, children, userIsStaff = false }: ProtectedRouteProps) => {
 	const dispatch = useDispatch();
 	const nativNavigate = useNavigate();
 	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
@@ -29,16 +28,7 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
 			return;
 		}
 
-		// if (userIsNeeded && (!userInfo._id || (allowedRoles && userInfo.role && !allowedRoles.includes(userInfo.role)))) {
-		//   // If there's no user logged in or the logged-in user's role is not allowed,
-		//   // remove the user information from Redux state and local storage and navigate to login page
-		//   dispatch(removeUser());
-		//   navigate("/");
-		// }
-
 		if (userIsNeeded && !userInfo.id) {
-			// If there's no user logged in or the logged-in user's role is not allowed,
-			// remove the user information from Redux state and local storage and navigate to login page
 			dispatch(removeUser());
 			const path = `/${window.location.pathname.split("/")[1]}`;
 			store.dispatch(openErrorSnackbar("Pro tuto akci musíte být přihlášeni!"));
@@ -58,18 +48,11 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
 			console.warn("You must be logged in to perform this action!");
 		}
 		dispatch(navigate(""));
-	}, [userInfo, userIsNeeded, allowedRoles, redirectLoggedUser, dispatch, navigateLink]);
+	}, [children]);
 
-	// Check if the current route requires a user
 	if (!userIsNeeded) {
 		return children;
 	}
-
-	// If a user is required, check if there is a user logged in (userInfo._id is not undefined)
-	// And if allowedRoles is defined, check if the logged-in user's role is included in allowedRoles
-	/*   if (userInfo._id && (!allowedRoles || (userInfo.role && allowedRoles.includes(userInfo.role)))) {
-      return children
-    } */
 
 	if (userIsStaff && userInfo.id && userInfo.is_staff === true) {
 		return children;
@@ -83,7 +66,6 @@ const ProtectedRoute = ({ allowedRoles, userIsNeeded = false, redirectLoggedUser
 		return children;
 	}
 
-	// Wait for useEffect to do its work
 	return null;
 };
 
