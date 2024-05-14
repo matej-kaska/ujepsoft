@@ -16,7 +16,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 5
       start_period: 30s
@@ -33,7 +33,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 5
       start_period: 30s
@@ -75,7 +75,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/test" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s
@@ -95,7 +95,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s
@@ -116,7 +116,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "/usr/bin/curl -f http://localhost:8080" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s

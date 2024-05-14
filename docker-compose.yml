@@ -15,7 +15,7 @@ services:
       - '127.0.0.1:5432:5432'
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 5
       start_period: 30s
@@ -32,7 +32,7 @@ services:
       - '6379:6379'
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 5
       start_period: 30s
@@ -70,7 +70,7 @@ services:
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/test" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s
@@ -93,7 +93,7 @@ services:
       - VITE_GITHUB_USERNAME=matej-kaska
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s
@@ -113,7 +113,7 @@ services:
       - backend
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080" ]
-      interval: 5m
+      interval: 30m
       timeout: 10s
       retries: 3
       start_period: 30s

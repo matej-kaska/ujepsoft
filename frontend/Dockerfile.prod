@@ -20,5 +20,5 @@ EXPOSE 3000
 
 CMD ["nginx", "-g", "daemon off;"]
 
-HEALTHCHECK --interval=5m --timeout=10s \
+HEALTHCHECK --interval=30m --timeout=10s \
   CMD curl -f http://localhost:3000 || exit 1
