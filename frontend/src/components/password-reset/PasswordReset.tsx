@@ -55,7 +55,7 @@ const PasswordReset = () => {
 				<Button color="secondary" type="button" onClick={() => showModal(<Login />)}>
 					Zpět
 				</Button>
-				<Button type="submit">Odeslat</Button>
+				<Button type="submit" color="accent">Odeslat</Button>
 			</div>
 		</form>
 	);

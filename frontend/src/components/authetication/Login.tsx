@@ -131,7 +131,7 @@ const Login = ({ token }: LoginProps) => {
 						<Button color="secondary" type="button" onClick={() => showModal(<Register />)}>
 							Zaregistrovat se
 						</Button>
-						<Button type="submit">Přihlásit se</Button>
+						<Button type="submit" color="accent">Přihlásit se</Button>
 					</div>
 				</>
 			)}
