@@ -12,10 +12,10 @@
   }
 
   &.secondary {
-    background-color: $color-secondary;
+    background-color: $color-primary;
     color: white;
     &:hover {
-      background-color: darken($color-secondary, 10%);
+      background-color: darken($color-primary, 10%);
     }
   }
 

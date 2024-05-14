@@ -37,11 +37,11 @@
   }
 
   &.gray {
-    background-color: gray;
+    background-color: #575757;
     color: white;
 
     &:hover {
-      background-color: darken(gray, 10%);
+      background-color: darken(#575757, 10%);
     }
   }
 }
