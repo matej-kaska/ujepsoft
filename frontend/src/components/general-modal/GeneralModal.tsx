@@ -28,11 +28,11 @@ const GeneralModal = ({ text, actionOnClick, input, actionOnClickWparam, submitT
 					Zrušit
 				</Button>
 				{actionOnClickWparam ? (
-					<Button color="primary" className="remove-button" onClick={() => actionOnClickWparam(inputValue)}>
+					<Button color="accent" className="remove-button" onClick={() => actionOnClickWparam(inputValue)}>
 						Smazat
 					</Button>
 				) : (
-					<Button color="primary" className="remove-button" onClick={actionOnClick}>
+					<Button color="accent" className="remove-button" onClick={actionOnClick}>
 						{submitText ? submitText : "Smazat"}
 					</Button>
 				)}

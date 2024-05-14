@@ -6,13 +6,19 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ujepsoft 
+      - POSTGRES_DB=ujepsoft
     volumes:
       - postgresql_data:/bitnami/postgresql
       - postgresql_pre_initdb:/docker-entrypoint-preinitdb.d
       - postgresql_initdb:/docker-entrypoint-initdb.d
     ports:
       - '127.0.0.1:5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5m
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   ## Redis
   redis:
@@ -20,10 +26,16 @@ services:
     container_name: ujepsoft-redis
     restart: always
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --dir /data
-    volumes: 
+    volumes:
       - redis:/data
     ports:
       - '6379:6379'
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 5m
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   ## Backend
   backend:
@@ -56,6 +68,12 @@ services:
       - REDIS-TIMEOUT=15
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/test" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   ## Frontend
   frontend:
@@ -73,10 +91,16 @@ services:
     environment:
       - NODE_ENV=development
       - VITE_GITHUB_USERNAME=matej-kaska
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   ## NGINX
   edge:
-    image: bitnami/nginx:latest
+    build: edge
     container_name: ujepsoft-edge
     ports:
       - '8080:8080'
@@ -86,7 +110,13 @@ services:
       - ./backend/staticfiles:/app/static
     depends_on:
       - frontend
-      - backend  
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   node_modules:
