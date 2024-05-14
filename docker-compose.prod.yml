@@ -5,7 +5,7 @@ services:
     image: 'bitnami/postgresql:latest'
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=postgres # TODO: CHANGE THIS ON PRODUCTION @{POSTGRES_PASSWORD}
       - POSTGRES_DB=ujepsoft
     volumes:
       - postgresql_data:/bitnami/postgresql
@@ -54,7 +54,7 @@ services:
       - DJANGO_STATIC_URL=http://localhost:8080/backend/static/
       - DJANGO_DB_NAME=ujepsoft
       - DJANGO_DB_USER=postgres
-      - DJANGO_DB_PASSWORD=postgres
+      - DJANGO_DB_PASSWORD=postgres # TODO: CHANGE THIS ON PRODUCTION @{POSTGRES_PASSWORD}
       - DJANGO_DB_HOST=postgresql
       - DJANGO_DB_PORT=5432
       - DJANGO_REDIS_LOCATION=redis://redis:6379/1
