@@ -8,7 +8,6 @@ import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
@@ -20,6 +19,9 @@ import { removeFooterFromBody } from "utils/plainTextToHtml";
 import { commentSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
+import React, { Suspense } from 'react';
+
+const WysiwygEditor = React.lazy(() => import('react-draft-wysiwyg').then(module => ({ default: module.Editor })));
 
 type Form = {
 	body: string;
@@ -127,35 +129,37 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 			) : (
 				<form className="edit-comment" onSubmit={handleSubmit(handlePostIssue)}>
 					<h1>Změnit komentář</h1>
-					<WysiwygEditor
-						stripPastedStyles={true}
-						editorState={commentEditorState}
-						toolbarClassName="toolbarClassName"
-						wrapperClassName={`wrapperClassName ${errors.body ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
-						editorClassName={"editorClassName"}
-						editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
-						toolbar={{
-							options: ["inline", "blockType", "list", "emoji", "remove", "history"],
-							inline: { options: ["bold", "italic", "underline", "strikethrough"] },
-						}}
-						localization={{ locale: "en", translations: editorLabels }}
-						onEditorStateChange={(newState: any) => {
-							let hasAtomicValue = false;
-							for (const element of newState.getCurrentContent().blockMap) {
-								if (element.type === "atomic") hasAtomicValue = true;
-							}
-							if (hasAtomicValue) {
-								alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
-								return;
-							}
-							const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
-							if (text.length > 8191) return alert("Komentář nesmí být delší než 8191 raw znaků!");
-							setCommentFocus(newState);
-							if (validate) setValue("body", text, { shouldValidate: true });
-							else setValue("body", text);
-							setCommentEditorState(newState);
-						}}
-					/>
+					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
+						<WysiwygEditor
+							stripPastedStyles={true}
+							editorState={commentEditorState}
+							toolbarClassName="toolbarClassName"
+							wrapperClassName={`wrapperClassName ${errors.body ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
+							editorClassName={"editorClassName"}
+							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
+							toolbar={{
+								options: ["inline", "blockType", "list", "emoji", "remove", "history"],
+								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
+							}}
+							localization={{ locale: "en", translations: editorLabels }}
+							onEditorStateChange={(newState: any) => {
+								let hasAtomicValue = false;
+								for (const element of newState.getCurrentContent().blockMap) {
+									if (element.type === "atomic") hasAtomicValue = true;
+								}
+								if (hasAtomicValue) {
+									alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
+									return;
+								}
+								const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
+								if (text.length > 8191) return alert("Komentář nesmí být delší než 8191 raw znaků!");
+								setCommentFocus(newState);
+								if (validate) setValue("body", text, { shouldValidate: true });
+								else setValue("body", text);
+								setCommentEditorState(newState);
+							}}
+						/>
+					</Suspense>
 					<p className={`${errors.body ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.body?.message}!</p>
 					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
