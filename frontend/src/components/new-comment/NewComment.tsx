@@ -13,7 +13,7 @@ import { RootState } from "redux/store";
 import { editorLabels } from "static/wysiwyg";
 import axiosRequest from "utils/axios";
 import { commentSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 
 type Form = {
@@ -50,7 +50,7 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 		};
 	}, []);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		comment: commentSchema,
 	});
 

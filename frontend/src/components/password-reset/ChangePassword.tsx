@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axiosRequest from "utils/axios";
 import { confirmPasswordSchema, passwordSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import { useModal } from "../../contexts/ModalProvider";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
 
@@ -24,7 +24,7 @@ const ChangePassword = ({ token }: ChangePasswordProps) => {
 	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		password: passwordSchema,
 		passwordConf: confirmPasswordSchema,
 	});

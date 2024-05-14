@@ -18,7 +18,7 @@ import { Attachment } from "types/offer";
 import axiosRequest from "utils/axios";
 import { removeFooterFromBody } from "utils/plainTextToHtml";
 import { commentSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 
 type Form = {
@@ -71,7 +71,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 		};
 	}, []);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		body: commentSchema,
 	});
 

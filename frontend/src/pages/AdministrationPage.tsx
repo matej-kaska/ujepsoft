@@ -14,7 +14,7 @@ import { RootState } from "redux/store";
 import { Repo } from "types/repo";
 import axiosRequest from "utils/axios";
 import { urlGithubSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 
 type AddRepoForm = {
@@ -37,7 +37,7 @@ const AdministrationPage = () => {
 		loadRepos();
 	}, []);
 
-	const addRepoFormSchema = yup.object().shape({
+	const addRepoFormSchema = object().shape({
 		url: urlGithubSchema,
 	});
 

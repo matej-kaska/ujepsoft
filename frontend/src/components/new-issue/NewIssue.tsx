@@ -24,7 +24,7 @@ import { RepoSelect } from "types/repo";
 import axiosRequest from "utils/axios";
 import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 
 type Form = {
@@ -126,7 +126,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		};
 	};
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		name: offerNameSchema,
 		repo: repoSelectSchema,
 		labels: labelsSchema,

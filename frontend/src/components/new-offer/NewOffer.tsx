@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
@@ -15,7 +14,8 @@ import { setReload } from "redux/reloadSlice";
 import { RootState } from "redux/store";
 import { Attachment, Offer } from "types/offer";
 import { descriptionSchema, offerKeywordsSchema, offerNameSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
 import "/src/static/react-draft-wysiwyg.css";
 import { useModal } from "../../contexts/ModalProvider";
 import { ReactComponent as CloseIcon } from "../../images/close.svg";
@@ -83,7 +83,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 		};
 	}, []);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		name: offerNameSchema,
 		keywords: offerKeywordsSchema,
 		description: descriptionSchema,

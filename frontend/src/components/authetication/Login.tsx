@@ -5,7 +5,7 @@ import PasswordReset from "components/password-reset/PasswordReset";
 import { useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import * as yup from "yup";
+import { object } from "yup";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import { setToken, setUser } from "redux/authSlice";
@@ -55,7 +55,7 @@ const Login = ({ token }: LoginProps) => {
 		setLoading(false);
 	};
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		email: emailSchema,
 		password: passwordSchema
 	});

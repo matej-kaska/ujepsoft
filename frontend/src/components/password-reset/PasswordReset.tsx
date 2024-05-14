@@ -6,7 +6,7 @@ import { useSnackbar } from "contexts/SnackbarProvider";
 import { useForm } from "react-hook-form";
 import axiosRequest from "utils/axios";
 import { emailSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 
 type Form = {
 	email: string;
@@ -17,7 +17,7 @@ const PasswordReset = () => {
 	const { showModal, closeModal } = useModal();
 	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		email: emailSchema,
 	});
 

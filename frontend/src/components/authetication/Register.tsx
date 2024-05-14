@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import axiosRequest from "utils/axios";
 import { confirmPasswordSchema, emailSchema, gdprSchema, passwordSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import Login from "./Login";
 
 type Form = {
@@ -23,7 +23,7 @@ const Register = () => {
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		email: emailSchema,
 		password: passwordSchema,
 		confirmPwd: confirmPasswordSchema,
