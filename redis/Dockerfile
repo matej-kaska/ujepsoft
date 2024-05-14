@@ -1,13 +1,10 @@
-FROM bitnami/redis:latest
+FROM bitnami/redis:7.2.4
+
 USER root
+
 RUN mkdir -p /data && chown -R 1001:0 /data
 
-# Create user with no password (not for login)
-RUN adduser --disabled-password --gecos "" ujepsoft
-RUN chown -R ujepsoft:ujepsoft /data
+USER 1001
 
-USER ujepsoft
-
-# Add a health check
 HEALTHCHECK --interval=5m --timeout=10s \
   CMD redis-cli ping || exit 1
