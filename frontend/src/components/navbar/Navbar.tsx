@@ -36,7 +36,7 @@ const Navbar = () => {
 				</Link>
 				<div className="img-wrapper">
 					<Link to={"https://ujep.cz/"}>
-						<img src="/src/images/ujep-full-logo.png" alt="UJEP logo" />
+						<img src="/src/images/ujep-full-logo.webp" alt="UJEP logo" />
 					</Link>
 				</div>
 			</header>

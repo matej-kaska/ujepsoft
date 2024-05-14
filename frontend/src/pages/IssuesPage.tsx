@@ -72,10 +72,11 @@ const IssuesPage = () => {
 			<div className="issues-page">
 				<header>
 					<h1>Problémy/Úkoly (Issues)</h1>
-					<p>Sekce Problémy/Úkoly (dále jen Issues) slouží k evidenci a správě různých úkolů, chyb, nápadů a dalších záležitostí v rámci softwaru spravovaného univerzitou UJEP. Pokud potřebujete vytvořit nový podnět k některému ze softwarů, klikněte na tlačítko "Přidat Issue".</p>
+					<p>Sekce Problémy/Úkoly (dále jen Issues) slouží k evidenci a správě různých úkolů, chyb, nápadů a dalších záležitostí v rámci softwaru spravovaného univerzitou UJEP. Pokud potřebujete vytvořit nový podnět k některému ze softwarů, klikněte na tlačítko "Přidat issue".</p>
 					<div className="footer-header">
 						<div className="switch-wrapper">
 							<label className="switch" htmlFor="toggle">
+								<span className="visually-hidden">Toggle switch</span>
 								<input type="checkbox" id="toggle" defaultChecked={!closed} onClick={() => setClosed(!closed)} />
 								<span className="slider" />
 							</label>
