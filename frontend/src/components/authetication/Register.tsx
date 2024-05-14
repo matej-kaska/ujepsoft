@@ -106,7 +106,7 @@ const Register = () => {
 				<Button color="secondary" type="button" onClick={() => showModal(<Login />)}>
 					Přihlásit se
 				</Button>
-				<Button type="submit">Zaregistrovat se</Button>
+				<Button type="submit" color="accent">Zaregistrovat se</Button>
 			</div>
 		</form>
 	);

@@ -67,7 +67,7 @@ const Navbar = () => {
 					{userInfo.id ? (
 						<>
 							<span>Jste přihlášen jako {userInfo.email}</span>
-							<Button onClick={handleLogout} color="secondary">
+							<Button onClick={handleLogout} color="accent">
 								Odhlásit se
 							</Button>
 						</>

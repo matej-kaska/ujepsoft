@@ -14,6 +14,12 @@ services:
     ports:
       - '127.0.0.1:5432:5432'
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5m
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   ## Redis
   redis:
@@ -25,6 +31,12 @@ services:
     ports:
       - '6379:6379'
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 5m
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   ## Backend
   backend:
@@ -61,6 +73,12 @@ services:
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/test" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   ## Frontend
   frontend:
@@ -75,10 +93,16 @@ services:
       - NODE_ENV=production
       - VITE_GITHUB_USERNAME=matej-kaska
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   ## NGINX
   edge:
-    image: bitnami/nginx:latest
+    build: edge
     container_name: ujepsoft-edge-prod
     ports:
       - '8080:8080'
@@ -90,6 +114,12 @@ services:
       - frontend
       - backend  
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "/usr/bin/curl -f http://localhost:8080" ]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   postgresql_data:
