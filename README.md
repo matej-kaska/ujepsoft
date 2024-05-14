@@ -1,4 +1,4 @@
-# UJEP soft
+# UJEP Soft
 ## Zapnutí dockeru
 - ``git clone https://github.com/matej-kaska/ujepsoft.git``
 - ``cd ujepsoft``
@@ -24,10 +24,8 @@
 - Na FE držet tuto hierarchii `import > komponenta > useState > useEffect > funkce > return JSX HTML`
 - Používat arrow funkce `const funkce = () => {}`
 - Používat SVGs všude, kde je to možné
-- Axios používat pomocí `import axios from "utils/axios"`
+- Axios používat pomocí `import axiosRequest from "utils/axios"`
 - Pro přidání knihovny `npm i xxx` v `ujepsoft/frontend`, smazat container `ujepsoft` > `client`, smazat image `ujepsoft-client`, smazat volume `ujepsoft_node_modules`
-
-### backend-old je Django, na kterým se můžeš učit
 
 ### Doporučené extesions pro VS Code
 - PostCSS Language Support
