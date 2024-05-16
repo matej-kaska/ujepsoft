@@ -206,7 +206,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			closeModal();
 			dispatch(setReload("issuepage"));
 		} else {
-			const response = await axiosRequest<PostIssueResponse>("POST", "/api/issue");
+			const response = await axiosRequest<PostIssueResponse>("POST", "/api/issue", formData);
 			if (!response.success) {
 				setLoading(false);
 				openErrorSnackbar(response.message.cz);

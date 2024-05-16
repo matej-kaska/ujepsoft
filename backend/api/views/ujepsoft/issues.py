@@ -96,7 +96,7 @@ class IssueCreate(APIView):
     repo = request.POST.get('repo', None)
     labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
     description = request.POST.get('description', None)
-
+    
     if name is None or repo is None or labels is None or description is None:
       return Response({
         "en": "All required fields must be specified",
