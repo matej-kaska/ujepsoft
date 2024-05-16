@@ -88,6 +88,7 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 		openSuccessSnackbar("Komentář byl úspěšně přidán!");
 		dispatch(setReload("issuepage"));
 		setCommentEditorState(EditorState.createEmpty());
+		setValue("comment", "");
 		setFiles([]);
 		setValidate(false);
 	};
