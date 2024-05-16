@@ -24,7 +24,6 @@ services:
   redis:
     build: redis
     container_name: ujepsoft-redis
-    restart: always
     command: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD} --dir /data
     volumes:
       - redis:/data
