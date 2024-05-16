@@ -3,7 +3,6 @@ from api.models import Label
 from datetime import datetime,timezone
 import markdown
 
-from django.conf import settings
 from api import IMAGES_EXTENSIONS
 from utils import GITHUB_EXTENSIONS
 
