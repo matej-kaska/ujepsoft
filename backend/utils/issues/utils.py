@@ -76,19 +76,25 @@ def extract_files_from_github(body):
     """
     images_alts = []
     videos_and_files = []
-
+    print(body)
     # Regex for Markdown image syntax
     image_pattern = re.compile(r'!\[(.*?)\]\((.*?)\)')
     # Regex for Markdown link syntax
     link_pattern = re.compile(r'\[(.*?)\]\((.*?)\)')
+    # Regex for HTML <img> tag
+    html_image_pattern = re.compile(r'<img src=\'(.*?)\' alt=\'(.*?)\'')
 
     for match in image_pattern.finditer(body):
       alt_text, url = match.groups()
       images_alts.append((alt_text, url))
 
+    for match in html_image_pattern.finditer(body):
+      url, alt_text = match.groups()
+      images_alts.append((alt_text, url))
+
     for match in link_pattern.finditer(body):
       link_text, url = match.groups()
-      if any(url.lower().endswith(f".{ext}") for ext in GITHUB_EXTENSIONS):
+      if any(url.lower().endswith(f".{ext.lower()}") for ext in GITHUB_EXTENSIONS):
         videos_and_files.append((link_text, url))
 
     return images_alts, videos_and_files
@@ -117,9 +123,9 @@ def add_files_to_description(description: str, files) -> str:
   for file in files:
     extension = file.name.split('.')[-1].lower()
     if extension in IMAGES_EXTENSIONS:
-      images_description = images_description + f"<img src='{settings.MEDIA_URL}{file.name}' alt='{file.name}'>\n"
+      images_description = images_description + f"<img src='{file.file.url}' alt='{file.name}'>\n"
     else:
-      files_description = files_description + f"[{file.name}]({settings.MEDIA_URL}{file.file})\n"
+      files_description = files_description + f"[{file.name}]({file.file.url})\n"
 
   if len(images_description) > 2:
     formatted_description = formatted_description + "<h2>Obrázky:</h2>\n" + images_description

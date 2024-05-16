@@ -96,7 +96,7 @@ class IssueCreate(APIView):
     repo = request.POST.get('repo', None)
     labels = json.loads(request.POST.get('labels')) if request.POST.get('labels') else None
     description = request.POST.get('description', None)
-    
+
     if name is None or repo is None or labels is None or description is None:
       return Response({
         "en": "All required fields must be specified",
@@ -383,18 +383,19 @@ class IssueDetail(APIView):
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    issue_files = []
     # Delete non Existing files
     for file in IssueFile.objects.filter(issue=issue):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
           file_found = True
+          issue_files.append(file)
           break
       if not file_found:
         file.delete()
 
     # Upload new files    
-    issue_files = []
     for uploaded_file in request.FILES.getlist('files'):
       _, file_extension = os.path.splitext(uploaded_file.name)
       file_extension = file_extension.lower()[1:]
