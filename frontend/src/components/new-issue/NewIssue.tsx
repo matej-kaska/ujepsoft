@@ -191,22 +191,22 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
-
+		console.log(issue);
 		if (issue) {
-			const response = await axiosRequest("GET", `/api/issue/${issue.id}`);
+			const response = await axiosRequest("PUT", `/api/issue/${issue.id}`, formData);
 			if (!response.success) {
 				setLoading(false);
 				openErrorSnackbar(response.message.cz);
 				setError("apiError", { type: "server", message: response.message.cz });
-				console.error("Error getting issue:", response.message.cz);
+				console.error("Error editing issue:", response.message.cz);
 				return;
 			}
 			setLoading(false);
-			openSuccessSnackbar("Issue byla úspěšně vytvořena!");
+			openSuccessSnackbar("Issue byla úspěšně změněna!");
 			closeModal();
 			dispatch(setReload("issuepage"));
 		} else {
-			const response = await axiosRequest<PostIssueResponse>("POST", "/api/issue", formData);
+			const response = await axiosRequest<PostIssueResponse>("POST", "/api/issue");
 			if (!response.success) {
 				setLoading(false);
 				openErrorSnackbar(response.message.cz);
@@ -217,7 +217,6 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			setLoading(false);
 			openSuccessSnackbar("Issue byla úspěšně vytvořena!");
 			closeModal();
-			dispatch(setReload("issues"));
 			navigate(`/issue/${response.data.id}`);
 		}
 	};

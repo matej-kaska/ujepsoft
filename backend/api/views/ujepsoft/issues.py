@@ -54,9 +54,9 @@ class IssuesList(generics.ListAPIView):
 
       # Getting new issue
       if issue is None:
-        new_issue = GitHubAPIService.get_issue(fetched_issue["user"]["login"], fetched_issue["repo"], fetched_issue["number"])
+        new_issue = GitHubAPIService.get_issue(fetched_issue["author"], fetched_issue["repo"], fetched_issue["number"])
 
-        repo = Repo.objects.get(author=fetched_issue["user"]["login"], name=fetched_issue["repo"])
+        repo = Repo.objects.get(author=fetched_issue["author"], name=fetched_issue["repo"])
 
         create_issue(new_issue, repo, fetched_issue["user"]["login"], fetched_issue["repo"])
 

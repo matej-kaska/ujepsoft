@@ -79,6 +79,7 @@ class GitHubAPIService:
       for issue in issues:
         if 'pull_request' not in issue:
           issue['repo'] = repo.name
+          issue['author'] = repo.author
           response.append(issue)
     
     return response
