@@ -13,7 +13,7 @@
     padding: 3rem;
 
     a {
-      width: 50%;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -28,9 +28,11 @@
     }
 
     .img-wrapper {
-      width: 50%;
-      display: flex;
-      justify-content: right;
+      width: 100%;
+
+      a {
+        justify-content: flex-end;
+      }
 
       img {
         max-height: 70px;
