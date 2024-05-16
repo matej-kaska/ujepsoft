@@ -589,17 +589,18 @@ class EditComment(APIView):
       }, status=status.HTTP_400_BAD_REQUEST)
     
     # Delete non Existing files
+    comment_files = [] 
     for file in CommentFile.objects.filter(comment=comment):
       file_found = False
       for existing_file in existing_files:
         if file.name == existing_file:
           file_found = True
+          comment_files.append(file)
           break
       if not file_found:
         file.delete()
 
     # Upload new files
-    comment_files = [] 
     for uploaded_file in request.FILES.getlist('files'):
       _, file_extension = os.path.splitext(uploaded_file.name)
       file_extension = file_extension.lower()[1:]
