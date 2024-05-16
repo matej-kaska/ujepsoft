@@ -200,7 +200,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 						<div className="keywords-container">
 							<label htmlFor="keywords-input">Klíčová slova: </label>
 							<div className="keywords">
-								{keywords.length ? null : <span className="add-keyword">Pro přidání klíčového slova stikněte Enter...</span>}
+								{keywords.length ? null : <span className="add-keyword">Pro přidání klíčového slova stiskněte Enter...</span>}
 								{keywords.map((keyword, index) => (
 									<div key={index} className="keyword-tag">
 										<div className="keyword-name">{keyword}</div>
