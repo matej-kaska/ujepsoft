@@ -43,6 +43,7 @@ const AdministrationPage = () => {
 
 	const {
 		setError,
+		setValue,
 		register,
 		handleSubmit,
 		formState: { errors },
@@ -74,6 +75,7 @@ const AdministrationPage = () => {
 		}
 		setSuccessfullySubmitted(true);
 		setLoadingAdd(false);
+		setValue("url", "");
 		loadRepos();
 	};
 
