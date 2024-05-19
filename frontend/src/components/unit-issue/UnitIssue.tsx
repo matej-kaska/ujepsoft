@@ -19,7 +19,7 @@ const UnitIssue = ({ issue }: UnitIssueProps) => {
 				<Link to={`/issue/${issue.id}`}>{issue.title}</Link>
 				{issue.state === "closed" && <span className="closed">(uzavřené)</span>}
 			</h2>
-			<h3>{issue.repo.name}</h3>
+			<h3>{issue.repo.author}/{issue.repo.name}</h3>
 			<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} authorUjepsoft={issue.author_ujepsoft} />
 			{issue.labels.length > 0 && (
 				<section className="unit-labels">

@@ -88,7 +88,7 @@ const IssuePage = () => {
 								)}
 							</div>
 							<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} authorUjepsoft={issue.author_ujepsoft} />
-							<h2 className="repo">Aplikace: {issue.repo.name}</h2>
+							<h2 className="repo">Aplikace: {issue.repo.author}/{issue.repo.name}</h2>
 						</header>
 						{issue.labels.length > 0 && (
 							<div className="labels">
