@@ -81,15 +81,21 @@ def extract_files_from_github(body):
     # Regex for Markdown link syntax
     link_pattern = re.compile(r'\[(.*?)\]\((.*?)\)')
     # Regex for HTML <img> tag
-    html_image_pattern = re.compile(r'<img src=\'(.*?)\' alt=\'(.*?)\'')
+    html_image_pattern = re.compile(
+      r'<img[^>]*\b(src|alt)=["\'](.*?)["\'][^>]*\b(alt|src)=["\'](.*?)["\'][^>]*>',
+      re.IGNORECASE
+    )
 
     for match in image_pattern.finditer(body):
       alt_text, url = match.groups()
       images_alts.append((alt_text, url))
 
     for match in html_image_pattern.finditer(body):
-      url, alt_text = match.groups()
-      images_alts.append((alt_text, url))
+      first_attr, first_value, second_attr, second_value = match.groups()
+      if first_attr == 'src' and second_attr == 'alt':
+        images_alts.append((second_value, first_value))
+      elif first_attr == 'alt' and second_attr == 'src':
+        images_alts.append((first_value, second_value))
 
     for match in link_pattern.finditer(body):
       link_text, url = match.groups()
@@ -97,6 +103,25 @@ def extract_files_from_github(body):
         videos_and_files.append((link_text, url))
 
     return images_alts, videos_and_files
+
+def remove_files_from_description(description: str) -> str:
+  """
+  Remove Images and Files from the issue/comment description/body
+  """
+  if not description:
+    return ""
+  
+  images_alts, videos_and_files = extract_files_from_github(description)
+
+  for alt_text, url in images_alts:
+    description = description.replace(f"![{alt_text}]({url})", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>")
+    description = re.sub(rf"<img[^>]*src=['\"]{re.escape(url)}['\"][^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>", description, flags=re.IGNORECASE)
+    description = re.sub(rf"<img[^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*src=['\"]{re.escape(url)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>", description, flags=re.IGNORECASE)
+
+  for link_text, url in videos_and_files:
+    description = description.replace(f"[{link_text}]({url})", f"<p class='file-gh' title='Soubor'>{link_text}</p>")
+
+  return description
 
 def add_ujepsoft_author(description: str, author: str) -> str:
   """

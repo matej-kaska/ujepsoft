@@ -6,7 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html
+from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html, remove_files_from_description
 
 def create_issue(issue, associated_repo, user, repo):
   """
@@ -52,6 +52,15 @@ def create_issue(issue, associated_repo, user, repo):
       print(f"Label {label_name} does not exist! Not Creating it!")
 
   images, files = extract_files_from_github(raw_body or '')
+
+  new_body = issue.get('body', '') or ''
+
+  if new_body != "":
+    cleaned_body = remove_files_from_description(new_body)
+
+    if cleaned_body != new_body:
+      new_issue.body = cleaned_body
+      new_issue.save()
 
   for file in files:
     new_issue_file = IssueFile.objects.create(
@@ -185,6 +194,13 @@ def update_issue(issue_pk, new_issue, user, repo):
       print(f"Label {label_name} does not exist! Not Creating it!")
 
   images, files = extract_files_from_github(new_issue.get('body', '') or '')
+
+  if updating_issue.body != "":
+    cleaned_body = remove_files_from_description(updating_issue.body)
+
+    if cleaned_body != updating_issue.body:
+      updating_issue.body = cleaned_body
+      updating_issue.save()
 
   # Delete old files
   old_files = IssueFile.objects.filter(issue=updating_issue)
