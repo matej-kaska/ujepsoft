@@ -140,7 +140,6 @@ def markdown_to_html(description: str) -> str:
   """
   proccessed_md = insert_div_after_lists(description)
   html = markdown.markdown(proccessed_md,  extensions=['extra', 'nl2br'])
-  html = re.sub(r'<code>(.*?)</code>', r'<pre>\1</pre>', html, flags=re.DOTALL)
   return html
 
 def insert_div_after_lists(md_content: str) -> str:

@@ -105,6 +105,14 @@
     word-wrap: break-word;
   }
 
+  code {
+    padding: .2em .4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: #eff1f3;
+    border-radius: 6px;
+  }
+
   &>ul, &>ol, &>menu, &>il, &>p, &>pre, &>blockquote {
     margin-bottom: 1rem !important;
     margin: initial;
