@@ -109,10 +109,10 @@ class IssueCreate(APIView):
         "cz": "Musí být specifikován alespoň jeden klíčový výraz"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    if len(name) < 6 or len(name) > 100:
+    if len(name) < 2 or len(name) > 100:
       return Response({
-        "en": "Name must be between 6 and 100 characters long",
-        "cz": "Název musí být dlouhý 6 až 100 znaků"
+        "en": "Name must be between 2 and 100 characters long",
+        "cz": "Název musí být dlouhý 2 až 100 znaků"
       }, status=status.HTTP_400_BAD_REQUEST)
     
     if len(description) < 32 or len(description) > 8192:
@@ -348,10 +348,10 @@ class IssueDetail(APIView):
         "cz": "Musí být specifikován alespoň jeden klíčový výraz"
       }, status=status.HTTP_400_BAD_REQUEST)
     
-    if len(name) < 6 or len(name) > 100:
+    if len(name) < 2 or len(name) > 100:
       return Response({
-        "en": "Name must be between 6 and 100 characters long",
-        "cz": "Název musí být dlouhý 6 až 100 znaků"
+        "en": "Name must be between 2 and 100 characters long",
+        "cz": "Název musí být dlouhý 2 až 100 znaků"
       }, status=status.HTTP_400_BAD_REQUEST)
     
     if len(description) < 32 or len(description) > 8192:

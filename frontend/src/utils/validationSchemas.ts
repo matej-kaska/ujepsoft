@@ -17,7 +17,7 @@ export const confirmPasswordSchema = string()
 
 export const gdprSchema = boolean().required().oneOf([true], "Musíte souhlasit se zpracováním osobních údajů");
 
-export const offerNameSchema = string().required("Toto pole je povinné").min(6, "Název musí být minimálně 6 znaků dlouhý").max(100, "Název nesmí být delší než 100 znaků");
+export const offerNameSchema = string().required("Toto pole je povinné").min(2, "Název musí být minimálně 2 znaků dlouhý").max(100, "Název nesmí být delší než 100 znaků");
 
 export const offerKeywordsSchema = array(yup.string().required("Toto pole je povinné").max(63, "Klíčové slovo nesmí být delší než 63 znaků").min(1, "Klíčové slovo musí být minimálně 1 znak dlouhé"))
 	.required("Toto pole je povinné")
