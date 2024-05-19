@@ -36,6 +36,11 @@
       }
     }
   }
+
+  .body {
+    overflow-wrap: anywhere;
+    overflow: hidden;
+  }
   
   .footer {
     display: flex;
