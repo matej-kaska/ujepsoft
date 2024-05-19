@@ -75,7 +75,7 @@ def extract_files_from_github(body):
     """
     images_alts = []
     videos_and_files = []
-    print(body)
+    
     # Regex for Markdown image syntax
     image_pattern = re.compile(r'!\[(.*?)\]\((.*?)\)')
     # Regex for Markdown link syntax

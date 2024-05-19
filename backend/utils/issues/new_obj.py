@@ -194,7 +194,7 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for file in files:
     try:
-      IssueFile.objects.get(name=file[0])
+      IssueFile.objects.get(name=file[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
         name=file[0],
@@ -205,7 +205,7 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for image in images:
     try:
-      IssueFile.objects.get(name=image[0])
+      IssueFile.objects.get(name=image[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
         name=image[0],
