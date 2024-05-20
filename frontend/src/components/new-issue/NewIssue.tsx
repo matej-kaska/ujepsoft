@@ -181,6 +181,11 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			alert("Název issue nesmí být prázdný!");
 			return;
 		}
+		if (uploadedFiles.length > 0) {
+			for (const uploadedFile of uploadedFiles) {
+				data.description = data.description.replace(`\n<p>[${uploadedFile.name}]</p>`, `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+			}
+		} 
 		const formData = new FormData();
 		formData.append("name", data.name);
 		formData.append("repo", data.repo.toString());
