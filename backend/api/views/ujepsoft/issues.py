@@ -14,7 +14,7 @@ from api.pagination import StandardPagination
 from api import IMAGES_EXTENSIONS
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
-from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime
+from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_file_extenstion_from_name
 
 class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
@@ -179,7 +179,7 @@ class IssueCreate(APIView):
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
       new_issue_file = IssueFile.objects.create(
-        name=uploaded_file.name,
+        name=remove_file_extenstion_from_name(uploaded_file.name),
         file=uploaded_file,
         issue=new_issue,
         file_type=file_type
@@ -403,7 +403,7 @@ class IssueDetail(APIView):
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
       new_file = IssueFile.objects.create(
-        name=uploaded_file.name,
+        name=remove_file_extenstion_from_name(uploaded_file.name),
         file=uploaded_file,
         issue=issue,
         file_type=file_type
@@ -502,7 +502,7 @@ class IssueAddComment(APIView):
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
       new_file = CommentFile.objects.create(
-        name=uploaded_file.name,
+        name=remove_file_extenstion_from_name(uploaded_file.name),
         file=uploaded_file,
         comment=new_comment,
         file_type=file_type
@@ -608,7 +608,7 @@ class EditComment(APIView):
       file_type = 'image' if file_extension in IMAGES_EXTENSIONS else 'file'
 
       comment_file = CommentFile.objects.create(
-        name=uploaded_file.name,
+        name=remove_file_extenstion_from_name(uploaded_file.name),
         file=uploaded_file,
         comment=comment,
         file_type=file_type

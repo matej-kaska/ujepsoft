@@ -160,7 +160,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const updateDescription = (deletedFile: Attachment) => {
 		if (!issue) return;
 		let text = draftToHtml(convertToRaw(descriptionEditorState.getCurrentContent()));
-		text = text.replace(`\n<p>[${deletedFile.name}]</p>`, "");
+		text = text.replace(new RegExp(`\\n?<p>\\[${deletedFile.name}\\]</p>`, 'g'), "");
 		setValue("description", text);
 		setDescriptionEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
 	}
@@ -181,11 +181,13 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 			alert("Název issue nesmí být prázdný!");
 			return;
 		}
+
 		if (uploadedFiles.length > 0) {
 			for (const uploadedFile of uploadedFiles) {
-				data.description = data.description.replace(`\n<p>[${uploadedFile.name}]</p>`, `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+				data.description = data.description.replace(new RegExp(`\\n?<p>\\[${uploadedFile.name}\\]</p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
 			}
-		} 
+		}
+
 		const formData = new FormData();
 		formData.append("name", data.name);
 		formData.append("repo", data.repo.toString());

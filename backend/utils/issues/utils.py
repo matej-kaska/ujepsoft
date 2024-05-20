@@ -193,3 +193,9 @@ def insert_div_after_lists(md_content: str) -> str:
     new_lines.append('<div></div>')
 
   return '\n'.join(new_lines)
+
+def remove_file_extenstion_from_name(file_name: str) -> str:
+  """
+  Remove file extension from the name of the file
+  """
+  return file_name[:file_name.rfind('.')] if '.' in file_name else file_name

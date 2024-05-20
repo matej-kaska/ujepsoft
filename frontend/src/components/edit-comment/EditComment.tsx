@@ -86,11 +86,29 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 		resolver: yupResolver(formSchema),
 	});
 
+	const updateBody = (deletedFile: Attachment) => {
+		let text = draftToHtml(convertToRaw(commentEditorState.getCurrentContent()));
+		text = text.replace(new RegExp(`\\n?<p>\\[${deletedFile.name}\\]</p>`, 'g'), "");
+		setValue("body", text);
+		setCommentEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
+	}
+
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
 		setValidate(true);
+
+		let newBody = data.body;
+
+		if (uploadedFiles.length > 0) {
+			for (const uploadedFile of uploadedFiles) {
+				newBody = newBody.replace(new RegExp(`\\n?<p>\\[${uploadedFile.name}\\]</p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+			}
+		}
+
+		console.log(newBody)
+
 		const formData = new FormData();
-		formData.append("body", data.body);
+		formData.append("body", newBody);
 
 		for (const file of files) {
 			formData.append("files", file);
@@ -161,7 +179,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 						/>
 					</Suspense>
 					<p className={`${errors.body ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.body?.message}!</p>
-					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateBody}/>
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>

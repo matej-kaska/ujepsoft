@@ -6,7 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html, remove_files_from_description
+from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html, remove_file_extenstion_from_name, remove_files_from_description
 
 def create_issue(issue, associated_repo, user, repo):
   """
@@ -64,7 +64,7 @@ def create_issue(issue, associated_repo, user, repo):
 
   for file in files:
     IssueFile.objects.create(
-      name=file[0],
+      name=remove_file_extenstion_from_name(file[0]),
       file_type='file',
       remote_url=file[1],
       issue=new_issue
@@ -72,7 +72,7 @@ def create_issue(issue, associated_repo, user, repo):
 
   for image in images:
     IssueFile.objects.create(
-      name=image[0],
+      name=remove_file_extenstion_from_name(image[0]),
       file_type='image',
       remote_url=image[1],
       issue=new_issue
@@ -129,7 +129,7 @@ def create_issue(issue, associated_repo, user, repo):
         
         for file in files:
           CommentFile.objects.create(
-            name=file[0],
+            name=remove_file_extenstion_from_name(file[0]),
             file_type='file',
             remote_url=file[1],
             comment=new_comment
@@ -137,7 +137,7 @@ def create_issue(issue, associated_repo, user, repo):
 
         for image in images:
           CommentFile.objects.create(
-            name=image[0],
+            name=remove_file_extenstion_from_name(image[0]),
             file_type='image',
             remote_url=image[1],
             comment=new_comment
@@ -216,7 +216,7 @@ def update_issue(issue_pk, new_issue, user, repo):
       IssueFile.objects.get(name=file[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
-        name=file[0],
+        name=remove_file_extenstion_from_name(file[0]),
         file_type='file',
         remote_url=file[1],
         issue=updating_issue
@@ -227,7 +227,7 @@ def update_issue(issue_pk, new_issue, user, repo):
       IssueFile.objects.get(name=image[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
-        name=image[0],
+        name=remove_file_extenstion_from_name(image[0]),
         file_type='image',
         remote_url=image[1],
         issue=updating_issue
@@ -316,7 +316,7 @@ def update_comment(comment, associated_issue):
       CommentFile.objects.get(name=file[0], comment=new_comment)
     except CommentFile.DoesNotExist:
       CommentFile.objects.create(
-        name=file[0],
+        name=remove_file_extenstion_from_name(file[0]),
         file_type='file',
         remote_url=file[1],
         comment=new_comment
@@ -327,7 +327,7 @@ def update_comment(comment, associated_issue):
       CommentFile.objects.get(name=image[0], comment=new_comment)
     except CommentFile.DoesNotExist:
       CommentFile.objects.create(
-        name=image[0],
+        name=remove_file_extenstion_from_name(image[0]),
         file_type='image',
         remote_url=image[1],
         comment=new_comment
@@ -378,7 +378,7 @@ def create_comment(comment, associated_issue):
 
   for file in files:
     CommentFile.objects.create(
-      name=file[0],
+      name=remove_file_extenstion_from_name(file[0]),
       file_type='file',
       remote_url=file[1],
       comment=new_comment
@@ -386,7 +386,7 @@ def create_comment(comment, associated_issue):
 
   for image in images:
     CommentFile.objects.create(
-      name=image[0],
+      name=remove_file_extenstion_from_name(image[0]),
       file_type='image',
       remote_url=image[1],
       comment=new_comment
