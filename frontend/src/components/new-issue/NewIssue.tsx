@@ -160,7 +160,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const updateDescription = (deletedFile: Attachment) => {
 		if (!issue) return;
 		let text = draftToHtml(convertToRaw(descriptionEditorState.getCurrentContent()));
-		text = text.replace(new RegExp(`\\n?<p>\\[${deletedFile.name}\\]</p>`, 'g'), "");
+		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), "");
 		setValue("description", text);
 		setDescriptionEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
 	}
@@ -184,7 +184,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 
 		if (uploadedFiles.length > 0) {
 			for (const uploadedFile of uploadedFiles) {
-				data.description = data.description.replace(new RegExp(`\\n?<p>\\[${uploadedFile.name}\\]</p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+				data.description = data.description.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
 			}
 		}
 

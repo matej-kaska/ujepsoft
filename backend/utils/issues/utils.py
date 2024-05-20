@@ -3,9 +3,6 @@ from api.models import Label
 from datetime import datetime,timezone
 import markdown
 
-from api import IMAGES_EXTENSIONS
-from utils import GITHUB_EXTENSIONS
-
 def get_label_names_by_ids(label_ids):
   """
   Get label names by their ids
@@ -99,7 +96,7 @@ def extract_files_from_github(body):
 
     for match in link_pattern.finditer(body):
       link_text, url = match.groups()
-      if any(url.lower().endswith(f".{ext.lower()}") for ext in GITHUB_EXTENSIONS):
+      if (link_text, url) not in images_alts:
         videos_and_files.append((link_text, url))
 
     return images_alts, videos_and_files
@@ -143,14 +140,11 @@ def add_files_to_description(description: str, files) -> str:
   files_description = "\n"
 
   for file in files:
-    extension = file.name.split('.')[-1].lower()
-    if extension in IMAGES_EXTENSIONS:
-      images_description = images_description + f"<img src='{file.file.url}' alt='{file.name}'>\n"
+    #extension = file.name.split('.')[-1].lower()
+    if file.file_type == 'image':
+      images_description = images_description + f"<img src='{file.file.url if file.file else file.remote_url}' alt='{file.name}'>\n"
     else:
-      if file.remote_url:
-        files_description = files_description + f"[{file.name}]({file.remote_url})\n"
-      else:
-        files_description = files_description + f"[{file.name}]({file.file.url})\n"
+      files_description = files_description + f"[{file.name}]({file.file.url if file.file else file.remote_url})\n"
 
   if len(images_description) > 2:
     formatted_description = formatted_description + "<h2>Obrázky:</h2>\n" + images_description

@@ -88,7 +88,8 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 
 	const updateBody = (deletedFile: Attachment) => {
 		let text = draftToHtml(convertToRaw(commentEditorState.getCurrentContent()));
-		text = text.replace(new RegExp(`\\n?<p>\\[${deletedFile.name}\\]</p>`, 'g'), "");
+		console.log(text)
+		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), "");
 		setValue("body", text);
 		setCommentEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
 	}
@@ -101,11 +102,9 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 
 		if (uploadedFiles.length > 0) {
 			for (const uploadedFile of uploadedFiles) {
-				newBody = newBody.replace(new RegExp(`\\n?<p>\\[${uploadedFile.name}\\]</p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+				newBody = newBody.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
 			}
 		}
-
-		console.log(newBody)
 
 		const formData = new FormData();
 		formData.append("body", newBody);
