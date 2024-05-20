@@ -40,6 +40,17 @@
   .body {
     overflow-wrap: anywhere;
     overflow: hidden;
+
+    .file-gh {
+      font-size: small;
+      font-style: italic;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: fit-content;
+      user-select: none;
+      padding: 0.25rem 0.5rem;
+      margin: 1px !important;
+    }
   }
   
   .footer {

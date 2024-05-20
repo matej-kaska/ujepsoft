@@ -24,7 +24,7 @@ export const formatDescription = (description: string, skipParag = false) => {
 };
 
 export const removeFooterFromBody = (body: string) => {
-	const footerRegex = /<p[^>]*>((?!<\/p>).)*<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft<\/h3>((?!<\/p>).)*<\/p>/gs;
+	const footerRegex = /<p class='ujepsoft-wrapper'>[\s\S]*?<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft<\/h3>[\s\S]*?<\/p>/;
 
 	const footerMatch = body.match(footerRegex);
 

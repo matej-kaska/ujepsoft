@@ -56,29 +56,27 @@ def create_issue(issue, associated_repo, user, repo):
   new_body = issue.get('body', '') or ''
 
   if new_body != "":
-    cleaned_body = remove_files_from_description(new_body)
+    cleaned_body = remove_files_from_description(new_body, images, files)
 
     if cleaned_body != new_body:
       new_issue.body = cleaned_body
       new_issue.save()
 
   for file in files:
-    new_issue_file = IssueFile.objects.create(
+    IssueFile.objects.create(
       name=file[0],
       file_type='file',
       remote_url=file[1],
       issue=new_issue
     )
-    new_issue.files.add(new_issue_file)
 
   for image in images:
-    new_issue_file = IssueFile.objects.create(
+    IssueFile.objects.create(
       name=image[0],
       file_type='image',
       remote_url=image[1],
       issue=new_issue
     )
-    new_issue.files.add(new_issue_file)
 
   for reaction_type, count in issue['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -120,25 +118,30 @@ def create_issue(issue, associated_repo, user, repo):
           author_ujepsoft=author_ujepsoft
         )
 
-        images, files = extract_files_from_github(comment.get('body', '') or '')
+        images, files = extract_files_from_github(new_comment.body)
 
+        if new_comment.body != "":
+          cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+          if cleaned_body != new_comment.body:
+            new_comment.body = cleaned_body
+            new_comment.save()
+        
         for file in files:
-          new_comment_file = CommentFile.objects.create(
+          CommentFile.objects.create(
             name=file[0],
             file_type='file',
             remote_url=file[1],
             comment=new_comment
           )
-          new_comment.files.add(new_comment_file)
 
         for image in images:
-          new_comment_image = CommentFile.objects.create(
+          CommentFile.objects.create(
             name=image[0],
             file_type='image',
             remote_url=image[1],
             comment=new_comment
           )
-          new_comment.files.add(new_comment_image)
       
       for reaction_type, count in comment['reactions'].items():
         if reaction_type in ['url', 'total_count'] or count == 0:
@@ -196,7 +199,7 @@ def update_issue(issue_pk, new_issue, user, repo):
   images, files = extract_files_from_github(new_issue.get('body', '') or '')
 
   if updating_issue.body != "":
-    cleaned_body = remove_files_from_description(updating_issue.body)
+    cleaned_body = remove_files_from_description(updating_issue.body, images, files)
 
     if cleaned_body != updating_issue.body:
       updating_issue.body = cleaned_body
@@ -290,8 +293,45 @@ def update_comment(comment, associated_issue):
     new_comment.body = markdown_to_html(comment['body'])
   else:
     new_comment.body = comment['body']
-  
+
+  images, files = extract_files_from_github(new_comment.body or '')
+
+  if new_comment.body != "":
+    cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+    if cleaned_body != new_comment.body:
+      new_comment.body = cleaned_body
+      new_comment.save()
+
   new_comment.save()
+
+  # Delete old files
+  old_files = CommentFile.objects.filter(comment=new_comment)
+  for old_file in old_files:
+    if old_file.name not in [file[0] for file in files]:
+      old_file.delete()
+
+  for file in files:
+    try:
+      CommentFile.objects.get(name=file[0], comment=new_comment)
+    except CommentFile.DoesNotExist:
+      CommentFile.objects.create(
+        name=file[0],
+        file_type='file',
+        remote_url=file[1],
+        comment=new_comment
+      )
+
+  for image in images:
+    try:
+      CommentFile.objects.get(name=image[0], comment=new_comment)
+    except CommentFile.DoesNotExist:
+      CommentFile.objects.create(
+        name=image[0],
+        file_type='image',
+        remote_url=image[1],
+        comment=new_comment
+      )
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -326,6 +366,31 @@ def create_comment(comment, associated_issue):
     updated_at=comment['updated_at'],
     author_ujepsoft=author_ujepsoft
   )
+
+  images, files = extract_files_from_github(new_comment.body or '')
+
+  if new_comment.body != "":
+    cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+    if cleaned_body != new_comment.body:
+      new_comment.body = cleaned_body
+      new_comment.save()
+
+  for file in files:
+    CommentFile.objects.create(
+      name=file[0],
+      file_type='file',
+      remote_url=file[1],
+      comment=new_comment
+    )
+
+  for image in images:
+    CommentFile.objects.create(
+      name=image[0],
+      file_type='image',
+      remote_url=image[1],
+      comment=new_comment
+    )
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:

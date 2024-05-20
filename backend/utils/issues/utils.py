@@ -104,19 +104,17 @@ def extract_files_from_github(body):
 
     return images_alts, videos_and_files
 
-def remove_files_from_description(description: str) -> str:
+def remove_files_from_description(description: str, images_alts, videos_and_files) -> str:
   """
   Remove Images and Files from the issue/comment description/body
   """
   if not description:
     return ""
-  
-  images_alts, videos_and_files = extract_files_from_github(description)
 
   for alt_text, url in images_alts:
-    description = description.replace(f"![{alt_text}]({url})", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>")
-    description = re.sub(rf"<img[^>]*src=['\"]{re.escape(url)}['\"][^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>", description, flags=re.IGNORECASE)
-    description = re.sub(rf"<img[^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*src=['\"]{re.escape(url)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>{alt_text}</p>", description, flags=re.IGNORECASE)
+    description = description.replace(f"![{alt_text}]({url})", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>")
+    description = re.sub(rf"<img[^>]*src=['\"]{re.escape(url)}['\"][^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>", description, flags=re.IGNORECASE)
+    description = re.sub(rf"<img[^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*src=['\"]{re.escape(url)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>", description, flags=re.IGNORECASE)
 
   for link_text, url in videos_and_files:
     description = description.replace(f"[{link_text}]({url})", f"<p class='file-gh' title='Soubor'>{link_text}</p>")

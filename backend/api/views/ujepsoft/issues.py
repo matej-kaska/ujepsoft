@@ -187,7 +187,7 @@ class IssueCreate(APIView):
       issue_files.append(new_issue_file)
 
     # Format description
-    description = description + "\n<p>"
+    description = description + "\n<p class='ujepsoft-wrapper'>"
     
     description = add_files_to_description(description, issue_files)
     description = add_ujepsoft_author(description, request.user.email)
@@ -412,7 +412,7 @@ class IssueDetail(APIView):
       issue_files.append(new_file)
     
     # Format description
-    description = description + "\n<p>"
+    description = description + "\n<p class='ujepsoft-wrapper'>"
     
     description = add_files_to_description(description, issue_files)
     description = add_ujepsoft_author(description, request.user.email)
@@ -511,7 +511,7 @@ class IssueAddComment(APIView):
       comment_files.append(new_file)
 
     # Format description
-    description = comment_body + "\n<p>"
+    description = comment_body + "\n<p class='ujepsoft-wrapper'>"
     
     description = add_files_to_description(description, comment_files)
     description = add_ujepsoft_author(description, request.user.email)
@@ -617,7 +617,7 @@ class EditComment(APIView):
       comment_files.append(comment_file)
 
     # Format description
-    description = body + "\n<p>"
+    description = body + "\n<p class='ujepsoft-wrapper'>"
 
     description = add_files_to_description(description, comment_files)
     description = add_ujepsoft_author(description, request.user.email)

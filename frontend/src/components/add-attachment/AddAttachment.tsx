@@ -46,18 +46,18 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 	};
 
 	const addFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target;
-    if (!input.files) return;
-    const file = input.files[0];
-    if (!file) return;
-    if (!validateSize(file)) {
+		const input = e.target;
+		if (!input.files) return;
+		const file = input.files[0];
+		if (!file) return;
+		if (!validateSize(file)) {
 			input.value = "";
 			return;
-    }
-    setFiles((prev: File[]) => {
+		}
+		setFiles((prev: File[]) => {
 			return [...prev, file];
-    });
-    input.value = "";
+		});
+		input.value = "";
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLSpanElement>) => {

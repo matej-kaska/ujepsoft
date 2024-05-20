@@ -1,3 +1,4 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
@@ -6,6 +7,7 @@ import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { useEffect, useLayoutEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,14 +16,12 @@ import { RootState } from "redux/store";
 import { Attachment, Offer } from "types/offer";
 import { descriptionSchema, offerKeywordsSchema, offerNameSchema } from "utils/validationSchemas";
 import { object } from "yup";
-import { yupResolver } from '@hookform/resolvers/yup';
 import "/src/static/react-draft-wysiwyg.css";
 import { useModal } from "../../contexts/ModalProvider";
 import { ReactComponent as CloseIcon } from "../../images/close.svg";
 import axiosRequest from "../../utils/axios";
-import React, { Suspense } from 'react';
 
-const WysiwygEditor = React.lazy(() => import('react-draft-wysiwyg').then(module => ({ default: module.Editor })));
+const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
 type Form = {
 	name: string;

@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { string, boolean, array, number } from "yup";
+import { array, boolean, number, string } from "yup";
 
 export const emailSchema = string()
 	.required("Toto pole je povinné")

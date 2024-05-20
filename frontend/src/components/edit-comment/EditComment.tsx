@@ -8,6 +8,7 @@ import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { useEffect, useLayoutEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
@@ -19,9 +20,8 @@ import { removeFooterFromBody } from "utils/plainTextToHtml";
 import { commentSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import React, { Suspense } from 'react';
 
-const WysiwygEditor = React.lazy(() => import('react-draft-wysiwyg').then(module => ({ default: module.Editor })));
+const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
 type Form = {
 	body: string;

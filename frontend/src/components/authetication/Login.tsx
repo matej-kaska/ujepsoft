@@ -2,16 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import PasswordReset from "components/password-reset/PasswordReset";
+import { useModal } from "contexts/ModalProvider";
+import { useSnackbar } from "contexts/SnackbarProvider";
 import { useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { object } from "yup";
-import { useModal } from "contexts/ModalProvider";
-import { useSnackbar } from "contexts/SnackbarProvider";
 import { setToken, setUser } from "redux/authSlice";
 import { TUserInfo } from "types/userInfo";
 import axiosRequest from "utils/axios";
 import { emailSchema, passwordSchema } from "utils/validationSchemas";
+import { object } from "yup";
 import Register from "./Register";
 
 type Form = {
@@ -42,9 +42,7 @@ const Login = ({ token }: LoginProps) => {
 	}, []);
 
 	const validateToken = async () => {
-		const response = await axiosRequest("POST", "/api/users/register/validate",
-			{ token: token }
-		);
+		const response = await axiosRequest("POST", "/api/users/register/validate", { token: token });
 		if (!response.success) {
 			openErrorSnackbar(response.message.cz);
 			console.error("Error validating token:", response.message.cz);
@@ -57,7 +55,7 @@ const Login = ({ token }: LoginProps) => {
 
 	const formSchema = object().shape({
 		email: emailSchema,
-		password: passwordSchema
+		password: passwordSchema,
 	});
 
 	const {
@@ -70,9 +68,7 @@ const Login = ({ token }: LoginProps) => {
 	});
 
 	const handleLogin = async (data: Form) => {
-		const response = await axiosRequest<LoginResponse>("POST", "/api/users/auth/token",
-			{ email: data.email, password: data.password }
-		);
+		const response = await axiosRequest<LoginResponse>("POST", "/api/users/auth/token", { email: data.email, password: data.password });
 		if (!response.success) {
 			if (response.message.en.includes("Invalid")) {
 				setError("password", { type: "user", message: "Nesprávný e-mail nebo heslo" });
@@ -131,7 +127,9 @@ const Login = ({ token }: LoginProps) => {
 						<Button color="secondary" type="button" onClick={() => showModal(<Register />)}>
 							Zaregistrovat se
 						</Button>
-						<Button type="submit" color="accent">Přihlásit se</Button>
+						<Button type="submit" color="accent">
+							Přihlásit se
+						</Button>
 					</div>
 				</>
 			)}

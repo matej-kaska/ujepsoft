@@ -11,6 +11,7 @@ import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import { useEffect, useLayoutEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +26,8 @@ import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import React, { Suspense } from 'react';
 
-const WysiwygEditor = React.lazy(() => import('react-draft-wysiwyg').then(module => ({ default: module.Editor })));
+const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
 type Form = {
 	name: string;
@@ -191,7 +191,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
-		console.log(issue);
+
 		if (issue) {
 			const response = await axiosRequest("PUT", `/api/issue/${issue.id}`, formData);
 			if (!response.success) {
