@@ -157,6 +157,14 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		setLabels(updatedLabels);
 	};
 
+	const updateDescription = (deletedFile: Attachment) => {
+		if (!issue) return;
+		let text = draftToHtml(convertToRaw(descriptionEditorState.getCurrentContent()));
+		text = text.replace(`\n<p>[${deletedFile.name}]</p>`, "");
+		setValue("description", text);
+		setDescriptionEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
+	}
+
 	const getRepos = async () => {
 		const response = await axiosRequest<RepoSelect[]>("GET", "/api/repo/list/small");
 		if (!response.success) {
@@ -311,7 +319,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						/>
 					</Suspense>
 					<p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
-					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateDescription}/>
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>

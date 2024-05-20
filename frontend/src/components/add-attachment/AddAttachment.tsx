@@ -7,9 +7,10 @@ type AddAttachmentProps = {
 	setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 	uploadedFiles?: Attachment[];
 	setUploadedFiles?: React.Dispatch<React.SetStateAction<Attachment[]>>;
+	updateDescription?: (deletedFile: Attachment) => void;
 };
 
-const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: AddAttachmentProps) => {
+const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles, updateDescription }: AddAttachmentProps) => {
 	const { openErrorSnackbar } = useSnackbar();
 
 	const onFileCloseButtonClick = (index: number) => {
@@ -19,10 +20,12 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 	};
 
 	const onUploadedFileCloseButtonClick = (index: number) => {
-		if (!setUploadedFiles) return;
+		if (!setUploadedFiles || !uploadedFiles) return;
+		const deletedFile = uploadedFiles[index];
 		setUploadedFiles((prev: Attachment[]) => {
 			return prev.filter((_file: Attachment, fileIndex: number) => fileIndex !== index);
 		});
+		if (updateDescription) updateDescription(deletedFile);
 	};
 
 	const validateSize = (file: File) => {
