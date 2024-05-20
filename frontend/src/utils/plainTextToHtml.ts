@@ -13,7 +13,7 @@ export const formatDescription = (description: string, skipParag = false) => {
 	return linkify(
 		newDescription
 			.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-			.replace(/<p>(?!\s*class="file-gh"|class='file-gh')[^<]*<\/p>/g, "<br>")
+			.replace(/<p>\s?<\/p>/g, "<br>")
 			.replace(/<em>/g, "<i>")
 			.replace(/<\/em>/g, "</i>")
 			.replace(/\\"/g, '"')
