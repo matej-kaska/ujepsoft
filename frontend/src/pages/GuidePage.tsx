@@ -2,6 +2,7 @@ import Administration from "components/guides/Administration";
 import CreateOfferGuide from "components/guides/CreateOfferGuide";
 import LookAtIssues from "components/guides/LookAtIssues";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
+import ScreenshotGuideMacOS from "components/guides/ScreenshotGuideMacOS";
 import Navbar from "components/navbar/Navbar";
 
 const GuidePage = () => {
@@ -10,6 +11,7 @@ const GuidePage = () => {
 	guides.push(<CreateOfferGuide />);
 	guides.push(<LookAtIssues />);
 	guides.push(<ScreenshotGuide />);
+	guides.push(<ScreenshotGuideMacOS />);
 
 	return (
 		<>
