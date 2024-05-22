@@ -1,5 +1,5 @@
 import datetime
-from api.models import Comment, CommentFile, Issue, IssueFile, Label, ReactionsComment, ReactionsIssue
+from api.models import Comment, CommentFile, Issue, IssueFile, Label
 from api.serializers.serializers import IssueFullSerializer, IssueSerializer
 from api.services import GitHubAPIService
 import json
@@ -78,20 +78,6 @@ def create_issue(issue, associated_repo, user, repo):
       issue=new_issue
     )
 
-  for reaction_type, count in issue['reactions'].items():
-    if reaction_type in ['url', 'total_count'] or count == 0:
-      continue
-
-    reaction_obj, created = ReactionsIssue.objects.get_or_create(
-      name=reaction_type, 
-      issue=new_issue,
-      defaults={'count': count}
-    )
-
-    if not created:
-      reaction_obj.count = count
-      reaction_obj.save()
-
   if issue['comments'] > 0:
     issue_comments = GitHubAPIService.get_issue_comments(user, repo, issue['number'])
     for comment in issue_comments:
@@ -142,20 +128,6 @@ def create_issue(issue, associated_repo, user, repo):
             remote_url=image[1],
             comment=new_comment
           )
-      
-      for reaction_type, count in comment['reactions'].items():
-        if reaction_type in ['url', 'total_count'] or count == 0:
-          continue
-
-        reaction_obj, created = ReactionsComment.objects.get_or_create(
-          name=reaction_type, 
-          comment=new_comment,
-          defaults={'count': count}
-        )
-
-        if not created:
-          reaction_obj.count = count
-          reaction_obj.save()
 
   issue_serializer = IssueSerializer(new_issue)
   cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
@@ -232,21 +204,6 @@ def update_issue(issue_pk, new_issue, user, repo):
         remote_url=image[1],
         issue=updating_issue
       )
-
-  for reaction_type, count in new_issue['reactions'].items():
-    if reaction_type in ['url', 'total_count'] or count == 0:
-      continue
-
-    reaction_obj, created = ReactionsIssue.objects.get_or_create(
-      name=reaction_type, 
-      issue=updating_issue,
-      defaults={'count': count}
-    )
-
-    if not created:
-      reaction_obj.count = count
-      reaction_obj.save()
-
 
   fetched_comments = GitHubAPIService.get_issue_comments(user, repo, new_issue['number'])
 
@@ -332,20 +289,6 @@ def update_comment(comment, associated_issue):
         remote_url=image[1],
         comment=new_comment
       )
-  
-  for reaction_type, count in comment['reactions'].items():
-    if reaction_type in ['url', 'total_count'] or count == 0:
-      continue
-
-    reaction_obj, created = ReactionsComment.objects.get_or_create(
-      name=reaction_type, 
-      comment=new_comment,
-      defaults={'count': count}
-    )
-
-    if not created:
-      reaction_obj.count = count
-      reaction_obj.save()
 
 def create_comment(comment, associated_issue):
   """
@@ -391,17 +334,3 @@ def create_comment(comment, associated_issue):
       remote_url=image[1],
       comment=new_comment
     )
-  
-  for reaction_type, count in comment['reactions'].items():
-    if reaction_type in ['url', 'total_count'] or count == 0:
-      continue
-
-    reaction_obj, created = ReactionsComment.objects.get_or_create(
-      name=reaction_type, 
-      comment=new_comment,
-      defaults={'count': count}
-    )
-
-    if not created:
-      reaction_obj.count = count
-      reaction_obj.save()

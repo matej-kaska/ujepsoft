@@ -42,7 +42,6 @@ export type FullIssue = {
 	files: Attachment[];
 	created_at: string;
 	updated_at: string;
-	reactions: Reaction[];
 };
 
 export type Comment = {
@@ -53,11 +52,6 @@ export type Comment = {
 	created_at: string;
 	updated_at: string;
 	id: number;
-	reactions: Reaction[];
 	files: Attachment[];
 	number: number;
-};
-
-export type Reaction = {
-	[key: string]: number;
 };

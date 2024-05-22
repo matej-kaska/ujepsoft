@@ -1,7 +1,7 @@
 from utils.issues.utils import get_label_names_by_ids
 from users.serializers.serializers import UserPublicSerializer
 from rest_framework import serializers
-from api.models import IssueFile, Offer, Keyword, OfferFile, Repo, Issue, Comment, ReactionsIssue, ReactionsComment
+from api.models import IssueFile, Offer, Keyword, OfferFile, Repo, Issue, Comment
 
 class KeywordSerializer(serializers.ModelSerializer):
   class Meta:
@@ -36,35 +36,25 @@ class RepoForIssueSerializer(serializers.ModelSerializer):
     fields = ['id', 'name', 'author']
   
 class CommentFullSerializer(serializers.ModelSerializer):
-  reactions = serializers.SerializerMethodField()
   files = FileIssueSerializer(many=True, read_only=True)
 
   class Meta:
     model = Comment
-    fields = ['id', 'number', 'body', 'author','author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'reactions']
+    fields = ['id', 'number', 'body', 'author','author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at']
 
-  def get_reactions(self, obj):
-    reactions = ReactionsComment.objects.filter(comment=obj)
-    return {reaction.name: reaction.count for reaction in reactions}
-
-# Issue serializer with comments and reactions count
+# Issue serializer with comments
 class IssueFullSerializer(serializers.ModelSerializer):
   labels = serializers.SerializerMethodField()
-  reactions = serializers.SerializerMethodField()
   comments = CommentFullSerializer(many=True, read_only=True)
   files = FileIssueSerializer(many=True, read_only=True)
   repo = RepoForIssueSerializer()
 
   class Meta:
     model = Issue
-    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'reactions', 'comments', 'repo']
+    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'comments', 'repo']
 
   def get_labels(self, obj):
     return [label.name for label in obj.labels.all()]
-
-  def get_reactions(self, obj):
-    reactions = ReactionsIssue.objects.filter(issue=obj)
-    return {reaction.name: reaction.count for reaction in reactions}
   
 class RepoFullSerializer(serializers.ModelSerializer):
   issues = IssueFullSerializer(many=True, read_only=True)

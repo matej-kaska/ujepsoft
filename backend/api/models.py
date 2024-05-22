@@ -98,28 +98,6 @@ class Comment(models.Model):
   def __repr__(self):
     return f"[{self.pk}] {self.number}"
 
-class ReactionsIssue(models.Model):
-  name = models.CharField(max_length=63)
-  count = models.IntegerField()
-  issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='reactions_issue')
-
-  def __str__(self):
-    return repr(self)
-  
-  def __repr__(self):
-    return f"[{self.pk}] {self.name}"
-
-class ReactionsComment(models.Model):
-  name = models.CharField(max_length=63)
-  count = models.IntegerField()
-  comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='reactions_comment')
-
-  def __str__(self):
-    return repr(self)
-  
-  def __repr__(self):
-    return f"[{self.pk}] {self.name}"
-  
 class IssueFile(models.Model):
   name = models.CharField(max_length=255)
   file = models.FileField(upload_to='issue_files')
