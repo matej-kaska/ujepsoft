@@ -6,6 +6,7 @@ import modalReducer from "./modalSlice";
 import navigateSlice from "./navigateSlice";
 import reloadSlice from "./reloadSlice";
 import snackbarReducer from "./snackbarSlice";
+import settingsSlice from "./settingsSlice";
 
 const rootReducers = combineReducers({
 	auth: authReducer,
@@ -14,6 +15,7 @@ const rootReducers = combineReducers({
 	snackbar: snackbarReducer,
 	navigator: navigateSlice,
 	reload: reloadSlice,
+	settings: settingsSlice
 });
 
 export const store = configureStore({
@@ -24,9 +26,8 @@ export const store = configureStore({
 		}).concat(errorHandlingMiddleware),
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+
 export type AppDispatch = typeof store.dispatch;
 
 export const persistedStore = persistStore(store);
