@@ -12,7 +12,7 @@ const LookAtIssues = () => {
 						Na stránce <a href="/issues">Pohledávky</a> se objeví pole viz obrázek.
 					</li>{" "}
 					<div className="image">
-						<img src="/src/images/guides/issues.png" alt="issues" />
+						<img src="/src/images/guides/issues.webp" alt="issues" />
 						<ul>
 							<strong>1</strong> &rarr; Název pohledávky/issue.
 						</ul>

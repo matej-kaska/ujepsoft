@@ -12,7 +12,7 @@ const ScreenshotGuide = () => {
 					<li>Napište do vyhledávácího pole &quot;Výstřižky&quot;</li>
 					<li>Zapněte program Výstřižky</li>
 					<div className="image">
-						<img src="/src/images/guides/screenshot.png" alt="screenshot" />
+						<img src="/src/images/guides/screenshot.webp" alt="screenshot" />
 						<p>Klikněte na &quot;+ Nový&quot;</p>
 					</div>
 					<li>Vyberte oblast, kterou chcete zachytit</li>

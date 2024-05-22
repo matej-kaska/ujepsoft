@@ -12,12 +12,12 @@ const CreateOfferGuide = () => {
 						Na úvodní stránce <a href="/">Ujepsoft</a>
 					</li>
 					<div className="image">
-						<img src="/src/images/guides/createoffer1.png" alt="createoffer1" />
+						<img src="/src/images/guides/createoffer1.webp" alt="createoffer1" />
 						Klikněte na tlačítko &quot;+ Přidat nabídku&quot;
 					</div>
 					<li>Objeví se tabulka pro vyplnění nabídky</li>
 					<div className="image">
-						<img src="/src/images/guides/createoffer2.png" alt="createoffer2" />
+						<img src="/src/images/guides/createoffer2.webp" alt="createoffer2" />
 						<ul>
 							<strong>1</strong> &rarr; Název nabídky
 							<i> (&quot;Aplikace pro zjištění počasí&quot;)</i>. Nutno vyplnit!

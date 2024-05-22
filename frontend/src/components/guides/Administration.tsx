@@ -12,7 +12,7 @@ const Administration = () => {
 						Na stránce <a href="/repo-administration">Administrace</a> se objeví pole &quot;Přidat nový repozitář&quot;.
 					</li>{" "}
 					<div className="image">
-						<img src="/src/images/guides/administration.png" alt="administration" />
+						<img src="/src/images/guides/administration.webp" alt="administration" />
 						<ul>
 							<strong>1</strong> &rarr; Vkládá se zde odkaz na GitHub repozitář ve formátu viz obrázek.
 						</ul>
@@ -28,7 +28,7 @@ const Administration = () => {
 						objeví se chybová hláška <i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
 					</li>
 					<div className="image">
-						<img src="/src/images/guides/administration2.png" alt="administration" />
+						<img src="/src/images/guides/administration2.webp" alt="administration" />
 					</div>
 				</ol>
 			)}
