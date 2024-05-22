@@ -9,26 +9,42 @@ const Administration = () => {
 			{open && (
 				<ol>
 					<li>
-						Na stránce <a href="/repo-administration">Administrace</a> se objeví pole &quot;Přidat nový repozitář&quot;.
+						Na stránce <a href="/repo-administration">Administrace</a> se objeví
+						pole &quot;Přidat nový repozitář&quot;.
 					</li>{" "}
 					<div className="image">
-						<img src="/src/images/guides/administration.webp" alt="administration" />
+						<img
+							src="/src/images/guides/administration.webp"
+							alt="administration"
+						/>
 						<ul>
-							<strong>1</strong> &rarr; Vkládá se zde odkaz na GitHub repozitář ve formátu viz obrázek.
+							<strong>1</strong> &rarr; Vkládá se zde odkaz na GitHub repozitář
+							ve formátu viz obrázek.
 						</ul>
 						<ul>
-							<strong>2</strong> &rarr; &quot;URL odkaz&quot; slouží pro přesun na oficiální stránku repozitáře na GitHubu.
+							<strong>2</strong> &rarr; Tlačítko pro přidání daného repozitáře.
 						</ul>
 						<ul>
-							<strong>3</strong> &rarr; &quot;X&quot; slouží pro odebrání příslušného repozitáře ze seznamu. Dojde i k odebrání repozitáře na GitHubu!
+							<strong>3</strong> &rarr; &quot;URL odkaz&quot; slouží pro přesun
+							na oficiální stránku repozitáře na GitHubu.
+						</ul>
+						<ul>
+							<strong>4</strong> &rarr; &quot;X&quot; slouží pro odebrání
+							příslušného repozitáře ze seznamu. Dojde i k odebrání repozitáře
+							na GitHubu!
 						</ul>
 					</div>
 					<li>
-						Pokud je vložen nesprávný odkaz nebo nejste kolaborantem v repozitáři, <p />
-						objeví se chybová hláška <i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
+						Pokud je vložen nesprávný odkaz nebo nejste kolaborantem v
+						repozitáři, <p />
+						objeví se chybová hláška{" "}
+						<i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
 					</li>
 					<div className="image">
-						<img src="/src/images/guides/administration2.webp" alt="administration" />
+						<img
+							src="/src/images/guides/administration2.webp"
+							alt="administration"
+						/>
 					</div>
 				</ol>
 			)}
