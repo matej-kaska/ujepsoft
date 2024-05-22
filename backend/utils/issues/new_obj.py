@@ -6,9 +6,12 @@ import json
 import os
 from django.core.cache import cache
 
-from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html
+from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html, remove_file_extenstion_from_name, remove_files_from_description
 
 def create_issue(issue, associated_repo, user, repo):
+  """
+  Create issue object with all related objects
+  """
   try:
     new_issue = Issue.objects.get(number=issue['number'], repo=associated_repo)
   except Issue.DoesNotExist:
@@ -50,23 +53,30 @@ def create_issue(issue, associated_repo, user, repo):
 
   images, files = extract_files_from_github(raw_body or '')
 
+  new_body = issue.get('body', '') or ''
+
+  if new_body != "":
+    cleaned_body = remove_files_from_description(new_body, images, files)
+
+    if cleaned_body != new_body:
+      new_issue.body = cleaned_body
+      new_issue.save()
+
   for file in files:
-    new_issue_file = IssueFile.objects.create(
-      name=file[0],
+    IssueFile.objects.create(
+      name=remove_file_extenstion_from_name(file[0]),
       file_type='file',
       remote_url=file[1],
       issue=new_issue
     )
-    new_issue.files.add(new_issue_file)
 
   for image in images:
-    new_issue_file = IssueFile.objects.create(
-      name=image[0],
+    IssueFile.objects.create(
+      name=remove_file_extenstion_from_name(image[0]),
       file_type='image',
       remote_url=image[1],
       issue=new_issue
     )
-    new_issue.files.add(new_issue_file)
 
   for reaction_type, count in issue['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -108,25 +118,30 @@ def create_issue(issue, associated_repo, user, repo):
           author_ujepsoft=author_ujepsoft
         )
 
-        images, files = extract_files_from_github(comment.get('body', '') or '')
+        images, files = extract_files_from_github(new_comment.body)
 
+        if new_comment.body != "":
+          cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+          if cleaned_body != new_comment.body:
+            new_comment.body = cleaned_body
+            new_comment.save()
+        
         for file in files:
-          new_comment_file = CommentFile.objects.create(
-            name=file[0],
+          CommentFile.objects.create(
+            name=remove_file_extenstion_from_name(file[0]),
             file_type='file',
             remote_url=file[1],
             comment=new_comment
           )
-          new_comment.files.add(new_comment_file)
 
         for image in images:
-          new_comment_image = CommentFile.objects.create(
-            name=image[0],
+          CommentFile.objects.create(
+            name=remove_file_extenstion_from_name(image[0]),
             file_type='image',
             remote_url=image[1],
             comment=new_comment
           )
-          new_comment.files.add(new_comment_image)
       
       for reaction_type, count in comment['reactions'].items():
         if reaction_type in ['url', 'total_count'] or count == 0:
@@ -149,6 +164,9 @@ def create_issue(issue, associated_repo, user, repo):
   cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
 def update_issue(issue_pk, new_issue, user, repo):
+  """
+  Update issue object with all related objects
+  """
   try:
     updating_issue = Issue.objects.get(pk=issue_pk)
   except Issue.DoesNotExist:
@@ -180,6 +198,13 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   images, files = extract_files_from_github(new_issue.get('body', '') or '')
 
+  if updating_issue.body != "":
+    cleaned_body = remove_files_from_description(updating_issue.body, images, files)
+
+    if cleaned_body != updating_issue.body:
+      updating_issue.body = cleaned_body
+      updating_issue.save()
+
   # Delete old files
   old_files = IssueFile.objects.filter(issue=updating_issue)
   for old_file in old_files:
@@ -188,10 +213,10 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for file in files:
     try:
-      IssueFile.objects.get(name=file[0], remote_url=file[1])
+      IssueFile.objects.get(name=file[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
-        name=file[0],
+        name=remove_file_extenstion_from_name(file[0]),
         file_type='file',
         remote_url=file[1],
         issue=updating_issue
@@ -199,10 +224,10 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for image in images:
     try:
-      IssueFile.objects.get(name=image[0], remote_url=image[1])
+      IssueFile.objects.get(name=image[0], issue=updating_issue)
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
-        name=image[0],
+        name=remove_file_extenstion_from_name(image[0]),
         file_type='image',
         remote_url=image[1],
         issue=updating_issue
@@ -254,27 +279,59 @@ def update_issue(issue_pk, new_issue, user, repo):
   issue_full_serializer = IssueFullSerializer(updating_issue)
   cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
 
-  return issue_full_serializer.data
+  return updating_issue
 
 def update_comment(comment, associated_issue):
+  """
+  Update comment object
+  """
   new_comment = Comment.objects.get(number=comment['id'], issue=associated_issue)
   new_comment.updated_at = comment['updated_at']
   new_comment.author_profile_pic=comment['user']['avatar_url']
-
-  # TODO: DELETE THIS
-  if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
-    author_ujepsoft = get_ujepsoft_author(comment['body'])
-  else:
-    author_ujepsoft = ""
-
-  new_comment.author_ujepsoft = author_ujepsoft
   
   if not get_ujepsoft_author(comment['body']) and comment.get('body', ''):
     new_comment.body = markdown_to_html(comment['body'])
   else:
     new_comment.body = comment['body']
-  
+
+  images, files = extract_files_from_github(new_comment.body or '')
+
+  if new_comment.body != "":
+    cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+    if cleaned_body != new_comment.body:
+      new_comment.body = cleaned_body
+      new_comment.save()
+
   new_comment.save()
+
+  # Delete old files
+  old_files = CommentFile.objects.filter(comment=new_comment)
+  for old_file in old_files:
+    if old_file.name not in [file[0] for file in files]:
+      old_file.delete()
+
+  for file in files:
+    try:
+      CommentFile.objects.get(name=file[0], comment=new_comment)
+    except CommentFile.DoesNotExist:
+      CommentFile.objects.create(
+        name=remove_file_extenstion_from_name(file[0]),
+        file_type='file',
+        remote_url=file[1],
+        comment=new_comment
+      )
+
+  for image in images:
+    try:
+      CommentFile.objects.get(name=image[0], comment=new_comment)
+    except CommentFile.DoesNotExist:
+      CommentFile.objects.create(
+        name=remove_file_extenstion_from_name(image[0]),
+        file_type='image',
+        remote_url=image[1],
+        comment=new_comment
+      )
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:
@@ -291,7 +348,9 @@ def update_comment(comment, associated_issue):
       reaction_obj.save()
 
 def create_comment(comment, associated_issue):
-
+  """
+  Create comment object
+  """
   if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
     author_ujepsoft = get_ujepsoft_author(comment['body'])
   else:
@@ -308,7 +367,30 @@ def create_comment(comment, associated_issue):
     author_ujepsoft=author_ujepsoft
   )
 
-  # TODO: Add author_ujepsoft
+  images, files = extract_files_from_github(new_comment.body or '')
+
+  if new_comment.body != "":
+    cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+    if cleaned_body != new_comment.body:
+      new_comment.body = cleaned_body
+      new_comment.save()
+
+  for file in files:
+    CommentFile.objects.create(
+      name=remove_file_extenstion_from_name(file[0]),
+      file_type='file',
+      remote_url=file[1],
+      comment=new_comment
+    )
+
+  for image in images:
+    CommentFile.objects.create(
+      name=remove_file_extenstion_from_name(image[0]),
+      file_type='image',
+      remote_url=image[1],
+      comment=new_comment
+    )
   
   for reaction_type, count in comment['reactions'].items():
     if reaction_type in ['url', 'total_count'] or count == 0:

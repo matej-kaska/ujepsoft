@@ -7,28 +7,29 @@ import Navbar from "components/navbar/Navbar";
 import NewOffer from "components/new-offer/NewOffer";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { Offer } from "types/offer";
-import axios from "utils/axios";
+import axiosRequest from "utils/axios";
 import { formatDescription } from "utils/plainTextToHtml";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
 
 const OfferPage = () => {
 	const { id } = useParams();
-	const { showModal, closeModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const dispatch = useDispatch();
-	const reload = useSelector((state: any) => state.reload);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [offer, setOffer] = useState<Offer>({} as Offer);
 	const navigate = useNavigate();
+	const { showModal, closeModal } = useModal();
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const reload = useSelector((state: RootState) => state.reload);
+	const [offer, setOffer] = useState<Offer>({} as Offer);
+	const [loading, setLoading] = useState<boolean>(true);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		getOffer();
 	}, [id]);
 
@@ -40,26 +41,27 @@ const OfferPage = () => {
 
 	const getOffer = async () => {
 		setLoading(true);
-		try {
-			const response = await axios.get(`/api/offer/${id}`);
-			if (!response.data) return;
-			setOffer(response.data);
-			setLoading(false);
-		} catch {
+		const response = await axiosRequest<Offer>("GET", `/api/offer/${id}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error getting offer:", response.message.cz);
 			navigate("/");
+			return;
 		}
+		setOffer(response.data);
+		setLoading(false);
 	};
 
 	const removeOffer = async () => {
 		closeModal();
-		try {
-			await axios.delete(`/api/offer/${id}`);
-			openSnackbar("Nabídka byla úspěšně smazána!");
-			navigate("/");
-		} catch (error) {
-			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-			console.error("Error deleting offer:", error);
+		const response = await axiosRequest("DELETE", `/api/offer/${id}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error deleting offer:", response.message.cz);
+			return;
 		}
+		openSuccessSnackbar("Nabídka byla úspěšně smazána!");
+		navigate("/");
 	};
 
 	return (
@@ -73,7 +75,7 @@ const OfferPage = () => {
 						<header>
 							<div className="header-buttons">
 								<h1>{offer.name}</h1>
-								{(userInfo.is_staff || userInfo.id === offer.author.id) && (
+								{(userInfo.is_staff || Number(userInfo.id) === offer.author.id) && (
 									<>
 										<EditIcon className="edit-icon" onClick={() => showModal(<NewOffer offer={offer} />)} />
 										<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)} />

@@ -24,15 +24,13 @@ export const formatDescription = (description: string, skipParag = false) => {
 };
 
 export const removeFooterFromBody = (body: string) => {
-	let new_body = body.replace(/!\[.*?\]\(.*?\)/g, "").replace(/\[.*?\]\(.*?\)/g, "");
+	const footerRegex = /<p class='ujepsoft-wrapper'>[\s\S]*?<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft<\/h3>[\s\S]*?<\/p>/;
 
-	const lastPClose = new_body.lastIndexOf("</p>");
-	if (lastPClose === -1) return new_body;
+	const footerMatch = body.match(footerRegex);
 
-	const lastPOpen = new_body.substring(0, lastPClose).lastIndexOf("<p");
-	if (lastPOpen === -1) return new_body;
+	if (footerMatch) {
+		return body.replace(footerRegex, "");
+	}
 
-	new_body = new_body.substring(0, lastPOpen) + new_body.substring(lastPClose + 4);
-
-	return new_body;
+	return body;
 };

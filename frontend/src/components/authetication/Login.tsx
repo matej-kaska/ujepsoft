@@ -2,16 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import PasswordReset from "components/password-reset/PasswordReset";
-import { useEffect, useState } from "react";
+import { useModal } from "contexts/ModalProvider";
+import { useSnackbar } from "contexts/SnackbarProvider";
+import { useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import * as yup from "yup";
-import { useModal } from "../../contexts/ModalProvider";
-import { useSnackbar } from "../../contexts/SnackbarProvider";
-import { setToken, setUser } from "../../redux/authSlice";
-import { TUserInfo } from "../../types/userInfo";
-import axios from "../../utils/axios";
-import { emailSchema, passwordSchema } from "../../utils/validationSchemas";
+import { setToken, setUser } from "redux/authSlice";
+import { TUserInfo } from "types/userInfo";
+import axiosRequest from "utils/axios";
+import { emailSchema, passwordSchema } from "utils/validationSchemas";
+import { object } from "yup";
 import Register from "./Register";
 
 type Form = {
@@ -24,37 +24,36 @@ type LoginProps = {
 	token?: string;
 };
 
+type LoginResponse = {
+	token: string;
+};
+
 const Login = ({ token }: LoginProps) => {
-	const { showModal, closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
+	const { showModal, closeModal } = useModal();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
 	const [rememberMe, setRememberMe] = useState(false);
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!token) return;
 		setLoading(true);
 		validateToken();
 	}, []);
 
 	const validateToken = async () => {
-		axios
-			.post("/api/users/register/validate", { token: token })
-			.then(() => {
-				openSnackbar("Účet byl úspěšně aktivován!");
-				setLoading(false);
-			})
-			.catch((response: any) => {
-				if (response.response.data.cz) {
-					openErrorSnackbar(`${response.response.data.cz}!`, true, true);
-				} else {
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!", true, true);
-				}
-			});
+		const response = await axiosRequest("POST", "/api/users/register/validate", { token: token });
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error validating token:", response.message.cz);
+			closeModal();
+			return;
+		}
+		openSuccessSnackbar("Účet byl úspěšně aktivován!");
 		setLoading(false);
 	};
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		email: emailSchema,
 		password: passwordSchema,
 	});
@@ -68,51 +67,31 @@ const Login = ({ token }: LoginProps) => {
 		resolver: yupResolver(formSchema),
 	});
 
-	const handleRegister = () => {
-		showModal(<Register />);
-	};
-
-	const handleLogin = (data: Form) => {
-		axios
-			.post("/api/users/auth/token", {
-				email: data.email,
-				password: data.password,
-			})
-			.then((res: any) => {
-				dispatch(
-					setToken({
-						token: res.data.token,
-						rememberMe: rememberMe,
-					}),
-				);
-				getUserInfo();
-				openSnackbar("Jste úspěšně přihlášen!");
-				closeModal();
-			})
-			.catch((err) => {
-				if (!err.response.data.en) {
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				} else if (err.response.data.en.includes("Invalid")) {
-					setError("password", {
-						type: "server",
-						message: "Nesprávný e-mail nebo heslo",
-					});
-				} else {
-					setError("apiError", {
-						type: "server",
-						message: "Někde nastala chyba zkuste to znovu",
-					});
-					openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				}
-			});
+	const handleLogin = async (data: Form) => {
+		const response = await axiosRequest<LoginResponse>("POST", "/api/users/auth/token", { email: data.email, password: data.password });
+		if (!response.success) {
+			if (response.message.en.includes("Invalid")) {
+				setError("password", { type: "user", message: "Nesprávný e-mail nebo heslo" });
+			} else {
+				setError("apiError", { type: "server", message: "Někde nastala chyba zkuste to znovu" });
+			}
+			console.error("Error logging in:", response.message.cz);
+			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
+			return;
+		}
+		dispatch(setToken({ token: response.data.token, rememberMe: rememberMe }));
+		getUserInfo();
+		openSuccessSnackbar("Jste úspěšně přihlášen!");
+		closeModal();
 	};
 
 	const getUserInfo = async () => {
-		const response = await axios.get("/api/users/user");
+		const response = await axiosRequest<TUserInfo>("GET", "/api/users/user");
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error getting user info:", response.message.cz);
+			return;
+		}
 		const newUserInfo: TUserInfo = {
 			id: response.data.id,
 			email: response.data.email,
@@ -145,10 +124,12 @@ const Login = ({ token }: LoginProps) => {
 					</div>
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
-						<Button color="secondary" type="button" onClick={handleRegister}>
+						<Button color="secondary" type="button" onClick={() => showModal(<Register />)}>
 							Zaregistrovat se
 						</Button>
-						<Button type="submit">Přihlásit se</Button>
+						<Button type="submit" color="accent">
+							Přihlásit se
+						</Button>
 					</div>
 				</>
 			)}

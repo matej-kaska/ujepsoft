@@ -5,26 +5,29 @@ import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
 import Dropdown from "components/dropdown/Dropdown";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
+import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-import { useEffect, useState } from "react";
-import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
+import { useEffect, useLayoutEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { editorLabels } from "static/wysiwyg";
 import { FullIssue } from "types/issue";
 import { Attachment } from "types/offer";
 import { RepoSelect } from "types/repo";
+import axiosRequest from "utils/axios";
 import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import { useModal } from "../../contexts/ModalProvider";
-import axios from "../../utils/axios";
+
+const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
 type Form = {
 	name: string;
@@ -38,24 +41,28 @@ type NewIssueProps = {
 	issue?: FullIssue;
 };
 
+type PostIssueResponse = {
+	id: string;
+};
+
 const NewIssue = ({ issue }: NewIssueProps) => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { closeModal } = useModal();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 	const [repos, setRepos] = useState<RepoSelect[]>([]);
-	const [selectValue, setSelectValue] = useState<number>(0);
+	const [labels, setLabels] = useState<string[]>([]);
 	const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
+	const [files, setFiles] = useState<File[]>([]);
+	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
+	const [selectValue, setSelectValue] = useState<number>(0);
 	const [validate, setValidate] = useState<boolean | null>(null);
 	const [focusDescription, setFocusDescription] = useState<boolean>(false);
 	const [hoverSelect, setHoverSelect] = useState<boolean>(false);
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const [files, setFiles] = useState<File[]>([]);
-	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
-	const { closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
-	const [labels, setLabels] = useState<string[]>([]);
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		getRepos();
 		if (!issue) return;
 		setValue("name", issue.title);
@@ -121,7 +128,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		};
 	};
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		name: offerNameSchema,
 		repo: repoSelectSchema,
 		labels: labelsSchema,
@@ -139,50 +146,48 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		resolver: yupResolver(formSchema),
 	});
 
-	const getRepos = async () => {
-		try {
-			const response = await axios.get("/api/repo/list/small");
-			if (response.data) setRepos(response.data);
-		} catch (error) {
-			console.error("Error getting repos:", error);
-		}
+	const changeLabel = (label: string) => {
+		const labels = getValues("labels") || [];
+		const labelExists = labels.includes(label);
+		const updatedLabels = labelExists ? labels.filter((l) => l !== label) : [...labels, label];
+
+		const updateOptions = validate ? { shouldValidate: true } : undefined;
+
+		setValue("labels", updatedLabels, updateOptions);
+		setLabels(updatedLabels);
 	};
 
-	const changeLabel = (label: string) => {
-		let labels = getValues("labels");
-		if (!labels) labels = [];
-		if (validate) {
-			if (labels?.includes(label)) {
-				setValue(
-					"labels",
-					labels.filter((l: string) => l !== label),
-					{ shouldValidate: true },
-				);
-				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
-			} else {
-				setValue("labels", [...labels, label], { shouldValidate: true });
-				setLabels([...labels, label]);
-			}
-		} else {
-			if (labels?.includes(label)) {
-				setValue(
-					"labels",
-					labels.filter((l: string) => l !== label),
-				);
-				setLabels((prev: string[]) => prev.filter((l: string) => l !== label));
-			} else {
-				setValue("labels", [...labels, label]);
-				setLabels([...labels, label]);
-			}
+	const updateDescription = (deletedFile: Attachment) => {
+		if (!issue) return;
+		let text = draftToHtml(convertToRaw(descriptionEditorState.getCurrentContent()));
+		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), "");
+		setValue("description", text);
+		setDescriptionEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
+	}
+
+	const getRepos = async () => {
+		const response = await axiosRequest<RepoSelect[]>("GET", "/api/repo/list/small");
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error loading repos:", response.message.cz);
+			return;
 		}
+		setRepos(response.data);
 	};
 
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
 		if (data.name.trim() === "") {
-			alert("Název pohledávky nesmí být prázdný!");
+			alert("Název issue nesmí být prázdný!");
 			return;
 		}
+
+		if (uploadedFiles.length > 0) {
+			for (const uploadedFile of uploadedFiles) {
+				data.description = data.description.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+			}
+		}
+
 		const formData = new FormData();
 		formData.append("name", data.name);
 		formData.append("repo", data.repo.toString());
@@ -202,40 +207,32 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
 
-		console.log(JSON.stringify(Object.fromEntries(formData)));
 		if (issue) {
-			try {
-				await axios.put(`/api/issue/${issue.id}`, formData);
+			const response = await axiosRequest("PUT", `/api/issue/${issue.id}`, formData);
+			if (!response.success) {
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně upravena!");
-				closeModal();
-				dispatch(setReload("issuepage"));
-			} catch (error) {
-				setLoading(false);
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				setError("apiError", {
-					type: "server",
-					message: "Někde nastala chyba zkuste to znovu",
-				});
-				console.error("Error editing issue:", error);
+				openErrorSnackbar(response.message.cz);
+				setError("apiError", { type: "server", message: response.message.cz });
+				console.error("Error editing issue:", response.message.cz);
+				return;
 			}
+			setLoading(false);
+			openSuccessSnackbar("Issue byla úspěšně změněna!");
+			closeModal();
+			dispatch(setReload("issuepage"));
 		} else {
-			try {
-				const response = await axios.post("/api/issue", formData);
+			const response = await axiosRequest<PostIssueResponse>("POST", "/api/issue", formData);
+			if (!response.success) {
 				setLoading(false);
-				openSnackbar("Poptávka byla úspěšně vytvořena!");
-				closeModal();
-				dispatch(setReload("issue"));
-				navigate(`/issue/${response.data.id}`);
-			} catch (error) {
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				setLoading(false);
-				setError("apiError", {
-					type: "server",
-					message: "Někde nastala chyba zkuste to znovu",
-				});
-				console.error("Error posting issue:", error);
+				openErrorSnackbar(response.message.cz);
+				setError("apiError", { type: "server", message: response.message.cz });
+				console.error("Error posting issue:", response.message.cz);
+				return;
 			}
+			setLoading(false);
+			openSuccessSnackbar("Issue byla úspěšně vytvořena!");
+			closeModal();
+			navigate(`/issue/${response.data.id}`);
 		}
 	};
 
@@ -245,9 +242,9 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 				<LoadingScreen modal />
 			) : (
 				<form className="new-issue" onSubmit={handleSubmit(handlePostIssue)}>
-					<h1>{issue ? "Změnit pohledávku (issue)" : "Vytvořit pohledávku (issue)"}</h1>
+					<h1>{issue ? "Změnit issue" : "Vytvořit issue"}</h1>
 					<label className="name">Název</label>
-					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název pohledávky..." {...register("name")} maxLength={100} />
+					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
 					<label className="repo">Aplikace</label>
 					<Dropdown
@@ -296,42 +293,44 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 					</div>
 					<p className={`${errors.labels ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.labels?.message || errors.labels?.[0]?.message}!</p>
 					<label className="description" htmlFor="description">
-						Popis poptávky
+						Popis issue
 					</label>
-					<WysiwygEditor
-						stripPastedStyles={true}
-						editorState={descriptionEditorState}
-						toolbarClassName="toolbarClassName"
-						wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
-						editorClassName={"editorClassName"}
-						editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
-						toolbar={{
-							options: ["inline", "blockType", "list", "emoji", "remove", "history"],
-							inline: { options: ["bold", "italic", "underline", "strikethrough"] },
-						}}
-						localization={{ locale: "en", translations: editorLabels }}
-						onEditorStateChange={(newState: any) => {
-							let hasAtomicValue = false;
-							for (const element of newState.getCurrentContent().blockMap) {
-								if (element.type === "atomic") hasAtomicValue = true;
-							}
-							if (hasAtomicValue) {
-								alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
-								return;
-							}
-							const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
-							if (text.length > 8191) return alert("Popis nabídky nesmí být delší než 8191 raw znaků!");
-							setDescriptionEditorState(newState);
-							if (validate) setValue("description", text, { shouldValidate: true });
-							else setValue("description", text);
-						}}
-					/>
+					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
+						<WysiwygEditor
+							stripPastedStyles={true}
+							editorState={descriptionEditorState}
+							toolbarClassName="toolbarClassName"
+							wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
+							editorClassName={"editorClassName"}
+							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
+							toolbar={{
+								options: ["inline", "blockType", "list", "emoji", "remove", "history"],
+								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
+							}}
+							localization={{ locale: "en", translations: editorLabels }}
+							onEditorStateChange={(newState: any) => {
+								let hasAtomicValue = false;
+								for (const element of newState.getCurrentContent().blockMap) {
+									if (element.type === "atomic") hasAtomicValue = true;
+								}
+								if (hasAtomicValue) {
+									alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
+									return;
+								}
+								const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
+								if (text.length > 8191) return alert("Popis nabídky nesmí být delší než 8191 raw znaků!");
+								setDescriptionEditorState(newState);
+								if (validate) setValue("description", text, { shouldValidate: true });
+								else setValue("description", text);
+							}}
+						/>
+					</Suspense>
 					<p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
-					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateDescription}/>
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>
-							{issue ? "Změnit pohledávku" : "Vytvořit pohledávku"}
+							{issue ? "Změnit issue" : "Vytvořit issue"}
 						</Button>
 					</div>
 				</form>

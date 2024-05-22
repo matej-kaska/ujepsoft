@@ -21,5 +21,16 @@
 }
 
 .fade-out {
-  animation: fadeOut 0.3s;
+  animation: fadeOut 0.4s;
+}
+
+.success-snackbar {
+  div {
+    background-color: $color-primary;
+    border-color: $color-accent;
+  }
+}
+
+.success-snackbar, .error-snackbar {
+  cursor: pointer;
 }

@@ -6,21 +6,21 @@ import { useSnackbar } from "contexts/SnackbarProvider";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "redux/authSlice";
-import { store } from "redux/store";
-import axios from "utils/axios";
+import { RootState, store } from "redux/store";
+import { clearAxiosAuthorization } from "utils/axios";
 
 const Navbar = () => {
-	const { showModal } = useModal();
-	const { openSnackbar } = useSnackbar();
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
 	const navigate = useNavigate();
+	const { showModal } = useModal();
+	const { openSuccessSnackbar } = useSnackbar();
 	const { checkIsLoggedIn } = useAuth();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 
 	const handleLogout = () => {
 		navigate("/");
 		store.dispatch(removeUser());
-		axios.defaults.headers.common.Authorization = "";
-		openSnackbar("Byl jste úspěšně odhlášen!");
+		clearAxiosAuthorization();
+		openSuccessSnackbar("Byl jste úspěšně odhlášen!");
 	};
 
 	const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -37,7 +37,7 @@ const Navbar = () => {
 				</Link>
 				<div className="img-wrapper">
 					<Link to={"https://ujep.cz/"}>
-						<img src="/src/images/ujep-full-logo.png" alt="UJEP logo" />
+						<img src="/src/images/ujep-full-logo.webp" alt="UJEP logo" />
 					</Link>
 				</div>
 			</header>
@@ -48,7 +48,7 @@ const Navbar = () => {
 					</li>
 					<li>
 						<Link to={"/issues"} onClick={handleLinkClick}>
-							Pohledávky
+							Problémy/Úkoly (Issues)
 						</Link>
 					</li>
 					<li>
@@ -67,8 +67,8 @@ const Navbar = () => {
 				<div className="user-wrapper">
 					{userInfo.id ? (
 						<>
-							<span>Jste přihlášen(a) jako {userInfo.email}</span>
-							<Button onClick={handleLogout} color="secondary">
+							<span>Jste přihlášen jako {userInfo.email}</span>
+							<Button onClick={handleLogout} color="accent">
 								Odhlásit se
 							</Button>
 						</>

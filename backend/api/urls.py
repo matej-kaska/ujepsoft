@@ -17,4 +17,6 @@ urlpatterns = [
     path("issue/list", issue_views.IssuesList.as_view(), name="api_issue_list"),
     path("issue", issue_views.IssueCreate.as_view(), name="api_issue_create"),
     path("issue/<int:pk>", issue_views.IssueDetail.as_view(), name="api_issue_detail"),
+    path("issue/<int:pk>/comment/new", issue_views.IssueAddComment.as_view(), name="api_issue_new_comment"),
+    path("issue/<int:issue_pk>/comment/<int:comment_pk>", issue_views.EditComment.as_view(), name="api_issue_comment_detail"),
 ]

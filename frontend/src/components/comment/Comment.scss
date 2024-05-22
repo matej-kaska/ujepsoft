@@ -4,6 +4,54 @@
   border-bottom: 1px solid #E5E5E5;
   padding-block: 0.5rem;
   flex-direction: column;
+
+  .comment-header {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-start;
+
+    .edit-icon, .remove-icon {
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      min-height: 30px;
+      border-radius: 5px;
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    .edit-icon {
+      background-color: #E6F4F1;
+      &:hover {
+        background-color: #D4E2DF;
+      }
+    }
+
+    .remove-icon {
+      background-color: #FCE8E8;
+      &:hover {
+        background-color: #F8C9C9;
+      }
+    }
+  }
+
+  .body {
+    overflow-wrap: anywhere;
+    overflow: hidden;
+
+    .file-gh {
+      font-size: small;
+      font-style: italic;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: fit-content;
+      user-select: none;
+      padding: 0.25rem 0.5rem;
+      margin: 1px !important;
+    }
+  }
   
   .footer {
     display: flex;

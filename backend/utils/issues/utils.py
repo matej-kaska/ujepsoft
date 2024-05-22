@@ -3,34 +3,36 @@ from api.models import Label
 from datetime import datetime,timezone
 import markdown
 
-from django.conf import settings
-from api import IMAGES_EXTENSIONS
-from utils import GITHUB_EXTENSIONS
-
 def get_label_names_by_ids(label_ids):
+  """
+  Get label names by their ids
+  """
   labels = Label.objects.filter(id__in=label_ids)
 
   return [label.name for label in labels]
 
-def find_obj_by_id(objs, id):
-  for obj in objs:
-    if "id" in obj and str(obj['id']) == id:
-      return obj
-  return None
-
 def find_issue_by_id(objs, id):
+  """
+  Find issue object by id
+  """
   for obj in objs:
     if str(obj.gh_id) == str(id):
       return obj
   return None
 
 def find_comment_by_id(objs, id):
+  """
+  Find comment object by id
+  """
   for obj in objs:
     if str(obj.number) == str(id):
       return obj
   return None
 
 def get_datetime(updated_at):
+  """
+  Get datetime from string
+  """
   if isinstance(updated_at, str):
     return datetime.strptime(updated_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
   return updated_at
@@ -64,68 +66,57 @@ def get_ujepsoft_author(description: str) -> str:
   h2_content = last_p_content[h2_start:h2_end]
   return h2_content.replace("Autor Issue: ", "") if "Autor Issue: " in h2_content else ""
 
-# TODO: Možná smazat? Idk jestli se to potřebuju
-def get_files_from_description_from_ujepsoft(description: str) -> list:
-  images_alts = []
-  files_hrefs = []
-
-  if "<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft</h3>" not in description:
-      return images_alts, files_hrefs
-
-  description = description.replace("\n", "")
-
-  attachments_pos = description.rfind("<h1>Přílohy:</h1>")
-  if attachments_pos == -1:
-      return images_alts, files_hrefs
-
-  description = description[attachments_pos:]
-
-  images_pos = description.find("<h2>Obrázky:</h2>")
-  files_pos = description.find("<h2>Soubory:</h2>")
-
-  if images_pos != -1:
-      images_html = description[images_pos:files_pos if files_pos != -1 else None]
-
-      img_pos = images_html.find("<img")
-      while img_pos != -1:
-          start_alt = images_html.find('alt="', img_pos) + 5
-          end_alt = images_html.find('"', start_alt)
-          images_alts.append(images_html[start_alt:end_alt])
-
-          img_pos = images_html.find("<img", end_alt)
-
-  if files_pos != -1:
-      files_html = description[files_pos:]
-
-      a_pos = files_html.find("<a")
-      while a_pos != -1:
-          start_href = files_html.find('href="', a_pos) + 6
-          end_href = files_html.find('"', start_href)
-          files_hrefs.append(files_html[start_href:end_href].replace(settings.MEDIA_URL, ""))
-
-          a_pos = files_html.find("<a", end_href)
-
-  return images_alts, files_hrefs
-
 def extract_files_from_github(body):
+    """
+    Get images and files from the body of the issue/comment
+    """
     images_alts = []
     videos_and_files = []
-
+    
     # Regex for Markdown image syntax
     image_pattern = re.compile(r'!\[(.*?)\]\((.*?)\)')
     # Regex for Markdown link syntax
     link_pattern = re.compile(r'\[(.*?)\]\((.*?)\)')
+    # Regex for HTML <img> tag
+    html_image_pattern = re.compile(
+      r'<img[^>]*\b(src|alt)=["\'](.*?)["\'][^>]*\b(alt|src)=["\'](.*?)["\'][^>]*>',
+      re.IGNORECASE
+    )
 
     for match in image_pattern.finditer(body):
       alt_text, url = match.groups()
       images_alts.append((alt_text, url))
 
+    for match in html_image_pattern.finditer(body):
+      first_attr, first_value, second_attr, second_value = match.groups()
+      if first_attr == 'src' and second_attr == 'alt':
+        images_alts.append((second_value, first_value))
+      elif first_attr == 'alt' and second_attr == 'src':
+        images_alts.append((first_value, second_value))
+
     for match in link_pattern.finditer(body):
       link_text, url = match.groups()
-      if any(url.lower().endswith(f".{ext}") for ext in GITHUB_EXTENSIONS):
+      if (link_text, url) not in images_alts:
         videos_and_files.append((link_text, url))
 
     return images_alts, videos_and_files
+
+def remove_files_from_description(description: str, images_alts, videos_and_files) -> str:
+  """
+  Remove Images and Files from the issue/comment description/body
+  """
+  if not description:
+    return ""
+
+  for alt_text, url in images_alts:
+    description = description.replace(f"![{alt_text}]({url})", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>")
+    description = re.sub(rf"<img[^>]*src=['\"]{re.escape(url)}['\"][^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>", description, flags=re.IGNORECASE)
+    description = re.sub(rf"<img[^>]*alt=['\"]{re.escape(alt_text)}['\"][^>]*src=['\"]{re.escape(url)}['\"][^>]*>", f"<p class='file-gh' title='Obrázek'>[{alt_text}]</p>", description, flags=re.IGNORECASE)
+
+  for link_text, url in videos_and_files:
+    description = description.replace(f"[{link_text}]({url})", f"<p class='file-gh' title='Soubor'>{link_text}</p>")
+
+  return description
 
 def add_ujepsoft_author(description: str, author: str) -> str:
   """
@@ -149,11 +140,11 @@ def add_files_to_description(description: str, files) -> str:
   files_description = "\n"
 
   for file in files:
-    extension = file.name.split('.')[-1].lower()
-    if extension in IMAGES_EXTENSIONS:
-      images_description = images_description + f"<img src='{settings.MEDIA_URL}{file.name}' alt='{file.name}'>\n"
+    #extension = file.name.split('.')[-1].lower()
+    if file.file_type == 'image':
+      images_description = images_description + f"<img src='{file.file.url if file.file else file.remote_url}' alt='{file.name}'>\n"
     else:
-      files_description = files_description + f"[{file.name}]({settings.MEDIA_URL}{file.file})\n"
+      files_description = files_description + f"[{file.name}]({file.file.url if file.file else file.remote_url})\n"
 
   if len(images_description) > 2:
     formatted_description = formatted_description + "<h2>Obrázky:</h2>\n" + images_description
@@ -164,9 +155,11 @@ def add_files_to_description(description: str, files) -> str:
   return formatted_description
 
 def markdown_to_html(description: str) -> str:
+  """
+  Convert markdown to html
+  """
   proccessed_md = insert_div_after_lists(description)
   html = markdown.markdown(proccessed_md,  extensions=['extra', 'nl2br'])
-  html = re.sub(r'<code>(.*?)</code>', r'<pre>\1</pre>', html, flags=re.DOTALL)
   return html
 
 def insert_div_after_lists(md_content: str) -> str:
@@ -194,3 +187,9 @@ def insert_div_after_lists(md_content: str) -> str:
     new_lines.append('<div></div>')
 
   return '\n'.join(new_lines)
+
+def remove_file_extenstion_from_name(file_name: str) -> str:
+  """
+  Remove file extension from the name of the file
+  """
+  return file_name[:file_name.rfind('.')] if '.' in file_name else file_name

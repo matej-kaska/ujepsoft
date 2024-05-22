@@ -5,66 +5,68 @@ import Images from "components/images/Images";
 import Label from "components/label/Label";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
+import NewComment from "components/new-comment/NewComment";
 import NewIssue from "components/new-issue/NewIssue";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { FullIssue } from "types/issue";
-import axios from "utils/axios";
+import axiosRequest from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
 
 const IssuePage = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const { id } = useParams();
 	const { showModal, closeModal } = useModal();
-	const { openErrorSnackbar, openSnackbar } = useSnackbar();
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const dispatch = useDispatch();
-	const reload = useSelector((state: any) => state.reload);
-	const [loading, setLoading] = useState<boolean>(true);
+	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const reload = useSelector((state: RootState) => state.reload);
 	const [issue, setIssue] = useState<FullIssue>({} as FullIssue);
-	const navigate = useNavigate();
+	const [loading, setLoading] = useState<boolean>(true);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		getIssue();
 	}, [id]);
 
 	useEffect(() => {
-		if (!reload.location) return;
+		if (!reload.location || reload.location !== "issuepage") return;
 		getIssue();
 		dispatch(setReload(""));
 	}, [reload]);
 
 	const getIssue = async () => {
-		setLoading(true);
-		try {
-			const response = await axios.get(`/api/issue/${id}`);
-			if (!response.data) return;
-			response.data.body = removeFooterFromBody(response.data.body);
-			setIssue(response.data);
-			console.log("HERE");
-			console.log(response.data);
-			setLoading(false);
-		} catch {
-			navigate("/");
+		if (Object.keys(issue).length === 0) setLoading(true);
+		const response = await axiosRequest<FullIssue>("GET", `/api/issue/${id}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error getting issue:", response.message.cz);
+			navigate("/issues");
+			return;
 		}
+		console.log(response.data);
+		if (response.data.body) response.data.body = removeFooterFromBody(response.data.body);
+		setIssue(response.data);
+		setLoading(false);
 	};
 
 	const removeIssue = async () => {
 		closeModal();
-		try {
-			await axios.delete(`/api/issue/${id}`);
-			openSnackbar("Issue byl úspěšně smazán!");
-			navigate("/");
-		} catch (error) {
-			openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-			console.error("Error deleting issue:", error);
+		const response = await axiosRequest("DELETE", `/api/issue/${id}`);
+		if (!response.success) {
+			openErrorSnackbar(response.message.cz);
+			console.error("Error deleting issue:", response.message.cz);
+			return;
 		}
+		openSuccessSnackbar("Issue byl úspěšně uzavřen!");
+		navigate("/issues");
 	};
 
 	return (
@@ -78,16 +80,16 @@ const IssuePage = () => {
 						<header>
 							<div className="header-buttons">
 								<h1>{issue.title}</h1>
-								{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
+								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
-										<EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />
-										<DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} />
+										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />}
+										{issue.state !== "closed" ? <DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} /> : <span className="closed">(uzavřené)</span>}
 									</>
 								)}
 							</div>
 							<ProfileBadge name={issue.author} profilePicture={issue.author_profile_pic} authorUjepsoft={issue.author_ujepsoft} />
 							<h2 className="repo">
-								Aplikace: {issue.repo.name} <span className="repo-author">({issue.repo.author})</span>
+								Aplikace: {issue.repo.author}/{issue.repo.name}
 							</h2>
 						</header>
 						{issue.labels.length > 0 && (
@@ -116,12 +118,10 @@ const IssuePage = () => {
 									return dateA.getTime() - dateB.getTime();
 								})
 								.map((comment) => {
-									return <Comment key={comment.id} {...comment} />;
+									return <Comment key={comment.id} issueId={issue.id} {...comment} />;
 								})}
 						</section>
-						<section className="new-comment-wrapper">
-							<div>add comment</div>
-						</section>
+						<NewComment issueId={issue.id} />
 					</>
 				)}
 			</div>

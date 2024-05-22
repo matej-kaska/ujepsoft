@@ -4,6 +4,7 @@ import LookAtIssues from "components/guides/LookAtIssues";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
 import Navbar from "components/navbar/Navbar";
 
+// TODO: CONVERT ALL IMAGES TO WEBP
 const GuidePage = () => {
 	const guides = new Array<JSX.Element>();
 	guides.push(<Administration />);

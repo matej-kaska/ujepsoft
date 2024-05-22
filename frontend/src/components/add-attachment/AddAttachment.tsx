@@ -5,11 +5,12 @@ import { ReactComponent as CloseIcon } from "../../images/close.svg";
 type AddAttachmentProps = {
 	files: File[];
 	setFiles: React.Dispatch<React.SetStateAction<File[]>>;
-	uploadedFiles: Attachment[];
-	setUploadedFiles: React.Dispatch<React.SetStateAction<Attachment[]>>;
+	uploadedFiles?: Attachment[];
+	setUploadedFiles?: React.Dispatch<React.SetStateAction<Attachment[]>>;
+	updateDescription?: (deletedFile: Attachment) => void;
 };
 
-const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: AddAttachmentProps) => {
+const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles, updateDescription }: AddAttachmentProps) => {
 	const { openErrorSnackbar } = useSnackbar();
 
 	const onFileCloseButtonClick = (index: number) => {
@@ -19,9 +20,12 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 	};
 
 	const onUploadedFileCloseButtonClick = (index: number) => {
+		if (!setUploadedFiles || !uploadedFiles) return;
+		const deletedFile = uploadedFiles[index];
 		setUploadedFiles((prev: Attachment[]) => {
 			return prev.filter((_file: Attachment, fileIndex: number) => fileIndex !== index);
 		});
+		if (updateDescription) updateDescription(deletedFile);
 	};
 
 	const validateSize = (file: File) => {
@@ -45,16 +49,18 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 	};
 
 	const addFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files) return;
-		const file = e.target.files[0];
+		const input = e.target;
+		if (!input.files) return;
+		const file = input.files[0];
 		if (!file) return;
 		if (!validateSize(file)) {
-			e.target.files = null;
+			input.value = "";
 			return;
 		}
 		setFiles((prev: File[]) => {
 			return [...prev, file];
 		});
+		input.value = "";
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLSpanElement>) => {
@@ -67,6 +73,7 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 			setFiles((prev: File[]) => [...prev, file]);
 		}
 	};
+
 	return (
 		<>
 			<label className="attachments">Přílohy</label>
@@ -84,7 +91,7 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles }: Add
 					</div>
 				);
 			})}
-			{uploadedFiles.map((file: Attachment, index: number) => {
+			{uploadedFiles?.map((file: Attachment, index: number) => {
 				return (
 					<div className="attachment-added" key={index}>
 						<span>{file.name}</span>

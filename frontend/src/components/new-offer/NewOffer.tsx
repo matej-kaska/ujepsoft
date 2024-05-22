@@ -6,19 +6,22 @@ import { useSnackbar } from "contexts/SnackbarProvider";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-import { useEffect, useState } from "react";
-import { Editor as WysiwygEditor } from "react-draft-wysiwyg";
+import { useEffect, useLayoutEffect, useState } from "react";
+import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
+import { RootState } from "redux/store";
 import { Attachment, Offer } from "types/offer";
 import { descriptionSchema, offerKeywordsSchema, offerNameSchema } from "utils/validationSchemas";
-import * as yup from "yup";
+import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 import { useModal } from "../../contexts/ModalProvider";
 import { ReactComponent as CloseIcon } from "../../images/close.svg";
-import axios from "../../utils/axios";
+import axiosRequest from "../../utils/axios";
+
+const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
 type Form = {
 	name: string;
@@ -31,22 +34,26 @@ type NewOfferProps = {
 	offer?: Offer;
 };
 
+type PostOfferResponse = {
+	id: string;
+};
+
 const NewOffer = ({ offer }: NewOfferProps) => {
-	const [keywords, setKeywords] = useState<string[]>([]);
-	const [keywordsInputValue, setKeywordsInputValue] = useState<string>("");
-	const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
-	const [validate, setValidate] = useState<boolean>(false);
-	const [focusDescription, setFocusDescription] = useState<boolean>(false);
-	const userInfo = useSelector((state: any) => state.auth.userInfo);
-	const [files, setFiles] = useState<File[]>([]);
-	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
-	const { closeModal } = useModal();
-	const { openSnackbar, openErrorSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { closeModal } = useModal();
+	const { openSuccessSnackbar, openErrorSnackbar } = useSnackbar();
+	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
+	const [descriptionEditorState, setDescriptionEditorState] = useState(EditorState.createEmpty());
+	const [keywords, setKeywords] = useState<string[]>([]);
+	const [keywordsInputValue, setKeywordsInputValue] = useState<string>("");
+	const [files, setFiles] = useState<File[]>([]);
+	const [uploadedFiles, setUploadedFiles] = useState<Attachment[]>([]);
+	const [validate, setValidate] = useState<boolean>(false);
+	const [focusDescription, setFocusDescription] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!offer) return;
 		setValue("name", offer.name);
 		setKeywords(offer.keywords);
@@ -78,7 +85,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 		};
 	}, []);
 
-	const formSchema = yup.object().shape({
+	const formSchema = object().shape({
 		name: offerNameSchema,
 		keywords: offerKeywordsSchema,
 		description: descriptionSchema,
@@ -144,38 +151,38 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));
 		setLoading(true);
 		if (offer) {
-			try {
-				await axios.put(`/api/offer/${offer.id}`, formData);
+			const response = await axiosRequest("PUT", `/api/offer/${offer.id}`, formData);
+			if (!response.success) {
 				setLoading(false);
-				openSnackbar("Nabídka byla úspěšně upravena!");
-				closeModal();
-				dispatch(setReload("offerpage"));
-			} catch (error) {
-				setLoading(false);
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
+				openErrorSnackbar(response.message.cz);
 				setError("apiError", {
 					type: "server",
-					message: "Někde nastala chyba zkuste to znovu",
+					message: response.message.cz,
 				});
-				console.error("Error editing offer:", error);
+				console.error("Error editing offer:", response.message.cz);
+				return;
 			}
+			setLoading(false);
+			openSuccessSnackbar("Nabídka byla úspěšně upravena!");
+			closeModal();
+			dispatch(setReload("offerpage"));
 		} else {
-			try {
-				const response = await axios.post("/api/offer", formData);
+			const response = await axiosRequest<PostOfferResponse>("POST", "/api/offer", formData);
+			if (!response.success) {
 				setLoading(false);
-				openSnackbar("Nabídka byla úspěšně vytvořena!");
-				closeModal();
-				dispatch(setReload("offer"));
-				navigate(`/offer/${response.data.id}`);
-			} catch (error) {
-				openErrorSnackbar("Někde nastala chyba zkuste to znovu!");
-				setLoading(false);
+				openErrorSnackbar(response.message.cz);
 				setError("apiError", {
 					type: "server",
-					message: "Někde nastala chyba zkuste to znovu",
+					message: response.message.cz,
 				});
-				console.error("Error posting offer:", error);
+				console.error("Error posting offer:", response.message.cz);
+				return;
 			}
+			setLoading(false);
+			openSuccessSnackbar("Nabídka byla úspěšně vytvořena!");
+			closeModal();
+			dispatch(setReload("offers"));
+			navigate(`/offer/${response.data.id}`);
 		}
 	};
 
@@ -193,7 +200,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 						<div className="keywords-container">
 							<label htmlFor="keywords-input">Klíčová slova: </label>
 							<div className="keywords">
-								{keywords.length ? null : <span className="add-keyword">Pro přidání klíčového slova stikněte Enter...</span>}
+								{keywords.length ? null : <span className="add-keyword">Pro přidání klíčového slova stiskněte Enter...</span>}
 								{keywords.map((keyword, index) => (
 									<div key={index} className="keyword-tag">
 										<div className="keyword-name">{keyword}</div>
@@ -208,33 +215,35 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 					<label className="description" htmlFor="description">
 						Popis nabídky
 					</label>
-					<WysiwygEditor
-						stripPastedStyles={true}
-						editorState={descriptionEditorState}
-						toolbarClassName="toolbarClassName"
-						wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
-						editorClassName={"editorClassName"}
-						editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
-						toolbar={{
-							options: ["inline", "fontSize", "list", "emoji", "remove", "history"],
-							inline: { options: ["bold", "italic", "underline", "strikethrough"] },
-						}}
-						onEditorStateChange={(newState: any) => {
-							let hasAtomicValue = false;
-							for (const element of newState.getCurrentContent().blockMap) {
-								if (element.type === "atomic") hasAtomicValue = true;
-							}
-							if (hasAtomicValue) {
-								alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
-								return;
-							}
-							const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
-							if (text.length > 8191) return alert("Popis nabídky nesmí být delší než 8191 raw znaků!");
-							setDescriptionEditorState(newState);
-							if (validate) setValue("description", text, { shouldValidate: true });
-							else setValue("description", text);
-						}}
-					/>
+					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
+						<WysiwygEditor
+							stripPastedStyles={true}
+							editorState={descriptionEditorState}
+							toolbarClassName="toolbarClassName"
+							wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
+							editorClassName={"editorClassName"}
+							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
+							toolbar={{
+								options: ["inline", "fontSize", "list", "emoji", "remove", "history"],
+								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
+							}}
+							onEditorStateChange={(newState: any) => {
+								let hasAtomicValue = false;
+								for (const element of newState.getCurrentContent().blockMap) {
+									if (element.type === "atomic") hasAtomicValue = true;
+								}
+								if (hasAtomicValue) {
+									alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
+									return;
+								}
+								const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
+								if (text.length > 8191) return alert("Popis nabídky nesmí být delší než 8191 raw znaků!");
+								setDescriptionEditorState(newState);
+								if (validate) setValue("description", text, { shouldValidate: true });
+								else setValue("description", text);
+							}}
+						/>
+					</Suspense>
 					<p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
 					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}

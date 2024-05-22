@@ -16,6 +16,7 @@ class RepoList(generics.ListAPIView):
 
   def get_queryset(self):
     repos = Repo.objects.all()
+    
     for repo in repos:
       change_collaborant(repo.author, repo.name, repo.pk)
     return Repo.objects.all()
@@ -100,7 +101,6 @@ class RepoDelete(APIView):
   permission_classes = (permissions.IsAuthenticated, IsStaffUser)
 
   def delete(self, request, pk):
-    
     try:
       repo = Repo.objects.get(pk=pk)
     except Repo.DoesNotExist:

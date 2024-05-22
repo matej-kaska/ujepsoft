@@ -13,7 +13,7 @@
     padding: 3rem;
 
     a {
-      width: 50%;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -33,13 +33,17 @@
     }
 
     .img-wrapper {
-      width: 50%;
-      display: flex;
-      justify-content: right;
+      width: 100%;
+
+      a {
+        justify-content: flex-end;
+      }
 
       img {
         max-height: 70px;
         max-width: 350px;
+        width: 300px;
+        height: 70px;
         cursor: pointer;  
       }
       a {
@@ -90,6 +94,7 @@
       
       span {
         margin-inline: 0.5rem;
+        text-align: end;
       }
 
       button {
