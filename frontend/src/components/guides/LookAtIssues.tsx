@@ -6,7 +6,7 @@ const LookAtIssues = () => {
 	return (
 		<div className={`guide ${open ? "open" : ""}`}>
 			<h2 onClick={() => setOpen(!open)}>
-				Jak se orientovat v pohledávkách/issues?
+				Jak se orientovat v Issues?
 			</h2>
 			{open && (
 				<ol>
@@ -23,26 +23,27 @@ const LookAtIssues = () => {
 							kterého se tento Issue týká.
 						</ul>
 						<ul>
-							<strong>3</strong> &rarr; Autor issue.
+							<strong>3</strong> &rarr; Autor Issue.
 						</ul>
 						<ul>
-							<strong>4</strong> &rarr; Obsah pohledávky/issue - obrázky jsou k
-							vidění přímo na GitHub stránce.
+							<strong>4</strong> &rarr; Označení Issue - chyba/vylepšení/otázka.
 						</ul>
 						<ul>
-							<strong>5</strong> &rarr; Počet komentářů k aktuální
-							pohledávce/issue.
+							<strong>5</strong> &rarr; Podrobný popis Issue.
 						</ul>
 						<ul>
-							<strong>6</strong> &rarr; Datum vytvoření pohledávky/issue.
+							<strong>6</strong> &rarr; Počet komentářů k aktuálnímu Issue.
 						</ul>
 						<ul>
-							<strong>7</strong> &rarr; Datum poslední aktualizace této
+							<strong>7</strong> &rarr; Datum vytvoření pohledávky/issue.
+						</ul>
+						<ul>
+							<strong>8</strong> &rarr; Datum poslední aktualizace této
 							pohledávky/issue.
 						</ul>
 						<ul>
-							<strong>8</strong> &rarr; Tlačítko pro zobrazení detailních
-							informací o pohledávce/issue.
+							<strong>9</strong> &rarr; Tlačítko pro zobrazení detailních
+							informací o Issue.
 						</ul>
 					</div>
 				</ol>
