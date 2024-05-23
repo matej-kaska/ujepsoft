@@ -6,6 +6,7 @@ import json
 import os
 from django.core.cache import cache
 
+from utils import REDIS_TIMEOUT
 from utils.issues.utils import extract_files_from_github, find_comment_by_id, get_ujepsoft_author, markdown_to_html, remove_file_extenstion_from_name, remove_files_from_description
 
 def create_issue(issue, associated_repo, user, repo):
@@ -132,10 +133,10 @@ def create_issue(issue, associated_repo, user, repo):
             )
 
   issue_serializer = IssueSerializer(new_issue)
-  cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
   issue_full_serializer = IssueFullSerializer(new_issue)
-  cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
 def update_issue(issue_pk, new_issue, user, repo):
   """
@@ -233,10 +234,10 @@ def update_issue(issue_pk, new_issue, user, repo):
   updating_issue.save()
 
   issue_serializer = IssueSerializer(updating_issue)
-  cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
   issue_full_serializer = IssueFullSerializer(updating_issue)
-  cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+  cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
   return updating_issue
 

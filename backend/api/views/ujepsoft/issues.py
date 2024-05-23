@@ -12,6 +12,7 @@ from django.core.cache import cache
 from api.services import GitHubAPIService
 from api.pagination import StandardPagination
 from api import IMAGES_EXTENSIONS
+from utils import REDIS_TIMEOUT
 from utils.repos.utils import check_labels
 from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_file_extenstion_from_name
@@ -47,7 +48,7 @@ class IssuesList(generics.ListAPIView):
       
       return Response(response,status=status.HTTP_200_OK)
     
-    cache.set("issues-cached", "1", timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issues-cached", "1", timeout=REDIS_TIMEOUT)
     fetched_issues = GitHubAPIService.get_all_issues()
     issue_ids = [str(issue.gh_id) for issue in issues]
     response = []
@@ -75,10 +76,10 @@ class IssuesList(generics.ListAPIView):
         continue
 
       issue_serializer = IssueSerializer(issue)
-      cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+      cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
       
       issue_full_serializer = IssueFullSerializer(issue)
-      cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+      cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
       response.append(issue)
 
@@ -234,10 +235,10 @@ class IssueCreate(APIView):
 
     # Add issue to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
-    cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
     issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=new_issue.pk))
-    cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
     return Response({
       "id": new_issue.pk
@@ -274,7 +275,7 @@ class IssueDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     serializer = self.serializer_class(issue)
-    cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=REDIS_TIMEOUT)
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def delete(self, request, pk):
@@ -449,10 +450,10 @@ class IssueDetail(APIView):
 
     # Add issue to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
     issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
     return Response(status=status.HTTP_200_OK)
 
@@ -543,10 +544,10 @@ class IssueAddComment(APIView):
 
     # Add to to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
     issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
     return Response({
       "id": new_comment.pk
@@ -644,10 +645,10 @@ class EditComment(APIView):
   
     # Add to to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
     issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
     return Response(status=status.HTTP_200_OK)
   
@@ -686,9 +687,9 @@ class EditComment(APIView):
 
     # Add to to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))
+    cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
     issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT'))) 
+    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT) 
 
     return Response(status=status.HTTP_204_NO_CONTENT)
