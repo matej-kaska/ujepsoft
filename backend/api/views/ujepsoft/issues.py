@@ -25,9 +25,9 @@ class IssuesList(generics.ListAPIView):
   def list(self, request, *args, **kwargs):
     closed = self.request.query_params.get('closed', None)
     if closed is None or closed == "true":
-      issues = Issue.objects.all()
+      issues = Issue.objects.prefetch_related('comments').all()
     else:
-      issues = Issue.objects.filter(state='open')
+      issues = Issue.objects.prefetch_related('comments').filter(state='open')
     response = []
 
     for issue in issues:

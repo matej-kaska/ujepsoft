@@ -85,7 +85,7 @@ class GitHubAPIService:
           processed_issues.append(issue)
       return processed_issues
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=12) as executor:
       future_to_repo = {executor.submit(fetch_and_process, repo): repo for repo in repos}
       for future in as_completed(future_to_repo):
         repo = future_to_repo[future]
