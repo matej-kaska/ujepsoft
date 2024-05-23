@@ -25,6 +25,11 @@
         cursor: pointer;
         margin: 0;
       }
+      .soft-title {
+        background-image: linear-gradient(45deg, #4F3A41, #EB9762, #9F5449);
+        background-clip: text;
+        color: transparent;
+      }
     }
 
     .img-wrapper {
@@ -40,6 +45,9 @@
         width: 300px;
         height: 70px;
         cursor: pointer;  
+      }
+      a {
+        justify-content: right;
       }
     }
   }

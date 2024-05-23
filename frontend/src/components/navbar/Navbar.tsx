@@ -32,7 +32,8 @@ const Navbar = () => {
 		<nav className="navbar">
 			<header className="header">
 				<Link to={"/"}>
-					<h1>UJEP SOFT</h1>
+					<h1>UJEP&#8202;&#8202;&#8202;</h1>
+					<h1 className="soft-title">SOFT</h1>
 				</Link>
 				<div className="img-wrapper">
 					<Link to={"https://ujep.cz/"}>
