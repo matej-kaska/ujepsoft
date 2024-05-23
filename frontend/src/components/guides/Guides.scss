@@ -15,6 +15,7 @@
     padding-block: 1rem;
     width: 100%;
     cursor: pointer;
+    user-select: none;
 
     &:hover {
       background-color: $color-lightgray;

@@ -8,7 +8,6 @@ import ScreenshotGuide from "components/guides/ScreenshotGuide";
 import ScreenshotGuideMacOS from "components/guides/ScreenshotGuideMacOS";
 import Navbar from "components/navbar/Navbar";
 
-// TODO: CONVERT ALL IMAGES TO WEBP
 const GuidePage = () => {
 	const guides = new Array<JSX.Element>();
 	guides.push(<Administration />);
@@ -18,6 +17,7 @@ const GuidePage = () => {
 	guides.push(<AddComment />);
 	guides.push(<ScreenshotGuide />);
 	guides.push(<ScreenshotGuideMacOS />);
+	guides.push(<EditIssue />);
 
 	return (
 		<>
@@ -25,7 +25,7 @@ const GuidePage = () => {
 			<section className="guide-page">
 				<header>
 					<h1>Návody</h1>
-					<p>Zde naleznete návody veškeré potřebné návody. Pokud ovšem narazíte na jakýkoliv problém, neváhejte nás kontaktovat na CUS@PIC.</p>
+					<p>Zde naleznete návody veškeré potřebné návody. Pokud ovšem narazíte na jakýkoliv problém, neváhejte kontaktovat na administátora pavel.beranek@ujep.cz.</p>
 				</header>
 				<section className="guides-container">
 					{guides.map((guide, index) => (
