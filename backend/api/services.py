@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import requests
 
@@ -68,19 +69,30 @@ class GitHubAPIService:
     repos = Repo.objects.all()
     response = []
 
-    for repo in repos:
+    def fetch_and_process(repo):
       issues = cls.get_repo_issues(repo.author, repo.name)
       if issues is None:
         Repo.objects.filter(pk=repo.pk).delete()
-        continue
+        return []
       cls.update_profile_picture(repo.author, repo.name, repo)
-      if len(issues) == 0:
-        continue
+      if not issues:
+        return []
+      processed_issues = []
       for issue in issues:
         if 'pull_request' not in issue:
           issue['repo'] = repo.name
           issue['author'] = repo.author
-          response.append(issue)
+          processed_issues.append(issue)
+      return processed_issues
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+      future_to_repo = {executor.submit(fetch_and_process, repo): repo for repo in repos}
+      for future in as_completed(future_to_repo):
+        repo = future_to_repo[future]
+        try:
+          response.extend(future.result())
+        except Exception as exc:
+          print(f'{repo.name} generated an exception: {exc}')
     
     return response
   
