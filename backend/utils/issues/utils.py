@@ -70,6 +70,9 @@ def extract_files_from_github(body):
     """
     Get images and files from the body of the issue/comment
     """
+    if not body:
+      return [], []
+    
     images_alts = []
     videos_and_files = []
     

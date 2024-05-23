@@ -88,11 +88,10 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 
 	const updateBody = (deletedFile: Attachment) => {
 		let text = draftToHtml(convertToRaw(commentEditorState.getCurrentContent()));
-		console.log(text)
-		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), "");
+		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, "g"), "");
 		setValue("body", text);
 		setCommentEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
-	}
+	};
 
 	const handlePostIssue = async (data: Form) => {
 		if (!userInfo.id) return;
@@ -102,7 +101,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 
 		if (uploadedFiles.length > 0) {
 			for (const uploadedFile of uploadedFiles) {
-				newBody = newBody.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+				newBody = newBody.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, "g"), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
 			}
 		}
 
@@ -178,7 +177,7 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 						/>
 					</Suspense>
 					<p className={`${errors.body ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.body?.message}!</p>
-					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateBody}/>
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateBody} />
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>

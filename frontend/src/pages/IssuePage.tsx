@@ -51,7 +51,6 @@ const IssuePage = () => {
 			navigate("/issues");
 			return;
 		}
-		console.log(response.data);
 		if (response.data.body) response.data.body = removeFooterFromBody(response.data.body);
 		setIssue(response.data);
 		setLoading(false);

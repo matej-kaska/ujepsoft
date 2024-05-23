@@ -76,6 +76,10 @@ const axiosRequest = async <T,>(method: "GET" | "POST" | "PUT" | "DELETE", url: 
 			data: response.data,
 		};
 	} catch (error) {
+		if (axios.isCancel(error)) {
+			console.warn("Request canceled:", error.message);
+			throw error;
+		}
 		const axiosError = error as AxiosError;
 		const responseData = axiosError.response?.data;
 		const errorData = isValidErrorData(responseData) && "en" in responseData && "cz" in responseData ? (responseData as { en: string; cz: string }) : { en: "An unexpected error occurred", cz: "Došlo k neočekávané chybě" };

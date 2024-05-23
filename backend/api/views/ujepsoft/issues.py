@@ -20,9 +20,13 @@ class IssuesList(generics.ListAPIView):
   serializer_class = IssueSerializer
   permission_classes = (permissions.IsAuthenticated,)
   pagination_class = StandardPagination
-
+  
   def list(self, request, *args, **kwargs):
-    issues = Issue.objects.all()
+    closed = self.request.query_params.get('closed', None)
+    if closed is None or closed == "true":
+      issues = Issue.objects.all()
+    else:
+      issues = Issue.objects.filter(state='open')
     response = []
 
     for issue in issues:
@@ -33,17 +37,20 @@ class IssuesList(generics.ListAPIView):
       else:
         response = []
         break
-
-    if len(response) > 0:
+    
+    issues_cached = cache.get("issues-cached")
+    if len(response) == len(issues) and issues_cached == "1":
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
       page = self.paginate_queryset(response)
       if page is not None:
         return self.get_paginated_response(response)
       
       return Response(response,status=status.HTTP_200_OK)
-
+    
+    cache.set("issues-cached", "1", timeout=int(os.getenv('REDIS-TIMEOUT')))
     fetched_issues = GitHubAPIService.get_all_issues()
     issue_ids = [str(issue.gh_id) for issue in issues]
+    response = []
 
     for fetched_issue in fetched_issues:
 
@@ -77,8 +84,11 @@ class IssuesList(generics.ListAPIView):
 
     if len(issue_ids) > 0:
       Issue.objects.filter(gh_id__in=issue_ids).delete()
-
+    
     response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
+
+    if closed == "false":
+      response = [issue for issue in response if issue.state == "open"]
 
     page = self.paginate_queryset(response)
     if page is not None:

@@ -12,6 +12,9 @@ def create_issue(issue, associated_repo, user, repo):
   """
   Create issue object with all related objects
   """
+  if issue is None:
+    return None
+
   try:
     new_issue = Issue.objects.get(number=issue['number'], repo=associated_repo)
   except Issue.DoesNotExist:
@@ -23,8 +26,6 @@ def create_issue(issue, associated_repo, user, repo):
       author_ujepsoft = get_ujepsoft_author(issue['body'])
     else:
       author_ujepsoft = ""
-
-    raw_body = issue.get('body', '') or ''
 
     if not author_ujepsoft and issue.get('body', ''):
       issue['body'] = markdown_to_html(issue['body'])
@@ -51,7 +52,7 @@ def create_issue(issue, associated_repo, user, repo):
     except Label.DoesNotExist:
       print(f"Label {label_name} does not exist! Not Creating it!")
 
-  images, files = extract_files_from_github(raw_body or '')
+  images, files = extract_files_from_github(issue.get('body', ''))
 
   new_body = issue.get('body', '') or ''
 
@@ -80,54 +81,55 @@ def create_issue(issue, associated_repo, user, repo):
 
   if issue['comments'] > 0:
     issue_comments = GitHubAPIService.get_issue_comments(user, repo, issue['number'])
-    for comment in issue_comments:
-      try:
-        new_comment = Comment.objects.get(number=comment['id'], issue=new_issue)
-      except Comment.DoesNotExist:
-        
-        if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
-          author_ujepsoft = get_ujepsoft_author(comment['body'])
-        else:
-          author_ujepsoft = ""
+    if issue_comments is not None:
+      for comment in issue_comments:
+        try:
+          new_comment = Comment.objects.get(number=comment['id'], issue=new_issue)
+        except Comment.DoesNotExist:
+          
+          if comment['user']['login'] == os.getenv('GITHUB_USERNAME'):
+            author_ujepsoft = get_ujepsoft_author(comment['body'])
+          else:
+            author_ujepsoft = ""
 
-        if not author_ujepsoft and comment.get('body', ''):
-          comment['body'] = markdown_to_html(comment['body'])
+          if not author_ujepsoft and comment.get('body', ''):
+            comment['body'] = markdown_to_html(comment['body'])
 
-        new_comment = Comment.objects.create(
-          number=comment['id'],
-          body=comment['body'],
-          issue=new_issue,
-          author=comment['user']['login'],
-          author_profile_pic=comment['user']['avatar_url'],
-          created_at=comment['created_at'],
-          updated_at=comment['updated_at'],
-          author_ujepsoft=author_ujepsoft
-        )
-
-        images, files = extract_files_from_github(new_comment.body)
-
-        if new_comment.body != "":
-          cleaned_body = remove_files_from_description(new_comment.body, images, files)
-
-          if cleaned_body != new_comment.body:
-            new_comment.body = cleaned_body
-            new_comment.save()
-        
-        for file in files:
-          CommentFile.objects.create(
-            name=remove_file_extenstion_from_name(file[0]),
-            file_type='file',
-            remote_url=file[1],
-            comment=new_comment
+          new_comment = Comment.objects.create(
+            number=comment['id'],
+            body=comment['body'],
+            issue=new_issue,
+            author=comment['user']['login'],
+            author_profile_pic=comment['user']['avatar_url'],
+            created_at=comment['created_at'],
+            updated_at=comment['updated_at'],
+            author_ujepsoft=author_ujepsoft
           )
 
-        for image in images:
-          CommentFile.objects.create(
-            name=remove_file_extenstion_from_name(image[0]),
-            file_type='image',
-            remote_url=image[1],
-            comment=new_comment
-          )
+          images, files = extract_files_from_github(new_comment.body)
+
+          if new_comment.body != "":
+            cleaned_body = remove_files_from_description(new_comment.body, images, files)
+
+            if cleaned_body != new_comment.body:
+              new_comment.body = cleaned_body
+              new_comment.save()
+          
+          for file in files:
+            CommentFile.objects.create(
+              name=remove_file_extenstion_from_name(file[0]),
+              file_type='file',
+              remote_url=file[1],
+              comment=new_comment
+            )
+
+          for image in images:
+            CommentFile.objects.create(
+              name=remove_file_extenstion_from_name(image[0]),
+              file_type='image',
+              remote_url=image[1],
+              comment=new_comment
+            )
 
   issue_serializer = IssueSerializer(new_issue)
   cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=int(os.getenv('REDIS-TIMEOUT')))

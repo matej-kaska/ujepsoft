@@ -5,8 +5,8 @@ import errorReducer, { errorHandlingMiddleware } from "./errorSlice";
 import modalReducer from "./modalSlice";
 import navigateSlice from "./navigateSlice";
 import reloadSlice from "./reloadSlice";
-import snackbarReducer from "./snackbarSlice";
 import settingsSlice from "./settingsSlice";
+import snackbarReducer from "./snackbarSlice";
 
 const rootReducers = combineReducers({
 	auth: authReducer,
@@ -15,7 +15,7 @@ const rootReducers = combineReducers({
 	snackbar: snackbarReducer,
 	navigator: navigateSlice,
 	reload: reloadSlice,
-	settings: settingsSlice
+	settings: settingsSlice,
 });
 
 export const store = configureStore({

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const settingsSlice = createSlice({
 	name: "settings",
 	initialState: {
-		showClosedIssues: false
+		showClosedIssues: false,
 	},
 	reducers: {
 		setShowClosedIssues: (state, action) => {

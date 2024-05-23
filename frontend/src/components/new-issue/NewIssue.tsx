@@ -160,10 +160,10 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 	const updateDescription = (deletedFile: Attachment) => {
 		if (!issue) return;
 		let text = draftToHtml(convertToRaw(descriptionEditorState.getCurrentContent()));
-		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), "");
+		text = text.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${deletedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, "g"), "");
 		setValue("description", text);
 		setDescriptionEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(text || "<p></p>").contentBlocks)));
-	}
+	};
 
 	const getRepos = async () => {
 		const response = await axiosRequest<RepoSelect[]>("GET", "/api/repo/list/small");
@@ -184,7 +184,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 
 		if (uploadedFiles.length > 0) {
 			for (const uploadedFile of uploadedFiles) {
-				data.description = data.description.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, 'g'), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
+				data.description = data.description.replace(new RegExp(`\\n?<p>(?:.*?<br>)*\\s*\\[${uploadedFile.name}\\]\\s*(?:&nbsp;)*<\/p>`, "g"), `\n<p class="file-gh" title="${uploadedFile.file_type === "image" ? "Obrázek" : "Soubor"}">[${uploadedFile.name}]</p>`);
 			}
 		}
 
@@ -326,7 +326,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						/>
 					</Suspense>
 					<p className={`${errors.description ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.description?.message}!</p>
-					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateDescription}/>
+					<AddAttachment files={files} setFiles={setFiles} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} updateDescription={updateDescription} />
 					{errors.apiError && <p className="ml-0.5 text-sm text-red-600">Někde nastala chyba zkuste to znovu!</p>}
 					<div className="buttons">
 						<Button type="submit" onClick={() => setValidate(true)}>
