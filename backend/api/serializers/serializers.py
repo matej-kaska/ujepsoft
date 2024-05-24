@@ -1,4 +1,3 @@
-from utils.issues.utils import get_label_names_by_ids
 from users.serializers.serializers import UserPublicSerializer
 from rest_framework import serializers
 from api.models import IssueFile, Offer, Keyword, OfferFile, Repo, Issue, Comment

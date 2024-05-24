@@ -1,15 +1,6 @@
 import re
-from api.models import Label
 from datetime import datetime,timezone
 import markdown
-
-def get_label_names_by_ids(label_ids):
-  """
-  Get label names by their ids
-  """
-  labels = Label.objects.filter(id__in=label_ids)
-
-  return [label.name for label in labels]
 
 def find_issue_by_id(objs, id):
   """
