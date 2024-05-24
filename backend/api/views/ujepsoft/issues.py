@@ -40,7 +40,7 @@ class IssuesList(generics.ListAPIView):
         break
     
     issues_cached = cache.get("issues-cached")
-    if len(response) == len(issues) and issues_cached == "1":
+    if len(response) == issues.count() and issues_cached == "1":
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
       page = self.paginate_queryset(response)
       if page is not None:
@@ -50,16 +50,17 @@ class IssuesList(generics.ListAPIView):
     
     cache.set("issues-cached", "1", timeout=REDIS_TIMEOUT)
     fetched_issues = GitHubAPIService.get_all_issues()
+    if closed == "false":
+      fetched_issues = [issue for issue in fetched_issues if issue["state"] == "open"]
     issue_ids = [str(issue.gh_id) for issue in issues]
     response = []
 
     for fetched_issue in fetched_issues:
-
       if str(fetched_issue["id"]) in issue_ids:
         issue_ids.remove(str(fetched_issue["id"]))
 
       issue = find_issue_by_id(issues, fetched_issue["id"])
-
+      
       # Getting new issue
       if issue is None:
         new_issue = GitHubAPIService.get_issue(fetched_issue["author"], fetched_issue["repo"], fetched_issue["number"])
@@ -74,7 +75,7 @@ class IssuesList(generics.ListAPIView):
       if issue and datetime.strptime(fetched_issue["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) != issue.updated_at:
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
         continue
-
+      
       issue_serializer = IssueSerializer(issue)
       cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
       
