@@ -3,11 +3,12 @@ import os
 from datetime import datetime, timezone
 
 from api.models import Issue, Label, Repo, IssueFile, Comment, CommentFile
-from api.serializers.serializers import IssueFullSerializer, IssueSerializer
+from api.serializers.serializers import IssueSerializer
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.cache import cache
+from django.db.models import Prefetch
 
 from api.services import GitHubAPIService
 from api.pagination import StandardPagination
@@ -18,6 +19,7 @@ from utils.issues.new_obj import create_issue, update_issue
 from utils.issues.utils import add_files_to_description, add_ujepsoft_author, find_issue_by_id, get_datetime, remove_file_extenstion_from_name
 
 class IssuesList(generics.ListAPIView):
+  queryset = Issue.objects.prefetch_related('labels', 'comments', 'files', Prefetch('repo'))
   serializer_class = IssueSerializer
   permission_classes = (permissions.IsAuthenticated,)
   pagination_class = StandardPagination
@@ -49,7 +51,9 @@ class IssuesList(generics.ListAPIView):
       return Response(response,status=status.HTTP_200_OK)
     
     cache.set("issues-cached", "1", timeout=REDIS_TIMEOUT)
+
     fetched_issues = GitHubAPIService.get_all_issues()
+
     if closed == "false":
       fetched_issues = [issue for issue in fetched_issues if issue["state"] == "open"]
     issue_ids = [str(issue.gh_id) for issue in issues]
@@ -76,21 +80,18 @@ class IssuesList(generics.ListAPIView):
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
         continue
       
-      issue_serializer = IssueSerializer(issue)
-      cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
-      
-      issue_full_serializer = IssueFullSerializer(issue)
-      cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
+      issue_data = IssueSerializer(issue).data
+      cache.set(f"issue-{issue.pk}", json.dumps(issue_data), timeout=REDIS_TIMEOUT)
 
       response.append(issue)
 
     if len(issue_ids) > 0:
       Issue.objects.filter(gh_id__in=issue_ids).delete()
     
-    response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
-
     if closed == "false":
       response = [issue for issue in response if issue.state == "open"]
+    
+    response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
 
     page = self.paginate_queryset(response)
     if page is not None:
@@ -238,15 +239,12 @@ class IssueCreate(APIView):
     issue_serializer = IssueSerializer(Issue.objects.get(pk=new_issue.pk))
     cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
-    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=new_issue.pk))
-    cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
-
     return Response({
       "id": new_issue.pk
     }, status=status.HTTP_201_CREATED)
 
 class IssueDetail(APIView):
-  serializer_class = IssueFullSerializer
+  serializer_class = IssueSerializer
   permission_classes = (permissions.IsAuthenticated,)
 
   def get(self, request, pk):
@@ -258,7 +256,7 @@ class IssueDetail(APIView):
         "cz": "Issue nebyl nalezen"
       }, status=status.HTTP_404_NOT_FOUND)
     
-    cached_issue = cache.get("issue-full-" + str(issue.pk))
+    cached_issue = cache.get("issue-" + str(issue.pk))
     if cached_issue:
       return Response(json.loads(cached_issue), status=status.HTTP_200_OK)
     
@@ -276,7 +274,7 @@ class IssueDetail(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     serializer = self.serializer_class(issue)
-    cache.set("issue-full-" + str(issue.pk), json.dumps(serializer.data), timeout=REDIS_TIMEOUT)
+    cache.set("issue-" + str(issue.pk), json.dumps(serializer.data), timeout=REDIS_TIMEOUT)
     return Response(serializer.data, status=status.HTTP_200_OK)
   
   def delete(self, request, pk):
@@ -453,9 +451,6 @@ class IssueDetail(APIView):
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
-    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
-
     return Response(status=status.HTTP_200_OK)
 
 class IssueAddComment(APIView):
@@ -546,9 +541,6 @@ class IssueAddComment(APIView):
     # Add to to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
-
-    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
     return Response({
       "id": new_comment.pk
@@ -648,9 +640,6 @@ class EditComment(APIView):
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
-    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
-
     return Response(status=status.HTTP_200_OK)
   
   def delete(self, request, issue_pk, comment_pk):
@@ -689,8 +678,5 @@ class EditComment(APIView):
     # Add to to cache
     issue_serializer = IssueSerializer(Issue.objects.get(pk=issue.pk))
     cache.set("issue-" + str(issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
-
-    issue_full_serializer = IssueFullSerializer(Issue.objects.get(pk=issue.pk))
-    cache.set("issue-full-" + str(issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT) 
 
     return Response(status=status.HTTP_204_NO_CONTENT)

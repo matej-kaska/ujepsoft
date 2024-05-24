@@ -32,7 +32,7 @@ const UnitIssue = ({ issue }: UnitIssueProps) => {
 			)}
 			<p className="unit-description">{issue.body && htmlToPlainText(removeFooterFromBody(issue.body))}</p>
 			<div className="unit-footer">
-				<span className="unit-comments">Počet komentářů: {issue.comments}</span>
+				<span className="unit-comments">Počet komentářů: {issue.comments_count}</span>
 				<span className="unit-date">Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>
 				<span className="unit-date ml-4">Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
 				<Link to={`/issue/${issue.id}`}>
