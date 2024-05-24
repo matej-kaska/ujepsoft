@@ -134,7 +134,6 @@ def add_files_to_description(description: str, files) -> str:
   files_description = "\n"
 
   for file in files:
-    #extension = file.name.split('.')[-1].lower()
     if file.file_type == 'image':
       images_description = images_description + f"<img src='{file.file.url if file.file else file.remote_url}' alt='{file.name}'>\n"
     else:
