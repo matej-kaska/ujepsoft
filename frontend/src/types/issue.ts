@@ -7,7 +7,7 @@ export type Issue = {
 	state: string;
 	labels: string[];
 	author: string;
-	comments: number;
+	comments_count: number;
 	author_profile_pic: string;
 	author_ujepsoft: string;
 	files: Attachment[];

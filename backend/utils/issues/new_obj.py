@@ -1,6 +1,6 @@
 import datetime
 from api.models import Comment, CommentFile, Issue, IssueFile, Label
-from api.serializers.serializers import IssueFullSerializer, IssueSerializer
+from api.serializers.serializers import IssueSerializer
 from api.services import GitHubAPIService
 import json
 import os
@@ -135,9 +135,6 @@ def create_issue(issue, associated_repo, user, repo):
   issue_serializer = IssueSerializer(new_issue)
   cache.set("issue-" + str(new_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
 
-  issue_full_serializer = IssueFullSerializer(new_issue)
-  cache.set("issue-full-" + str(new_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
-
 def update_issue(issue_pk, new_issue, user, repo):
   """
   Update issue object with all related objects
@@ -235,9 +232,6 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   issue_serializer = IssueSerializer(updating_issue)
   cache.set("issue-" + str(updating_issue.pk), json.dumps(issue_serializer.data), timeout=REDIS_TIMEOUT)
-
-  issue_full_serializer = IssueFullSerializer(updating_issue)
-  cache.set("issue-full-" + str(updating_issue.pk), json.dumps(issue_full_serializer.data), timeout=REDIS_TIMEOUT)
 
   return updating_issue
 

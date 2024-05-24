@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET", 'django-insecure-o!t-tj#9&_%9cranyr65a^a91douw@)!!l5_t@6bv-_yqacw+8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_PRODUCTION", "False") == "False"
+#DEBUG = os.environ.get("DJANGO_PRODUCTION", "False") == "False"
+DEBUG = True
 
 ALLOWED_HOSTS = [host for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")]
 
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "rest_framework.authtoken",
+    'debug_toolbar',
 ]
 
 REST_FRAMEWORK = {
@@ -57,17 +59,30 @@ REST_FRAMEWORK = {
     ],
 }
 
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+}
+
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+    'host.docker.internal'
+]
 
 TEMPLATES = [
     {

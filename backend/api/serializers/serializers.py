@@ -42,22 +42,22 @@ class CommentFullSerializer(serializers.ModelSerializer):
     model = Comment
     fields = ['id', 'number', 'body', 'author','author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at']
 
-# Issue serializer with comments
-class IssueFullSerializer(serializers.ModelSerializer):
-  labels = serializers.SerializerMethodField()
+class IssueSerializer(serializers.ModelSerializer):
+  labels = serializers.StringRelatedField(many=True)
   comments = CommentFullSerializer(many=True, read_only=True)
+  comments_count = serializers.SerializerMethodField()
   files = FileIssueSerializer(many=True, read_only=True)
   repo = RepoForIssueSerializer()
 
   class Meta:
     model = Issue
-    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'comments', 'repo']
+    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'comments', 'comments_count', 'repo']
 
-  def get_labels(self, obj):
-    return [label.name for label in obj.labels.all()]
+  def get_comments_count(self, obj):
+    return obj.comments.all().count()
   
 class RepoFullSerializer(serializers.ModelSerializer):
-  issues = IssueFullSerializer(many=True, read_only=True)
+  issues = IssueSerializer(many=True, read_only=True)
 
   class Meta:
     model = Repo
@@ -78,26 +78,3 @@ class RepoSerializerSmall(serializers.ModelSerializer):
 
   def get_name(self, obj):
     return f"{obj.name} ({obj.author})"
-  
-# Issue Serializer without comments
-class IssueSerializer(serializers.ModelSerializer):
-  labels = serializers.SerializerMethodField()
-  repo = RepoForIssueSerializer()
-  comments = serializers.SerializerMethodField()
-  files = FileIssueSerializer(many=True, read_only=True)
-
-  class Meta:
-    model = Issue
-    fields = ['id', 'number', 'title', 'body', 'state', 'labels', 'author', 'author_profile_pic', 'author_ujepsoft', 'files', 'created_at', 'updated_at', 'repo', 'comments']
-
-  def get_labels(self, obj):
-    if isinstance(obj, dict):
-      label_ids = obj.get('labels', [])
-      return get_label_names_by_ids(label_ids)
-    else:
-      return [label.name for label in obj.labels.all()]
-  
-  def get_comments(self, obj):
-    if isinstance(obj, dict):
-      return obj.get('comments', 0)
-    return len(obj.comments.all())

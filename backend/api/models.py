@@ -57,7 +57,7 @@ class Label(models.Model):
   color = models.CharField(max_length=7)
 
   def __str__(self):
-    return repr(self)
+    return self.name
   
   def __repr__(self):
     return f"[{self.pk}] {self.name}"
