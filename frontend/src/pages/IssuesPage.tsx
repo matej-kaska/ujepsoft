@@ -63,7 +63,6 @@ const IssuesPage = () => {
 				navigate("/");
 				return;
 			}
-			console.log(response.data)
 			setIssues(response.data.results);
 			setNext(response.data.next);
 			setLoading(false);
@@ -80,9 +79,7 @@ const IssuesPage = () => {
 			console.error("Error loading more issues:", response.message.cz);
 			return;
 		}
-		console.log(response.data)
-		//setIssues((prev) => [...prev, ...response.data.results]);
-		setIssues(response.data.results)
+		setIssues(response.data.results);
 		setNext(response.data.next);
 		setLoading(false);
 	};
