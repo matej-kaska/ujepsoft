@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import JsonResponse
-from django.conf import settings
 
 urlpatterns = [
     path("api/test/", lambda req: JsonResponse({"message": "Backend is connected!"})),
@@ -25,10 +24,3 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("api/users/", include("users.urls")),
 ]
-
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('api/__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns

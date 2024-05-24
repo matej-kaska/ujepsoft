@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime, timezone
-import time
 
 from api.models import Issue, Label, Repo, IssueFile, Comment, CommentFile
 from api.serializers.serializers import IssueSerializer
@@ -22,11 +21,10 @@ from utils.issues.utils import add_files_to_description, add_ujepsoft_author, fi
 class IssuesList(generics.ListAPIView):
   queryset = Issue.objects.prefetch_related('labels', 'comments', 'files', Prefetch('repo'))
   serializer_class = IssueSerializer
-  #permission_classes = (permissions.IsAuthenticated,)
+  permission_classes = (permissions.IsAuthenticated,)
   pagination_class = StandardPagination
   
   def list(self, request, *args, **kwargs):
-    tic_full = time.perf_counter()
     closed = self.request.query_params.get('closed', None)
     if closed is None or closed == "true":
       issues = Issue.objects.prefetch_related('comments').all()
@@ -54,10 +52,7 @@ class IssuesList(generics.ListAPIView):
     
     cache.set("issues-cached", "1", timeout=REDIS_TIMEOUT)
 
-    tic = time.perf_counter()
     fetched_issues = GitHubAPIService.get_all_issues()
-    toc = time.perf_counter()
-    print(f"Time to fetch issues: {toc - tic} seconds")
 
     if closed == "false":
       fetched_issues = [issue for issue in fetched_issues if issue["state"] == "open"]
@@ -85,17 +80,10 @@ class IssuesList(generics.ListAPIView):
         response.append(update_issue(issue.pk, fetched_issue, issue.repo.author, issue.repo.name))
         continue
       
-      
-
-      issue_full_data = IssueSerializer(issue).data
-      cache.set(f"issue-{issue.pk}", json.dumps(issue_full_data), timeout=REDIS_TIMEOUT)
-
-      #issue_data = {field: issue_full_data.get(field, None) for field in IssueSerializer.Meta.fields}
-      #cache.set(f"issue-{issue.pk}", json.dumps(issue_data), timeout=REDIS_TIMEOUT)
+      issue_data = IssueSerializer(issue).data
+      cache.set(f"issue-{issue.pk}", json.dumps(issue_data), timeout=REDIS_TIMEOUT)
 
       response.append(issue)
-
-
 
     if len(issue_ids) > 0:
       Issue.objects.filter(gh_id__in=issue_ids).delete()
@@ -105,18 +93,12 @@ class IssuesList(generics.ListAPIView):
     
     response = sorted(response, key=lambda x: get_datetime(x.updated_at), reverse=True)
 
-
     page = self.paginate_queryset(response)
     if page is not None:
       serializer = self.get_serializer(page, many=True)
-      toc_full = time.perf_counter()
-      print(f"Time to load all issues: {toc_full - tic_full} seconds")
-      print(f"Fetching from github is {(toc - tic) / (toc_full - tic_full) * 100} %")
       return self.get_paginated_response(serializer.data)
     
     serializer = self.get_serializer(response, many=True)
-    toc_full = time.perf_counter()
-    print(f"Time to load all issues: {toc_full - tic_full} seconds")
     return Response(serializer.data,status=status.HTTP_200_OK)
   
 class IssueCreate(APIView):
