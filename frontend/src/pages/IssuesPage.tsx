@@ -14,6 +14,7 @@ import { setShowClosedIssues } from "redux/settingsSlice";
 import { RootState } from "redux/store";
 import { Issue } from "types/issue";
 import axiosRequest from "utils/axios";
+import useWindowSize from "utils/useWindowSize";
 
 type IssuesResponse = {
 	next: string;
@@ -25,12 +26,22 @@ const IssuesPage = () => {
 	const navigate = useNavigate();
 	const { showModal } = useModal();
 	const { openErrorSnackbar } = useSnackbar();
+	const windowSize = useWindowSize();
 	const reload = useSelector((state: RootState) => state.reload);
 	const showClosedIssues = useSelector((state: RootState) => state.settings.showClosedIssues);
 	const [issues, setIssues] = useState<Issue[]>([]);
 	const [next, setNext] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(true);
 	const cancelTokenSource = useRef(axios.CancelToken.source());
+	const [isMobile, setIsMobile] = useState<boolean>(false);
+
+	useLayoutEffect(() => {
+		if (windowSize[0] > 1060) {
+			setIsMobile(false);
+			return;
+		}
+		setIsMobile(true);
+	}, [windowSize[0]])
 
 	useLayoutEffect(() => {
 		getIssues();
@@ -98,7 +109,7 @@ const IssuesPage = () => {
 								<input type="checkbox" id="toggle" defaultChecked={!showClosedIssues} onClick={() => dispatch(setShowClosedIssues(!showClosedIssues))} />
 								<span className="slider" />
 							</label>
-							<span className="text">Nezobrazovat uzavřené</span>
+							<span className="text">{isMobile ? "Otevřené" : "Nezobrazovat uzavřené"}</span>
 						</div>
 						<Button color="accent" onClick={() => showModal(<NewIssue />)}>
 							+ Přidat issue
@@ -107,13 +118,13 @@ const IssuesPage = () => {
 					</div>
 				</header>
 				{(issues.length === 0 || (!showClosedIssues ? issues.filter((issue) => issue.state === "closed").length === issues.length : issues.filter((issue) => issue.state === "open").length === issues.length)) && !loading ? (
-					<span className="mt-4 text-gray-600 italic">Nejsou zde žádné issues</span>
+					<span className="mt-4 text-gray-600 italic no-issues">Nejsou zde žádné issues</span>
 				) : (
 					<section className="issues-container">
 						{issues?.map((issue: Issue, index: number) => {
 							if (!showClosedIssues && issue.state === "closed") return;
 
-							return <UnitIssue issue={issue} key={index} />;
+							return <UnitIssue issue={issue} isMobile={isMobile} key={index} />;
 						})}
 					</section>
 				)}

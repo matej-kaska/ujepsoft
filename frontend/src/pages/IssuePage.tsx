@@ -20,6 +20,7 @@ import axiosRequest from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
 import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
+import useWindowSize from "utils/useWindowSize";
 
 const IssuePage = () => {
 	const navigate = useNavigate();
@@ -27,10 +28,20 @@ const IssuePage = () => {
 	const { id } = useParams();
 	const { showModal, closeModal } = useModal();
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
+	const windowSize = useWindowSize();
 	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 	const reload = useSelector((state: RootState) => state.reload);
 	const [issue, setIssue] = useState<FullIssue>({} as FullIssue);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [isMobile, setIsMobile] = useState<boolean>(false);
+
+	useLayoutEffect(() => {
+		if (windowSize[0] > 1060) {
+			setIsMobile(false);
+			return;
+		}
+		setIsMobile(true);
+	}, [windowSize[0]]);
 
 	useLayoutEffect(() => {
 		getIssue();
@@ -100,7 +111,11 @@ const IssuePage = () => {
 						)}
 						<div className="dates">
 							<span>Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>
-							<span>Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
+							{isMobile ?
+								<span>Aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
+							:
+								<span>Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
+							}
 						</div>
 						<section className="description-wrapper">
 							<h2>Popis Issue:</h2>

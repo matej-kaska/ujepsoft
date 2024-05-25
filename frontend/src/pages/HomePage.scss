@@ -46,3 +46,16 @@
     }
   }
 }
+
+@media (max-width:1060px) {
+  .homepage {
+    header,.offer-container {
+      width: 100% !important;
+      padding-inline: 1rem !important;
+    }
+
+    .no-issues {
+      margin-bottom: 1rem;
+    }  
+  }
+}

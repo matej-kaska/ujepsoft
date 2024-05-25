@@ -96,7 +96,7 @@ const AdministrationPage = () => {
 			<Navbar />
 			<section className="administration-page">
 				<header>
-					<h1>Administrace UJEP Soft</h1>
+					<h1>Administrace UJEP SOFT</h1>
 				</header>
 				<section className="repos-wrapper">
 					<form className="add-new" onSubmit={handleSubmit(addRepo)}>

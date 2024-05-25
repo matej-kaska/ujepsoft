@@ -2,6 +2,8 @@
   h1 {
     user-select: none;
     font-size: 18px;
+    text-wrap: wrap;
+    text-align: center;
   }
 
   .buttons {
@@ -32,6 +34,16 @@
     &:focus-visible {
         border-color: gray;
         outline: 0px;
+    }
+  }
+}
+
+@media (max-width: 1060px) {
+  .general-modal {
+    width: 80vw;
+    
+    h1 {
+      font-size: 1.5rem !important;
     }
   }
 }

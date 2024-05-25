@@ -43,7 +43,7 @@ services:
     volumes:
       - ./backend:/backend
     environment:
-      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16
+      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16,192.168.1.2
       - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8080
       - DJANGO_MEDIA_URL=http://localhost:8080/backend/media/
       - DJANGO_STATIC_URL=http://localhost:8080/backend/static/

@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-
+  
   &.open {
     background-color: $color-lightgray;
   }
@@ -16,10 +16,15 @@
     width: 100%;
     cursor: pointer;
     user-select: none;
+    padding-inline: 1rem;
 
     &:hover {
       background-color: $color-lightgray;
     }
+  }
+
+  ol {
+    padding-inline: 1rem !important;
   }
 
   li {

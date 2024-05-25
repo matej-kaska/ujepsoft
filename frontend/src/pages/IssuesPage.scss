@@ -134,3 +134,33 @@
     margin-bottom: 2rem;
   }
 }
+
+@media (max-width:1060px) {
+  .issues-page {
+    header,.issues-container {
+      min-width: 100% !important;
+      padding-inline: 1rem !important;
+    }
+
+    .footer-header {
+      min-width: unset !important;
+      width: 100% !important;
+
+      .text {
+        font-size: 0.75rem;
+      }
+
+      .spacer {
+        width: 5.875rem !important;
+      }
+    }
+
+    .no-issues {
+      margin-bottom: 1rem;
+    }
+
+    .unit-issue {
+      min-width: unset !important;
+    }
+  }
+}

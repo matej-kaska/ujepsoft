@@ -110,3 +110,19 @@
     }
   }
 }
+
+@media (max-width:1060px) {
+  .administration-page {
+    padding-inline: 1rem;
+
+    .repos-wrapper {
+      .add-new {
+        .input-wrapper {
+          input {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
