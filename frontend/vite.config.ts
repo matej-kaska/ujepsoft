@@ -25,6 +25,10 @@ export default defineConfig({
 	},
 	build: {
 		sourcemap: true,
+		minify: "terser"
 	},
+	css: {
+		postcss: "./postcss.config.js"
+  },
 	publicDir: "public",
 });
