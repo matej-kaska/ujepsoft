@@ -1,5 +1,3 @@
-import { faCheck, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
@@ -27,6 +25,8 @@ import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } fr
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 import { ReactComponent as CloseIcon } from "images/close.svg";
+import { ReactComponent as Check } from "images/check.svg";
+import { ReactComponent as Chevron } from "images/chevron.svg";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
@@ -267,28 +267,28 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 							);
 						})}
 					</Dropdown>
-					<FontAwesomeIcon icon={faChevronDown} className={`arrow ${issue ? "arrow-disabled" : ""}`} />
+					<Chevron className={`arrow rotate-90 ${issue ? "arrow-disabled" : ""}`} />
 					<p className={`${errors.repo ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.repo?.message}!</p>
 					<div className="labels-wrapper">
 						<h2>Označení </h2>
 						<div className="labels">
 							<div className="label">
 								<input type="checkbox" id="bug" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("bug")} checked={labels.includes("bug")} />
-								<FontAwesomeIcon icon={faCheck} className="check" />
+								<Check className="check" />
 								<label htmlFor="bug" className="bug">
 									chyba
 								</label>
 							</div>
 							<div className="label">
 								<input type="checkbox" id="enhancement" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("enhancement")} checked={labels.includes("enhancement")} />
-								<FontAwesomeIcon icon={faCheck} className="check" />
+								<Check className="check" />
 								<label htmlFor="enhancement" className="enhancement">
 									vylepšení
 								</label>
 							</div>
 							<div className="label">
 								<input type="checkbox" id="question" className={`${errors.labels ? "error" : ""}`} onChange={() => changeLabel("question")} checked={labels.includes("question")} />
-								<FontAwesomeIcon icon={faCheck} className="check" />
+								<Check className="check" />
 								<label htmlFor="question" className="question">
 									otázka
 								</label>

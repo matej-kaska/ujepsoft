@@ -274,6 +274,38 @@
   }
 }
 
+.edit-button, .remove-button, .done-button {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+
+  &.edit-button {
+    background-color: #E6F4F1;
+    &:hover {
+      background-color: #D4E2DF;
+    }
+  }
+
+  &.remove-button {
+    background-color: #FCE8E8;
+    &:hover {
+      background-color: #F8C9C9;
+    }
+  }
+
+  &.done-button {
+    background-color: #ddd3ee;
+    &:hover {
+      background-color: #cfc1e7;
+    }
+  }
+}
+
 @media (max-width:1060px) {
   h1 {
     font-size: 2rem !important;

@@ -1,5 +1,4 @@
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ReactComponent as Chevron } from "images/chevron.svg";
 import { Menu, Transition } from "@headlessui/react";
 import { ButtonHTMLAttributes, Fragment, PropsWithChildren, ReactNode } from "react";
 
@@ -34,7 +33,7 @@ const Dropdown = ({ label, disabled, upPlacement, className, noArrow, defaultCla
 					{svg}
 					{label}
 
-					{noArrow ? "" : <FontAwesomeIcon icon={upPlacement ? faChevronUp : faChevronDown} className="ml-2 h-3" />}
+					{noArrow ? "" : <Chevron className={`ml-2 h-3 ${upPlacement ? "rotate-90" : "-rotate-90"} arrow`} />}
 				</Menu.Button>
 
 				<Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">

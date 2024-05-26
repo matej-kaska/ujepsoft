@@ -21,6 +21,7 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+      gap: 0.5rem;
 
       h1 {
         max-width: 100%;
@@ -28,34 +29,7 @@
         font-size: 32px;
         margin-right: 2px;
       }
-
-      .edit-icon, .remove-icon {
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
-        min-height: 30px;
-        border-radius: 5px;
-        padding: 6px;
-        margin-left: 6px;
-        cursor: pointer;
-      }
-
-      .edit-icon {
-        background-color: #E6F4F1;
-        &:hover {
-          background-color: #D4E2DF;
-        }
-      }
-
-      .remove-icon {
-        background-color: #FCE8E8;
-        &:hover {
-          background-color: #F8C9C9;
-        }
-      }
     }
-
-
 
     h2 {
       font-size: 24px;

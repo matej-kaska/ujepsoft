@@ -11,30 +11,6 @@
     gap: 0.5rem;
     align-items: center;
     justify-content: flex-start;
-
-    .edit-icon, .remove-icon {
-      width: 30px;
-      height: 30px;
-      min-width: 30px;
-      min-height: 30px;
-      border-radius: 5px;
-      padding: 6px;
-      cursor: pointer;
-    }
-
-    .edit-icon {
-      background-color: #E6F4F1;
-      &:hover {
-        background-color: #D4E2DF;
-      }
-    }
-
-    .remove-icon {
-      background-color: #FCE8E8;
-      &:hover {
-        background-color: #F8C9C9;
-      }
-    }
   }
 
   .body {

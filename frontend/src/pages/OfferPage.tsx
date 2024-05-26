@@ -77,8 +77,8 @@ const OfferPage = () => {
 								<h1>{offer.name}</h1>
 								{(userInfo.is_staff || Number(userInfo.id) === offer.author.id) && (
 									<>
-										<EditIcon className="edit-icon" onClick={() => showModal(<NewOffer offer={offer} />)} />
-										<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)} />
+										<button className="edit-button" onClick={() => showModal(<NewOffer offer={offer} />)}><EditIcon/></button>
+										<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)}><RemoveIcon/></button>
 									</>
 								)}
 							</div>

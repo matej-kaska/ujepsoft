@@ -1,5 +1,3 @@
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "components/buttons/Button";
 import Label from "components/label/Label";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
@@ -7,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Issue } from "types/issue";
 import { htmlToPlainText } from "utils/htmlToPlainText";
 import { removeFooterFromBody } from "utils/plainTextToHtml";
+import { ReactComponent as Chevron } from "images/chevron.svg";
 
 type UnitIssueProps = {
 	issue: Issue;
@@ -43,7 +42,7 @@ const UnitIssue = ({ issue, isMobile }: UnitIssueProps) => {
 					<span className="unit-date">Aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
 				}
 				<Link to={`/issue/${issue.id}`}>
-					<Button icon={<FontAwesomeIcon icon={faChevronRight} />} iconPosition="right">
+					<Button icon={<Chevron/>} iconPosition="right">
 						Zobrazit
 					</Button>
 				</Link>

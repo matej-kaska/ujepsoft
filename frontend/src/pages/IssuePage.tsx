@@ -92,8 +92,8 @@ const IssuePage = () => {
 								<h1>{issue.title}</h1>
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
-										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <EditIcon className="edit-icon" onClick={() => showModal(<NewIssue issue={issue} />)} />}
-										{issue.state !== "closed" ? <DoneIcon className="done-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)} /> : <span className="closed">(uzavřené)</span>}
+										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <button className="edit-button" onClick={() => showModal(<NewIssue issue={issue} />)}><EditIcon/></button>}
+										{issue.state !== "closed" ? <button className="done-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}><DoneIcon/> </button>: <span className="closed">(uzavřené)</span>}
 									</>
 								)}
 							</div>
