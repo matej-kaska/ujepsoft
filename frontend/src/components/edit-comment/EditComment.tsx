@@ -20,6 +20,7 @@ import { removeFooterFromBody } from "utils/plainTextToHtml";
 import { commentSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
@@ -144,7 +145,10 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 				<LoadingScreen modal />
 			) : (
 				<form className="edit-comment" onSubmit={handleSubmit(handlePostIssue)}>
-					<h1>Změnit komentář</h1>
+					<header className="modal-header">
+						<h1>Změnit komentář</h1>
+						<CloseIcon className="close-icon" onClick={() => closeModal()} />
+					</header>
 					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
 						<WysiwygEditor
 							stripPastedStyles={true}

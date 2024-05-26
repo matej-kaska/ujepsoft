@@ -22,3 +22,11 @@
         white-space: nowrap;
     }
 }
+
+@media (max-width: 1060px) {
+    .tooltip {
+        .panel {
+            transform: translate(-14%, -140%) !important;
+        }
+    }
+}

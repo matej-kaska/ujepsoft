@@ -192,7 +192,10 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 				<LoadingScreen modal />
 			) : (
 				<form className="new-offer" onSubmit={handleSubmit(handlePostOffer)}>
-					<h1>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</h1>
+					<header className="modal-header">
+						<h1>{offer ? "Změnit nabídku" : "Vytvořit nabídku"}</h1>
+						<CloseIcon className="close-icon" onClick={() => closeModal()} />
+					</header>
 					<label className="name">Název</label>
 					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název nabídky..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>

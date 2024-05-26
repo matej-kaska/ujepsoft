@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useModal } from "../../contexts/ModalProvider";
 import Button from "../buttons/Button";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 export interface GeneralModalProps {
 	text: string;
@@ -16,7 +17,10 @@ const GeneralModal = ({ text, actionOnClick, input, actionOnClickWparam, submitT
 
 	return (
 		<div className="general-modal">
-			<h1>{text}</h1>
+			<header className="modal-header">
+				<h1>{text}</h1>
+				<CloseIcon className="close-icon" onClick={() => closeModal()} />
+			</header>
 			{input && (
 				<>
 					<h2>{input}</h2>

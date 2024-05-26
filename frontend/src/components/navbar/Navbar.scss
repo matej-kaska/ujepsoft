@@ -126,13 +126,21 @@
       ul {
         gap: 1rem !important;
 
-        svg {
-          width: 2.5rem;
-          height: 2.5rem;
+        li {
+          border-radius: 50%;
 
-          &:hover {
-            circle {
-              fill: #3333;
+          a {
+            border-radius: 50%;
+            
+            svg {
+              width: 2.5rem;
+              height: 2.5rem;
+              
+              &:hover {
+                circle {
+                  fill: #3333;
+                }
+              }
             }
           }
         }

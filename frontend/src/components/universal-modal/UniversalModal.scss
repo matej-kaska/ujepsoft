@@ -46,9 +46,34 @@
   width: fit-content;
   align-items: flex-end;
   justify-content: space-between;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    
+    .close-icon {
+      margin-bottom: auto;
+      margin-top: 0.675rem;
+      margin-right: 0.675rem;
+      cursor: pointer;
+      width: 1.25rem;
+      height: 1.25rem;
+
+      &:hover {
+        path {
+          fill: dimgray;
+        }
+      }
+    }
+  }
 }
 
-.flex-start {
-  align-items: flex-start;
-  padding-bottom: 10px;
+@media (max-width: 1060px) {
+  .modal-content {
+    h1 {
+      font-size: 1.5rem !important;
+    }
+  }
 }

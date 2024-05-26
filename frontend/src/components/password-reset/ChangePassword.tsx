@@ -8,6 +8,7 @@ import { confirmPasswordSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import { useModal } from "../../contexts/ModalProvider";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 type Form = {
 	password: string;
@@ -58,7 +59,10 @@ const ChangePassword = ({ token }: ChangePasswordProps) => {
 
 	return (
 		<form className="change-password" onSubmit={handleSubmit(handleChange)}>
-			<h1>Změnit heslo</h1>
+			<header className="modal-header">
+				<h1>Změnit heslo</h1>
+				<CloseIcon className="close-icon" onClick={() => closeModal()} />
+			</header>
 			<label>Heslo:</label>
 			<input className={`${errors.password ? "border-red-600" : ""}`} type="password" placeholder="Zadejte heslo..." {...register("password")} />
 			<p className={`${errors.password ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.password?.message}!</p>

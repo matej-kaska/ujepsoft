@@ -9,6 +9,7 @@ import axiosRequest from "utils/axios";
 import { confirmPasswordSchema, emailSchema, gdprSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import Login from "./Login";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 type Form = {
 	email: string;
@@ -19,7 +20,7 @@ type Form = {
 };
 
 const Register = () => {
-	const { showModal } = useModal();
+	const { showModal, closeModal } = useModal();
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const [isSuccessfullySubmitted, setIsSuccessfullySubmitted] = useState<boolean>(false);
 
@@ -80,7 +81,10 @@ const Register = () => {
 
 	return (
 		<form className="register" onSubmit={handleSubmit(handleRegister)}>
-			<h1>Zaregistrovat se</h1>
+			<header className="modal-header">
+				<h1>Zaregistrovat se</h1>
+				<CloseIcon className="close-icon" onClick={() => closeModal()} />
+			</header>
 			<label>E-mail:</label>
 			<input className={`${errors.email ? "border-red-600" : ""}`} type="email" placeholder="Zadejte e-mail..." {...register("email")} />
 			<p className={`${errors.email ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.email?.message}!</p>

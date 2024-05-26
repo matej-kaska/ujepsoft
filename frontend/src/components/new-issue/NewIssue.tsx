@@ -26,6 +26,7 @@ import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
@@ -242,7 +243,10 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 				<LoadingScreen modal />
 			) : (
 				<form className="new-issue" onSubmit={handleSubmit(handlePostIssue)}>
-					<h1>{issue ? "Změnit issue" : "Vytvořit issue"}</h1>
+					<header className="modal-header">
+						<h1>{issue ? "Změnit issue" : "Vytvořit issue"}</h1>
+						<CloseIcon className="close-icon" onClick={() => closeModal()} />
+					</header>
 					<label className="name">Název</label>
 					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>

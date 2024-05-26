@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import axiosRequest from "utils/axios";
 import { emailSchema } from "utils/validationSchemas";
 import { object } from "yup";
+import { ReactComponent as CloseIcon } from "images/close.svg";
 
 type Form = {
 	email: string;
@@ -47,7 +48,10 @@ const PasswordReset = () => {
 
 	return (
 		<form className="password-reset" onSubmit={handleSubmit(handleReset)}>
-			<h1>Zapomenuté heslo</h1>
+			<header className="modal-header">
+				<h1>Zapomenuté heslo</h1>
+				<CloseIcon className="close-icon" onClick={() => closeModal()} />
+			</header>
 			<label>E-mail:</label>
 			<input className={`${errors.email ? "border-red-600" : ""}`} type="email" placeholder="Zadejte e-mail..." {...register("email")} />
 			<p className={`${errors.email ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.email?.message}!</p>
