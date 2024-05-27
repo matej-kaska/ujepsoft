@@ -102,7 +102,7 @@ const AdministrationPage = () => {
 					<form className="add-new" onSubmit={handleSubmit(addRepo)}>
 						<h2>Přidat nový repozitář</h2>
 						<div className="input-wrapper">
-							<input type="text" className="new-repo" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)} />
+							<input type="text" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)} />
 							<Button className="add-button" type="submit">
 								Přidat
 							</Button>

@@ -135,6 +135,18 @@
   }
 }
 
+@media (max-width:820px) {
+  .issues-page {
+    .text {
+      font-size: 0.75rem;
+    }
+    
+    .spacer {
+      width: 5.875rem !important;
+    }
+  }
+}
+
 @media (max-width:1060px) {
   .issues-page {
     header,.issues-container {
@@ -145,14 +157,6 @@
     .footer-header {
       min-width: unset !important;
       width: 100% !important;
-
-      .text {
-        font-size: 0.75rem;
-      }
-
-      .spacer {
-        width: 5.875rem !important;
-      }
     }
 
     .no-issues {

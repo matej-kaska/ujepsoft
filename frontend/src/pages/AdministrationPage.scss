@@ -37,6 +37,7 @@
 
         input {
           margin-right: 6px;
+          margin-top: 0 !important;
         }
       }
 
@@ -100,7 +101,7 @@
   }
 }
 
-@media (max-width:1060px) {
+@media (max-width:820px) {
   .administration-page {
     padding-inline: 1rem;
 

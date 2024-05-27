@@ -100,19 +100,11 @@
   }
 }
 
-@media (max-width:1060px) {
+@media (max-width:820px) {
   .navbar {
     header {
       padding: 1rem !important;
       min-width: unset !important;
-
-      .img-wrapper {
-        width: 0 !important;
-
-        img {
-          display: none;
-        }
-      }
 
       h1 {
         font-size: 2rem !important;
@@ -147,6 +139,7 @@
       }
 
       .user-wrapper {
+        padding-left: 1rem !important;
 
         .login-button {
           padding: 0.75rem !important;

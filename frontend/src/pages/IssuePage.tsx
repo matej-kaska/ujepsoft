@@ -36,7 +36,7 @@ const IssuePage = () => {
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 
 	useLayoutEffect(() => {
-		if (windowSize[0] > 1060) {
+		if (windowSize[0] > 820) {
 			setIsMobile(false);
 			return;
 		}

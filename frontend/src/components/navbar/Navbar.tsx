@@ -24,13 +24,19 @@ const Navbar = () => {
 	const windowSize = useWindowSize();
 	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
+	const [isNarrow, setIsNarrow] = useState<boolean>(false);
 
 	useLayoutEffect(() => {
 		if (windowSize[0] > 1060) {
-			setIsMobile(false);
-			return;
+			setIsNarrow(false);
+		} else {
+			setIsNarrow(true);
 		}
-		setIsMobile(true);
+		if (windowSize[0] > 820) {
+			setIsMobile(false);
+		} else {
+			setIsMobile(true);
+		}
 	}, [windowSize[0]]);
 
 	const handleLogout = () => {
@@ -51,11 +57,13 @@ const Navbar = () => {
 				<Link to={"/"}>
 					<h1>UJEP SOFT</h1>
 				</Link>
-				<div className="img-wrapper">
-					<Link to={"https://ujep.cz/"}>
-						<img src="/src/images/ujep-full-logo.webp" alt="UJEP logo" />
-					</Link>
-				</div>
+				{!isMobile &&
+					<div className="img-wrapper">
+						<Link to={"https://ujep.cz/"}>
+							<img src="/src/images/ujep-full-logo.webp" alt="UJEP logo" />
+						</Link>
+					</div>
+				}
 			</header>
 			<div className="bottom-wrapper">
 				<ul>
@@ -83,7 +91,7 @@ const Navbar = () => {
 				<div className="user-wrapper">
 					{userInfo.id ? (
 						<>
-							{!isMobile && <span>Jste přihlášen jako {userInfo.email}</span>}
+							{!isNarrow && <span>Jste přihlášen jako {userInfo.email}</span>}
 							<Button onClick={handleLogout} color="accent" className="logout-button">
 								{isMobile ? <LogoutIcon/> : "Odhlásit se"}
 							</Button>
