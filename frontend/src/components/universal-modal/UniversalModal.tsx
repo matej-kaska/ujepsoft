@@ -12,10 +12,6 @@ const UniversalModal = ({ children }: UniversalModalProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [height, setHeight] = useState<number>(0);
 
-	useEffect(() => {
-		console.log(height)
-	}, [height])
-
 	const handleOutsideContentClick = () => {
 		const activeElement = document.activeElement;
 		if (activeElement && activeElement.tagName === "INPUT") return;
