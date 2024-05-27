@@ -64,19 +64,30 @@
     display: flex;
     justify-content: space-between;
 
+    .loading-tooltip {
+      margin-left: 0.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+
+      svg {
+        height: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+    }
+
     .tooltip {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-left: 3px;
+      margin-left: 0.25rem;
 
       button {
         margin-top: auto;
         margin-bottom: 4px;
 
         svg {
-          height: 20px;
-          width: 18px;
+          height: 1.25rem;
   
           &:hover {
             color: dimgray;
