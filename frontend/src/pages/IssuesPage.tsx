@@ -90,7 +90,7 @@ const IssuesPage = () => {
 			console.error("Error loading more issues:", response.message.cz);
 			return;
 		}
-		setIssues(response.data.results);
+		setIssues([...issues, ...response.data.results]);
 		setNext(response.data.next);
 		setLoading(false);
 	};

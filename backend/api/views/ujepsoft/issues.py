@@ -27,9 +27,9 @@ class IssuesList(generics.ListAPIView):
   def list(self, request, *args, **kwargs):
     closed = self.request.query_params.get('closed', None)
     if closed is None or closed == "true":
-      issues = Issue.objects.prefetch_related('comments').all()
+      issues = Issue.objects.prefetch_related('comments').all().order_by('-updated_at')
     else:
-      issues = Issue.objects.prefetch_related('comments').filter(state='open')
+      issues = Issue.objects.prefetch_related('comments').filter(state='open').order_by('-updated_at')
     response = []
 
     for issue in issues:
@@ -46,7 +46,7 @@ class IssuesList(generics.ListAPIView):
       response = sorted(response, key=lambda x: get_datetime(x["updated_at"]), reverse=True)
       page = self.paginate_queryset(response)
       if page is not None:
-        return self.get_paginated_response(response)
+        return self.get_paginated_response(page)
       
       return Response(response,status=status.HTTP_200_OK)
     
