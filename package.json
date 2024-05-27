@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "@types/react": "^18.3.2",
-    "@types/react-dom": "^18.3.0"
-  }
-}
