@@ -19,22 +19,21 @@
     h1 {
       text-align: center;
       margin-block: 1rem;
-      font-size: 40px;
+      font-size: 2.5rem;
     }
 
     p {
       text-align: center;
-      font-size: 18px;
+      font-size: 1.125rem;
       margin-bottom: 1rem;
     }
   }
   
   .offer-container {
-
     margin-block: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px; 
+    grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr));
+    gap: 1rem; 
     max-width: 100%;
 
     .unit-offer {

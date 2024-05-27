@@ -119,7 +119,7 @@ const IssuePage = () => {
 						</div>
 						<section className="description-wrapper">
 							<h2>Popis Issue:</h2>
-							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "", true) || "<p><span class='no-description'>Není zde popis</span></p>" }} />
+							<div className="description html-inner lists" dangerouslySetInnerHTML={{ __html: formatDescription(issue?.body || "", true) || "<p><span class='no-description'>Není zde popis</span></p>" }} />
 						</section>
 						<Files files={issue.files.filter((file) => file.file_type === "file")} />
 						<Images images={issue.files.filter((file) => file.file_type === "image")} />

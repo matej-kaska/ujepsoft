@@ -247,7 +247,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 						<CloseIcon className="close-icon" onClick={() => closeModal()} />
 					</header>
 					<label className="name">Název</label>
-					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
+					<input type="text" className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
 					<label className="repo">Aplikace</label>
 					<LazyDropdown repos={repos} errors={errors} issue={issue} selectValue={selectValue} setSelectValue={setSelectValue} hoverSelect={hoverSelect} />

@@ -4,7 +4,7 @@ const AddComment = () => {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<div className={`guide ${open ? "open" : ""}`}>
+		<div className={`guide lists ${open ? "open" : ""}`}>
 			<h2 onClick={() => setOpen(!open)}>Jak přidat komentář v Issues?</h2>
 			{open && (
 				<ol>

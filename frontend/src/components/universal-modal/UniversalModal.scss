@@ -12,36 +12,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: #AFAFAF #EFEFEF;
-  &::-webkit-scrollbar {
-      width: 8px;
-      background-color: #EFEFEF;
-      height: 8px;
-      border-radius: 5px;
-  }
-  &::-webkit-scrollbar-track {
-      border-radius: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-      background: #AFAFAF;
-      border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-      background: #909090;
-  }
 }
-  
-/* Modal Content */
+
 .modal-content {
   display: flex;
   flex-direction: column;
   background-color: #fefefe;
   padding: 1rem;
   border: 1px solid #888;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   width: fit-content;
   align-items: flex-end;
   justify-content: space-between;

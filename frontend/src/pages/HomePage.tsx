@@ -76,8 +76,7 @@ const HomePage = () => {
 		const token: string | null = searchParams?.get("token");
 		const registration: string | null = searchParams?.get("registration");
 		if (token) showModal(<ChangePassword token={token} />);
-		if (!registration) return;
-		showModal(<Login token={registration} />);
+		if (registration) showModal(<Login token={registration} />);
 	}, [loaded]);
 
 	return (

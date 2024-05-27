@@ -93,7 +93,7 @@ const OfferPage = () => {
 						<Files files={offer.files.filter((file) => file.file_type === "file")} />
 						<section className="description-wrapper">
 							<h2>Popis nabídky:</h2>
-							<div className="description html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(offer.description) || "<p></p>" }} />
+							<div className="description html-inner lists" dangerouslySetInnerHTML={{ __html: formatDescription(offer.description) || "<p></p>" }} />
 						</section>
 						<Images images={offer.files.filter((file) => file.file_type === "image")} />
 					</>

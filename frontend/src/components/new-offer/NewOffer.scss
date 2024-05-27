@@ -3,46 +3,31 @@
   justify-content: left;
   flex-direction: column;
   align-items: flex-start;
-  width: clamp(330px, 50vw, 1000px);
+  width: clamp(20.625rem, 50vw, 62.5rem);
   user-select: none;
 
   h1 {
-    margin-left: 2px;
+    margin-left: 0.125rem;
     margin-bottom: 1rem;
     font-size: 1.5rem;
     font-weight: 500;
   }
 
   label {
-    margin-left: 2px;
-  }
-
-  input {
-    min-height: 36px;
-    height: 36px;
-    width: 100%;
-    border-radius: 5px;
-    border: 1px solid #CCCCCC;
-    padding-left: 12px;
-    margin-top: 6px;
-
-    &:focus-visible {
-      border-color: gray;
-      outline: 0px;
-    }
+    margin-left: 0.125rem;
   }
 
   .name, .description {
-    margin-bottom: 3px;
+    margin-bottom: 0.188rem;
   }
 
   .keywords-wrapper {
     width: 100%;
-    margin-top: -4px;
+    margin-top: -0.25rem;
 
     .keywords-container {
-      max-height: 30px;
-      height: 30px;
+      max-height: 1.875rem;
+      height: 1.875rem;
       white-space: nowrap;
       display: flex;
       flex-direction: row;
@@ -50,10 +35,10 @@
       max-width: 100%;
       align-items: center;
       justify-content: flex-start;
-      margin-bottom: -2px;
+      margin-bottom: -0.125rem;
   
       label {
-        margin-right: 8px;
+        margin-right: 0.5rem;
         height: 100%;
         display: flex;
         line-height: normal;
@@ -68,22 +53,19 @@
         display: flex;
         align-items: center;
   
-        scrollbar-width: thin;
-        scrollbar-color: #AFAFAF #EFEFEF;
-  
         &::-webkit-scrollbar {
-          width: 8px;
-          height: 6px;
+          width: 0.5rem;
+          height: 0.375rem;
           background-color: #EFEFEF;
         }
   
         &::-webkit-scrollbar-track {
-          border-radius: 2px;
+          border-radius: 0.125rem;
         }
   
         &::-webkit-scrollbar-thumb {
           background: #AFAFAF;
-          border-radius: 4px;
+          border-radius: 0.25rem;
         }
   
         &::-webkit-scrollbar-thumb:hover {
@@ -101,31 +83,31 @@
         }
   
         .keyword-tag {
-          background-color: $color-primary;
-          line-height: 23px;
-          height: 23px;
-          padding: 4px 6px 4px 8px;
+          background-color: $color-lightaccent;
+          line-height: 1.5rem;
+          height: 1.5rem;
+          padding: 0.25rem 0.375rem 0.25rem 0.5rem;
           display: inline-flex;
   
           align-items: center;
-          border-radius: 3px;
-          margin-right: 8px;
+          border-radius: 0.188rem;
+          margin-right: 0.5rem;
           color: white;
           white-space: nowrap;
           text-overflow: ellipsis;
           user-select: none;
   
           .keyword-name {
-            line-height: 16px;
+            line-height: 1rem;
             white-space: nowrap;
             align-self: flex-start;
           }
   
           .close-icon {
             cursor: pointer;
-            width: 10px;
-            height: 10px;
-            margin-left: 6px;
+            width: 0.625rem;
+            height: 0.625rem;
+            margin-left: 0.375rem;
   
             svg {
               width: 100%;
@@ -143,5 +125,12 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+  }
+}
+
+@supports not (-webkit-appearance: none) {
+  .keywords {
+    scrollbar-width: thin;
+    scrollbar-color: #AFAFAF #EFEFEF;
   }
 }

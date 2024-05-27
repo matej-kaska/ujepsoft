@@ -55,7 +55,7 @@ const UniversalModal = ({ children }: UniversalModalProps) => {
 	}, []);
 
 	return (
-		<aside className={`universal-modal ${height >= windowSize?.[1] ? "modal-height-overflow" : ""}`} onClick={handleOutsideContentClick}>
+		<aside className={`universal-modal scrollbar ${height >= windowSize?.[1] ? "modal-height-overflow" : ""}`} onClick={handleOutsideContentClick}>
 			<div className="modal-content" onClick={(e) => e.stopPropagation()} ref={ref}>
 				{children}
 			</div>

@@ -197,7 +197,7 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 						<CloseIcon className="close-icon" onClick={() => closeModal()} />
 					</header>
 					<label className="name">Název</label>
-					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název nabídky..." {...register("name")} maxLength={100} />
+					<input type="text" className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název nabídky..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
 					<div className="keywords-wrapper">
 						<div className="keywords-container">

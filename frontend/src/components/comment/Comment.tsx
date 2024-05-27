@@ -47,7 +47,7 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 					</>
 				)}
 			</div>
-			<div className="body html-inner" dangerouslySetInnerHTML={{ __html: formatDescription(removeFooterFromBody(body), true) || "" }} />
+			<div className="body html-inner lists" dangerouslySetInnerHTML={{ __html: formatDescription(removeFooterFromBody(body), true) || "" }} />
 			<Files files={files.filter((file) => file.file_type === "file")} />
 			<Images images={files.filter((file) => file.file_type === "image")} />
 			<div className="footer">

@@ -4,7 +4,7 @@ const navod = () => {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<div className={`guide ${open ? "open" : ""}`}>
+		<div className={`guide lists ${open ? "open" : ""}`}>
 			<h2 onClick={() => setOpen(!open)}></h2>
 			{open && (
 				<ol>
