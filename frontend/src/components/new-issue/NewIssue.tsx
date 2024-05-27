@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import AddAttachment from "components/add-attachment/AddAttachment";
 import Button from "components/buttons/Button";
-import Dropdown from "components/dropdown/Dropdown";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
@@ -26,7 +25,7 @@ import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
 import { ReactComponent as CloseIcon } from "images/close.svg";
 import { ReactComponent as Check } from "images/check.svg";
-import { ReactComponent as Chevron } from "images/chevron.svg";
+import LazyDropdown from "components/new-issue/LazyDropdown";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
@@ -251,23 +250,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 					<input className={`${errors.name ? "border-red-600" : ""}`} placeholder="Zadejte název issue..." {...register("name")} maxLength={100} />
 					<p className={`${errors.name ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.name?.message}!</p>
 					<label className="repo">Aplikace</label>
-					<Dropdown
-						label={selectValue !== 0 ? (repos.find((repo: RepoSelect) => repo.id === selectValue) || { name: "Vyberte aplikaci..." }).name : "Vyberte aplikaci..."}
-						className={`select ${errors.repo ? "border-red-600" : ""} ${selectValue !== 0 ? "" : "unselected"} ${hoverSelect ? "darken" : ""}`}
-						defaultClasses={false}
-						menuClasses="options"
-						noArrow={true}
-						disabled={issue ? true : false}
-					>
-						{repos.map((repo: RepoSelect, index: number) => {
-							return (
-								<Dropdown.Item key={index} onClick={() => setSelectValue(repo.id)}>
-									{repo.name}
-								</Dropdown.Item>
-							);
-						})}
-					</Dropdown>
-					<Chevron className={`arrow rotate-90 ${issue ? "arrow-disabled" : ""}`} />
+					<LazyDropdown repos={repos} errors={errors} issue={issue} selectValue={selectValue} setSelectValue={setSelectValue} hoverSelect={hoverSelect} />
 					<p className={`${errors.repo ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.repo?.message}!</p>
 					<div className="labels-wrapper">
 						<h2>Označení </h2>
@@ -299,7 +282,7 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 					<label className="description" htmlFor="description">
 						Popis issue
 					</label>
-					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
+					<Suspense fallback={<div className="editorClassName">Načítám editor...</div>}>
 						<WysiwygEditor
 							stripPastedStyles={true}
 							editorState={descriptionEditorState}
