@@ -12,6 +12,10 @@ const UniversalModal = ({ children }: UniversalModalProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [height, setHeight] = useState<number>(0);
 
+	useEffect(() => {
+		console.log(height)
+	}, [height])
+
 	const handleOutsideContentClick = () => {
 		const activeElement = document.activeElement;
 		if (activeElement && activeElement.tagName === "INPUT") return;
@@ -51,7 +55,7 @@ const UniversalModal = ({ children }: UniversalModalProps) => {
 	}, []);
 
 	return (
-		<aside className={`universal-modal ${height > windowSize?.[1] ? "flex-start" : ""}`} onClick={handleOutsideContentClick}>
+		<aside className={`universal-modal ${height >= windowSize?.[1] ? "modal-height-overflow" : ""}`} onClick={handleOutsideContentClick}>
 			<div className="modal-content" onClick={(e) => e.stopPropagation()} ref={ref}>
 				{children}
 			</div>
