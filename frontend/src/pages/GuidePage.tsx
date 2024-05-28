@@ -25,7 +25,7 @@ const GuidePage = () => {
 			<section className="guide-page">
 				<header>
 					<h1>Návody</h1>
-					<p>Zde naleznete návody veškeré potřebné návody. Pokud ovšem narazíte na jakýkoliv problém, neváhejte kontaktovat na administátora pavel.beranek@ujep.cz.</p>
+					<p>Zde naleznete veškeré potřebné návody. Pokud ovšem narazíte na jakýkoliv problém, neváhejte kontaktovat administrátora na e-mailu pavel.beranek@ujep.cz.</p>
 				</header>
 				<section className="guides-container">
 					{guides.map((guide, index) => (

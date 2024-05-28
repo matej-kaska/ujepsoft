@@ -21,6 +21,7 @@
   }
 
   .repos-wrapper {
+    width: 100%;
 
     h2 {
       font-size: 1.25rem;
@@ -28,6 +29,7 @@
     }
 
     .add-new {
+      width: 100%;
 
       .input-wrapper {
         display: flex;
@@ -38,6 +40,7 @@
         input {
           margin-right: 6px;
           margin-top: 0 !important;
+          width: clamp(10rem, 50%, 24rem);
         }
       }
 
@@ -111,6 +114,12 @@
           input {
             width: 100%;
           }
+        }
+      }
+
+      .repos-list {
+        .repo {
+          gap: 1rem !important;
         }
       }
     }

@@ -16,6 +16,7 @@ import axiosRequest from "utils/axios";
 import { urlGithubSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
+import useWindowSize from "utils/useWindowSize";
 
 type AddRepoForm = {
 	url: string;
@@ -26,11 +27,21 @@ const AdministrationPage = () => {
 	const navigate = useNavigate();
 	const { openErrorSnackbar, openSuccessSnackbar } = useSnackbar();
 	const { showModal, closeModal } = useModal();
+	const windowSize = useWindowSize();
 	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 	const [loadedRepos, setLoadedRepos] = useState<Repo[]>([]);
 	const [successfullySubmitted, setSuccessfullySubmitted] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
+	const [isNarrow, setIsNarrow] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (windowSize[0] > 450) {
+			setIsNarrow(false);
+			return;
+		}
+		setIsNarrow(true);
+	}, [windowSize[0]]);
 
 	useEffect(() => {
 		if (!userInfo.is_staff) navigate("/");
@@ -136,9 +147,11 @@ const AdministrationPage = () => {
 										<li key={index} className="repo">
 											<ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic} />
 											<span>{repo.name}</span>
-											<Link to={repo.url} target="_blank" rel="noopener noreferrer">
-												URL odkaz
-											</Link>
+											{!isNarrow &&
+												<Link to={repo.url} target="_blank" rel="noopener noreferrer">
+													URL odkaz
+												</Link>
+											}
 											<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)} />)} />
 											{!repo.collaborant && <span className="text-red-700">UJEP není collaborantem repozitáře!</span>}
 										</li>
