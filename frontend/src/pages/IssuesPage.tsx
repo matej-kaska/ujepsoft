@@ -34,6 +34,11 @@ const IssuesPage = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const cancelTokenSource = useRef(axios.CancelToken.source());
 	const [isMobile, setIsMobile] = useState<boolean>(false);
+	
+	useLayoutEffect(() => {
+		getIssues();
+		return () => cancelTokenSource.current.cancel("Component unmounted or state changed");
+	}, [showClosedIssues]);
 
 	useLayoutEffect(() => {
 		if (windowSize[0] > 820) {
@@ -43,20 +48,11 @@ const IssuesPage = () => {
 		setIsMobile(true);
 	}, [windowSize[0]])
 
-	useLayoutEffect(() => {
-		getIssues();
-	}, []);
-
 	useEffect(() => {
 		if (!reload.location || reload.location !== "issues") return;
 		getIssues();
 		dispatch(setReload(""));
 	}, [reload]);
-
-	useEffect(() => {
-		getIssues();
-		return () => cancelTokenSource.current.cancel("Component unmounted or state changed");
-	}, [showClosedIssues]);
 
 	const getIssues = async () => {
 		setLoading(true);
