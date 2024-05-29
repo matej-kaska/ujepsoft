@@ -8,10 +8,8 @@ const Administration = () => {
 			<h2 onClick={() => setOpen(!open)}>Jak na správu repozitářů?</h2>
 			{open && (
 				<ol>
-					<li>
-						Na stránce <a href="/repo-administration">Administrace</a> se objeví
-						pole &quot;Přidat nový repozitář&quot;.
-					</li>{" "}
+					Na stránce <a href="/repo-administration">Administrace</a> se objeví
+					pole &quot;Přidat nový repozitář&quot;.
 					<div className="image">
 						<img
 							src="/src/images/guides/administration.webp"
@@ -30,16 +28,14 @@ const Administration = () => {
 						</ul>
 						<ul>
 							<strong>4</strong> &rarr; &quot;X&quot; slouží pro odebrání
-							příslušného repozitáře ze seznamu. Dojde i k odebrání repozitáře
-							na GitHubu!
+							příslušného repozitáře z databáze.
 						</ul>
 					</div>
-					<li>
+					<td>&nbsp;</td>
 						Pokud je vložen nesprávný odkaz nebo nejste kolaborantem v
-						repozitáři, <p />
-						objeví se chybová hláška{" "}
+						repozitáři, objeví se chybová hláška
 						<i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
-					</li>
+					
 					<div className="image">
 						<img
 							src="/src/images/guides/administration2.webp"

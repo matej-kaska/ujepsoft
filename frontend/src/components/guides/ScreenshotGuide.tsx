@@ -8,15 +8,15 @@ const ScreenshotGuide = () => {
 			<h2 onClick={() => setOpen(!open)}>Jak udělat screenshot? (Windows)</h2>
 			{open && (
 				<ol>
-					<li>Klikněte na vyhledávání (lupa nebo start)</li>
-					<li>Napište do vyhledávácího pole &quot;Výstřižky&quot;</li>
-					<li>Zapněte program Výstřižky</li>
+					<li>Klikněte na vyhledávání (lupa nebo start).</li>
+					<li>Napište do vyhledávácího pole &quot;Výstřižky&quot;.</li>
+					<li>Zapněte program Výstřižky.</li>
 					<div className="image">
 						<img src="/src/images/guides/screenshot.webp" alt="screenshot" />
-						<p>Klikněte na &quot;+ Nový&quot;</p>
+						<p>Klikněte na &quot;+ Nový&quot;.</p>
 					</div>
-					<li>Vyberte oblast, kterou chcete zachytit</li>
-					<li>Vpravo nahoře klikněte na tlačítko diskety (Uložit jako)</li>
+					<li>Vyberte oblast, kterou chcete zachytit.</li>
+					<li>Vpravo nahoře klikněte na tlačítko diskety (Uložit jako).</li>
 				</ol>
 			)}
 		</div>

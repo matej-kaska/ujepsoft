@@ -1,7 +1,7 @@
 import AddComment from "components/guides/AddComment";
 import Administration from "components/guides/Administration";
+import CreateIssueGuide from "components/guides/CreateIssueGuide";
 import CreateOfferGuide from "components/guides/CreateOfferGuide";
-import DetailedIssue from "components/guides/EditIssue";
 import EditIssue from "components/guides/EditIssue";
 import LookAtIssues from "components/guides/LookAtIssues";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
@@ -12,12 +12,13 @@ const GuidePage = () => {
 	const guides = new Array<JSX.Element>();
 	guides.push(<Administration />);
 	guides.push(<CreateOfferGuide />);
+	guides.push(<CreateIssueGuide />);
 	guides.push(<LookAtIssues />);
-	guides.push(<DetailedIssue />);
+	guides.push(<EditIssue />)
 	guides.push(<AddComment />);
 	guides.push(<ScreenshotGuide />);
 	guides.push(<ScreenshotGuideMacOS />);
-	guides.push(<EditIssue />);
+	
 
 	return (
 		<>

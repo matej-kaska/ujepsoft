@@ -13,7 +13,9 @@ const ScreenshotGuideMacOS = () => {
 					</li>
 					<li>Kurzor se změní na křížek</li>
 					<li>Klikněte a táhněte pro výběr oblasti, kterou chcete zachytit</li>
+					<div className="image">
 					<img src="/src/images/guides/screenshotmacos.webp" alt="screenshot" />
+					</div>
 					<li>Uvolněte tlačítko myši pro pořízení snímku</li>
 					<li>Snímek obrazovky bude ve výchozím nastavení uložen na vaší ploše</li>
 				</ol>
