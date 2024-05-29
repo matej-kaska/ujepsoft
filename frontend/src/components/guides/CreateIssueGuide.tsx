@@ -30,20 +30,20 @@ const CreateIssueGuide = () => {
 							alt="createissue"
 						/>
 						<ul>
-							<strong>1</strong> &rarr; Název Issue
+							<strong>1</strong> &rarr; Název Issue <strong>Nutno vyplnit!</strong>
 						</ul>
 						<ul>
-							<strong>2</strong> &rarr; Zvolení aplikace, pro kterou se daný Issue zakládá.
+							<strong>2</strong> &rarr; Zvolení aplikace, pro kterou se daný Issue zakládá. <strong>Nutno vyplnit!</strong>
 						</ul>
 							<ul>
-							<strong>3</strong> &rarr; Zaškrtnutí vhodného označení - pomůže programátorům zorientovat se v Issue.
+							<strong>3</strong> &rarr; Zaškrtnutí vhodného označení - pomůže programátorům zorientovat se v Issue. <strong>Nutno vyplnit!</strong>
 						</ul>
 							<ul>
-							<strong>4</strong> &rarr; Důkladný popis Issue.
+							<strong>4</strong> &rarr; Důkladný popis Issue. <strong>Nutno vyplnit!</strong>
 						</ul>
 							<ul>
-							<strong>5</strong> &rarr; Místo pro nahrání případných příloh -
-							fotky, náčrtky, dokumenty. Velikost max 128MB.
+							<strong>5</strong> &rarr; Místo pro nahrání případných příloh –⁠⁠⁠⁠⁠⁠
+							fotky, náčrtky, dokumenty. Velikost max 128MB. Celková velikost max 512MB.
 						</ul>
 							<ul>
 							<strong>6</strong> &rarr; Tlačítko pro potvrzení založení

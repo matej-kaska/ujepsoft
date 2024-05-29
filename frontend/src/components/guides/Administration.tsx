@@ -33,8 +33,7 @@ const Administration = () => {
 					</div>
 					<td>&nbsp;</td>
 						Pokud je vložen nesprávný odkaz nebo nejste kolaborantem v
-						repozitáři, objeví se chybová hláška
-						<i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
+						repozitáři, objeví se chybová hláška <i>&quot;Nejste collaborantem tohoto repozitáře!&quot;</i>.
 					
 					<div className="image">
 						<img

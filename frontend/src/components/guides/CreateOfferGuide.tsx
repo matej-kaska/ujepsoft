@@ -9,7 +9,7 @@ const CreateOfferGuide = () => {
 			{open && (
 				<ol>
 					<li>
-						Na úvodní stránce <a href="/">Ujepsoft</a> klikněte na tlačítko
+						Na úvodní stránce <a href="/">UJEP Soft</a> klikněte na tlačítko
 						&quot;+ Přidat nabídku&quot;.
 					</li>
 					<div className="image">
@@ -24,8 +24,7 @@ const CreateOfferGuide = () => {
 						/>
 						<ul>
 							<strong>1</strong> &rarr; Název nabídky
-							<i> (&quot;Aplikace pro zjištění počasí&quot;)</i>.
-							<strong>Nutno vyplnit!</strong>
+							<i> (&quot;Aplikace pro zjištění počasí&quot;)</i>. <strong>Nutno vyplnit!</strong>
 						</ul>
 						<ul>
 							<strong>2</strong> &rarr; Klíčová slova jsou určena k tomu, aby
@@ -33,12 +32,11 @@ const CreateOfferGuide = () => {
 						</ul>
 						<ul>
 							<strong>3</strong> &rarr; Důkladný popis aplikace/programu. Proč
-							je aplikace potřebná, jaká jsou očekávání, atd.{" "}
-							<strong>Nutno vyplnit!</strong>
+							je aplikace potřebná, jaká jsou očekávání atd. <strong>Nutno vyplnit!</strong>
 						</ul>
 						<ul>
-							<strong>4</strong> &rarr; Místo pro nahrání případných příloh -
-							fotky, náčrtky, dokumenty. Velikost max 128MB.
+							<strong>4</strong> &rarr; Místo pro nahrání případných příloh –⁠⁠⁠⁠⁠⁠ 
+							fotky, náčrtky, dokumenty. Velikost max 128MB. Celková velikost max 512MB.
 						</ul>
 						<ul>
 							<strong>5</strong> &rarr; Tlačítko pro potvrzení vytvoření

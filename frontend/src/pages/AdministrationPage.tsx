@@ -30,8 +30,7 @@ const AdministrationPage = () => {
 	const windowSize = useWindowSize();
 	const userInfo = useSelector((state: RootState) => state.auth.userInfo);
 	const [loadedRepos, setLoadedRepos] = useState<Repo[]>([]);
-	const [successfullySubmitted, setSuccessfullySubmitted] =
-		useState<boolean>(false);
+	const [successfullySubmitted, setSuccessfullySubmitted] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
 	const [isNarrow, setIsNarrow] = useState<boolean>(false);
@@ -117,13 +116,7 @@ const AdministrationPage = () => {
 					<form className="add-new" onSubmit={handleSubmit(addRepo)}>
 						<h2>Přidat nový repozitář</h2>
 						<div className="input-wrapper">
-							<input
-								type="text"
-								{...register("url")}
-								onChange={() =>
-									successfullySubmitted && setSuccessfullySubmitted(false)
-								}
-							/>
+							<input type="text" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)}/>
 							<Button className="add-button" type="submit">
 								+ Přidat
 							</Button>
@@ -138,19 +131,10 @@ const AdministrationPage = () => {
 								</>
 							) : (
 								<>
-									<p
-										className={`${
-											errors.url || errors.apiError ? "visible" : "invisible"
-										} text-sm text-red-600`}
-									>
-										{errors.url ? errors.url.message : errors.apiError?.message}
-										!
+									<p className={`${errors.url || errors.apiError ? "visible" : "invisible"} text-sm text-red-600`}>
+										{errors.url ? errors.url.message : errors.apiError?.message}!
 									</p>
-									<p
-										className={`${
-											successfullySubmitted ? "visible" : "invisible"
-										} text-sm text-green-600 success`}
-									>
+									<p className={`${successfullySubmitted ? "visible" : "invisible"} text-sm text-green-600 success`}>
 										Repozitář byl úspěšně přidán do databáze!
 									</p>
 								</>
@@ -176,33 +160,15 @@ const AdministrationPage = () => {
 									)}
 									{loadedRepos?.map((repo, index) => (
 										<li key={index} className="repo">
-											<ProfileBadge
-												name={repo.author}
-												profilePicture={repo.author_profile_pic}
+											<ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}
 											/>
 											<span>{repo.name}</span>
 											{!isNarrow && (
-												<Link
-													to={repo.url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
+												<Link to={repo.url} target="_blank" rel="noopener noreferrer">
 													URL odkaz
 												</Link>
 											)}
-											<RemoveIcon
-												className="remove-icon"
-												onClick={() =>
-													showModal(
-														<GeneralModal
-															text={
-																"Opravdu chcete smazat repozitář z databáze?"
-															}
-															actionOnClick={() => removeRepo(repo.id)}
-														/>,
-													)
-												}
-											/>
+											<RemoveIcon className="remove-icon" onClick={() =>showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
 											{!repo.collaborant && (
 												<span className="text-red-700">
 													UJEP není collaborantem repozitáře!

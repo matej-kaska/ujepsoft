@@ -18,7 +18,6 @@ const GuidePage = () => {
 	guides.push(<AddComment />);
 	guides.push(<ScreenshotGuide />);
 	guides.push(<ScreenshotGuideMacOS />);
-	
 
 	return (
 		<>

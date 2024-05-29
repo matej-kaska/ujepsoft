@@ -27,8 +27,8 @@ const AddComment = () => {
 							<strong>1</strong> &rarr; Místo pro sepsání komentáře.
 						</ul>
 						<ul>
-							<strong>2</strong> &rarr; Místo pro nahrání případných příloh -
-							fotky, náčrtky, dokumenty. Velikost max 128MB.
+							<strong>2</strong> &rarr; Místo pro nahrání případných příloh –⁠⁠⁠⁠⁠⁠
+							fotky, náčrtky, dokumenty. Velikost max 128MB. Celková velikost max 512MB.
 						</ul>
 						<ul>
 							<strong>1</strong> &rarr; Tlačítko pro potvrzení přidání komentáře.

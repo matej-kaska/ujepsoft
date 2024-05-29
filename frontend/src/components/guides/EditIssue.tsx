@@ -21,7 +21,7 @@ const EditIssue = () => {
 					<div className="image">
 						<img src="/src/images/guides/editissue2.webp" alt="editissue2" />
 						<ul>
-							<strong>1</strong> &rarr; Úprava Issue - viz návod <i> (&quot;Jak založit Issue?&quot;)</i>. Lze upravit veškeré informace.
+							<strong>1</strong> &rarr; Úprava Issue - viz návod <i> (&quot;Jak založit Issue?&quot;)</i>. Lze upravit veškeré informace. (kromě aplikace, pro kterou je Issue určená)
 						</ul>
 						<ul>
 							<strong>2</strong> &rarr; Uzavření Issue - pokud je daný problém vyřešen.
