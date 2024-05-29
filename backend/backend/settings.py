@@ -125,8 +125,10 @@ LOGGING = {
     },
     'loggers': {
         'api.caching_logging': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': [],
+            'level': 'NOTSET',
+            #'handlers': ['console'],
+            #'level': 'DEBUG',
             'propagate': False,
         },
     },
