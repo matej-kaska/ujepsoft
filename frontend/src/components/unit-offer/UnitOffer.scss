@@ -16,7 +16,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 1.125rem;
-    max-height: 2.75rem;
+    max-height: 3.25rem;
     width: 100%;
 
     a {
@@ -46,6 +46,7 @@
     overflow: hidden;
     max-width: 100%;
     max-height: 3.25rem;
+    min-height: 1.5rem;
   }
 
   .unit-description {

@@ -160,9 +160,10 @@ const AdministrationPage = () => {
 									)}
 									{loadedRepos?.map((repo, index) => (
 										<li key={index} className="repo">
-											<ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}
-											/>
-											<span>{repo.name}</span>
+											{!isNarrow && (
+												<ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}/>
+											)}
+											<span className="repo-name">{repo.name}</span>
 											{!isNarrow && (
 												<Link to={repo.url} target="_blank" rel="noopener noreferrer">
 													URL odkaz
