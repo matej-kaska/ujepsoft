@@ -22,7 +22,7 @@ from users.models import PasswordResetCode, RegistrationCode, User
 class ObtainAuthToken(DefaultObtainAuthToken):
 
   def post(self, request, *args, **kwargs):
-    email = request.data['email']
+    email = request.data['email'].lower()
     password = request.data['password']
 
     try:
@@ -61,7 +61,7 @@ class RegisterView(APIView):
   def post(self, request):
     password = request.data.get('password')
     password_again = request.data.get('password_again')
-    email = request.data.get('email')
+    email = request.data.get('email').lower()
 
     # Check requried fields
     if not password or not password_again or not email:
@@ -194,7 +194,7 @@ class RegisterValidatedView(APIView):
 class RequestPasswordResetView(APIView):
 
   def post(self, request):
-    email = request.data.get('email')
+    email = request.data.get('email').lower()
 
     if not email:
       return Response({
