@@ -47,7 +47,10 @@ const HomePage = () => {
 	const getOffers = async () => {
 		setLoading(true);
 		const pageAmount = getOffersRowAmount() * 2;
-		const response = await axiosRequest<OffersResponse>("GET", `/api/offer/list?page-size=${pageAmount}`);
+		const response = await axiosRequest<OffersResponse>(
+			"GET",
+			`/api/offer/list?page-size=${pageAmount}`,
+		);
 		if (!response.success) {
 			openErrorSnackbar(response.message.cz);
 			console.error("Error loading offers:", response.message.cz);
@@ -85,7 +88,13 @@ const HomePage = () => {
 			<div className="homepage">
 				<header>
 					<h1>Nabídky pro vývoj softwaru na UJEP</h1>
-					<p>Personál UJEP má možnost navrhovat softwarové projekty, které potřebují vyvinout. Studenti mohou na tyto nabídky reagovat a zapojit se do vývoje, posíláním svých nápadů na uvedený e-mail. Skvělá příležitost pro praktické zkušenosti a spolupráci mezi studenty a personálem.</p>
+					<p>
+						Personál UJEP má možnost navrhovat softwarové projekty, které jsou
+						zapotřebí vyvinout. Studenti mohou na tyto nabídky reagovat a
+						zapojit se do vývoje posíláním svých nápadů na uvedený e-mail. Jedná
+						se o skvělou příležitost k získání praktických zkušeností a
+						spolupráci mezi studenty a personálem.
+					</p>
 					{userInfo?.id && (
 						<Button color="accent" onClick={() => showModal(<NewOffer />)}>
 							+ Přidat nabídku
@@ -93,7 +102,9 @@ const HomePage = () => {
 					)}
 				</header>
 				{offers.length === 0 && !loading ? (
-					<span className="mt-4 text-gray-600 italic no-issues">Nejsou zde žádné nabídky</span>
+					<span className="mt-4 text-gray-600 italic no-issues">
+						Nejsou zde žádné nabídky
+					</span>
 				) : (
 					<section className="offer-container">
 						{offers.map((offer: Offer, index: number) => (
