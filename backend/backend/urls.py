@@ -14,13 +14,27 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from pathlib import Path
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.http import JsonResponse
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.static import serve
+
+def unprotected_serve(request, path):
+    media_path = Path(settings.MEDIA_ROOT) / 'offer_files' / path
+    return serve(request, path, document_root=str(media_path.parent))
+
+@login_required
+def protected_serve(request, path):
+    return serve(request, path, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = [
     path("api/test/", lambda req: JsonResponse({"message": "Backend is connected!"})),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
     path("api/users/", include("users.urls")),
+    re_path(r'^media/offer_files/(?P<path>.*)$', unprotected_serve, name='unprotected_media'),
+    re_path(r'^media/(?P<path>.*)$', protected_serve, name='protected_media'),
 ]
