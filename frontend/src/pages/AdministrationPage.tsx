@@ -172,7 +172,11 @@ const AdministrationPage = () => {
 											<RemoveIcon className="remove-icon" onClick={() =>showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
 											{!repo.collaborant && (
 												<span className="text-red-700">
-													UJEP není collaborantem repozitáře!
+													{!isNarrow ? 
+														"UJEP není collaborantem repozitáře!"
+													:
+														"Nejste collaborant!"
+													}
 												</span>
 											)}
 										</li>
