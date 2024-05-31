@@ -171,6 +171,10 @@ class OfferDetail(APIView):
         kw = Keyword.objects.create(name=keyword)
       offer.keywords.add(kw)
 
+    for keyword in offer.keywords.all():
+      if keyword.name not in keywords:
+        offer.keywords.remove(keyword)
+
     for file in OfferFile.objects.filter(offer=offer):
       file_found = False
       for existing_file in existing_files:
