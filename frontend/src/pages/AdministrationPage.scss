@@ -37,6 +37,12 @@
     .add-new {
       width: 100%;
 
+      .no-private {
+        color: #ed2213;
+        margin-left: 0.125rem;
+        margin-block: 0.125rem;
+      }
+
       .input-wrapper {
         display: flex;
         justify-content: flex-start;

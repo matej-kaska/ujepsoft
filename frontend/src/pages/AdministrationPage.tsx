@@ -115,6 +115,7 @@ const AdministrationPage = () => {
 				<section className="repos-wrapper">
 					<form className="add-new" onSubmit={handleSubmit(addRepo)}>
 						<h2>Přidat nový repozitář</h2>
+						<span className="no-private">Repozitář nesmí být privatní!</span>
 						<div className="input-wrapper">
 							<input type="text" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)}/>
 							<Button className="add-button" type="submit">
