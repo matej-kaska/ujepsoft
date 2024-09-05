@@ -41,9 +41,8 @@ jobs:
           password: ${{ secrets.PRODUCTION_PASSWORD }}
           script: |
             cd ujepsoft
-            echo ${{ secrets.PRODUCTION_SUDO_PASSWORD }} | sudo -S git pull origin production
-            sudo git pull origin production
-            sudo ~/ujepsoft/deploy.sh
+            echo ${{ secrets.PRODUCTION_PASSWORD }} | sudo -S git pull origin production
+            echo ${{ secrets.PRODUCTION_PASSWORD }} | sudo -S ~/ujepsoft/deploy.sh
 
       - name: Close WireGuard VPN
         run: sudo wg-quick down wg0

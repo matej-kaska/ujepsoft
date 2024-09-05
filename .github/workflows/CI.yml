@@ -38,7 +38,7 @@ jobs:
       - name: Install ruff
         run: pip install ruff
       - name: Run ruff on backend
-        run: ruff ./backend
+        run: ruff check ./backend
 
   test:
     name: Django run tests
@@ -57,16 +57,16 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Build the Docker Compose stack
-      run: docker-compose -f docker-compose.yml build
+      run: docker compose -f docker-compose.yml build
 
     - name: Run tests
       env:
         REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
         DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
       run: |
-        docker-compose -f docker-compose.yml up -d postgresql redis
-        docker-compose -f docker-compose.yml run backend ./manage.py test
-        docker-compose -f docker-compose.yml down
+        docker compose -f docker-compose.yml up -d postgresql redis
+        docker compose -f docker-compose.yml run backend ./manage.py test
+        docker compose -f docker-compose.yml down
 
   frontend-audit:
     name: Frontend audit
@@ -121,7 +121,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Docker Compose Build
-        run: docker-compose build
+        run: docker compose build
 
       - name: Install Trivy
         run: |
