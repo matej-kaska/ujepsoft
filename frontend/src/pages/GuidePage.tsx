@@ -24,7 +24,7 @@ const GuidePage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/"} />
+				<link rel="canonical" href={websiteUrl + "/guides"} />
 			</Helmet>
 			<Navbar />
 			<section className="guide-page">

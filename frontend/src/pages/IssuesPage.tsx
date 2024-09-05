@@ -105,7 +105,7 @@ const IssuesPage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/"} />
+				<link rel="canonical" href={websiteUrl + "/issues"} />
 			</Helmet>
 			<Navbar />
 			<div className="issues-page">

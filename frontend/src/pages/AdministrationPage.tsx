@@ -107,7 +107,7 @@ const AdministrationPage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/"} />
+				<link rel="canonical" href={websiteUrl + "/repo-administration"} />
 			</Helmet>
 			<Navbar />
 			<section className="administration-page">
