@@ -100,7 +100,7 @@ class RegisterView(APIView):
         "cz": "Neplatný e-mail"
       }, status=400)
     
-    if re.match('^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$'):
+    if not re.match(r'^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$', email):
       return Response({
         "en": "This e-mail doesn't have @ujep.cz domain (except students)",
         "cz": "Tento e-mail nemá doménu @ujep.cz (mimo students)"
@@ -210,7 +210,7 @@ class RequestPasswordResetView(APIView):
         "cz": "Neplatný email"
       }, status=400)
     
-    if re.match('^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$'):
+    if not re.match(r'^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$', email):
       return Response({
         "en": "This e-mail doesn't have @ujep.cz domain (except students)",
         "cz": "Tento e-mail nemá doménu @ujep.cz (mimo students)"

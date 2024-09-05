@@ -1,12 +1,23 @@
 import * as yup from "yup";
 import { array, boolean, number, string } from "yup";
 
+const forbiddenPatterns = /@students\.ujep\.cz$/;
+const allowedPatterns = /@ujep\.cz$|@.*\.ujep\.cz$/;
+
 export const emailSchema = string()
 	.required("Toto pole je povinné")
 	.email("E-mail není ve validním formátu")
 	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "E-mail není ve validním formátu")
-	// TODO: CHANGE THIS on Production
-	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$/, "E-mail musí mít doménu @ujep.cz (mimo students)")
+	.test("e-mail validation", "E-mail musí mít doménu @ujep.cz (mimo students)", value => {
+      if (!value) return false;
+			if (!value.endsWith("ujep.cz")) return false;
+
+      const isForbidden = forbiddenPatterns.test(value);
+			if (isForbidden) return false;
+
+			const isAllowed = allowedPatterns.test(value);
+      return isAllowed;
+	})
 	.max(320, "E-mail není ve validním formátu");
 
 export const passwordSchema = string().required("Toto pole je povinné").min(8, "Heslo musí být minimálně 8 znaků dlouhé").max(100, "Heslo nesmí být delší než 100 znaků");

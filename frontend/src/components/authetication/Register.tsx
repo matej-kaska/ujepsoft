@@ -41,7 +41,7 @@ const Register = () => {
 	});
 
 	const handleRegister = async (data: Form) => {
-		if (data.email.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$/)) {
+		if (!data.email.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$/)) {
 			setError("email", {
 				type: "server",
 				message: "Tento e-mail nemá doménu @ujep.cz (mimo students)",
