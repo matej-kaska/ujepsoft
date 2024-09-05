@@ -6,7 +6,7 @@ export const emailSchema = string()
 	.email("E-mail není ve validním formátu")
 	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "E-mail není ve validním formátu")
 	// TODO: CHANGE THIS on Production
-	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(ujep\.cz|gmail\.com)$/, "E-mail musí mít doménu @ujep.cz")
+	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$/, "E-mail musí mít doménu @ujep.cz (mimo students)")
 	.max(320, "E-mail není ve validním formátu");
 
 export const passwordSchema = string().required("Toto pole je povinné").min(8, "Heslo musí být minimálně 8 znaků dlouhé").max(100, "Heslo nesmí být delší než 100 znaků");
