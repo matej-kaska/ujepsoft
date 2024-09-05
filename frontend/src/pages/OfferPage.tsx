@@ -78,7 +78,7 @@ const OfferPage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/"} />
+				<link rel="canonical" href={websiteUrl + "/offer/" + id} />
 			</Helmet>
 			<Navbar />
 			<div className="offer-page">
