@@ -1,4 +1,4 @@
-FROM python:alpine3.19
+FROM python:3-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -9,7 +9,7 @@ WORKDIR /backend
 COPY . .
 
 # Install dependencies
-RUN apk --no-cache add curl=8.5.0-r0 && \
+RUN apk --no-cache add curl && \
   pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000

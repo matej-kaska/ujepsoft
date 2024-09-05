@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <!-- TODO: Change this on Production + robots.txt -->
-    <loc>http://localhost:8080/</loc>
-    <lastmod>2023-05-14</lastmod>
+    <loc>https://ujepsoft.ujep.cz/</loc>
+    <lastmod>2024-09-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

@@ -4,10 +4,9 @@ import Images from "components/images/Images";
 import Keyword from "components/keyword/Keyword";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
-import NewOffer from "components/new-offer/NewOffer";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
@@ -15,8 +14,12 @@ import { RootState } from "redux/store";
 import { Offer } from "types/offer";
 import axiosRequest from "utils/axios";
 import { formatDescription } from "utils/plainTextToHtml";
-import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
-import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
+import EditIcon from "images/edit-icon.svg?react";
+import RemoveIcon from "images/remove-icon.svg?react";
+import { Helmet } from "react-helmet-async";
+import { websiteUrl } from "utils/const";
+
+const NewOffer = lazy(() => import("components/new-offer/NewOffer"));
 
 const OfferPage = () => {
 	const { id } = useParams();
@@ -64,8 +67,19 @@ const OfferPage = () => {
 		navigate("/");
 	};
 
+	const editOffer = () => {
+		showModal(
+			<Suspense fallback={<LoadingScreen modal />}>
+				<NewOffer offer={offer} />
+			</Suspense>
+		);
+	};
+
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<div className="offer-page">
 				{loading ? (
@@ -77,7 +91,7 @@ const OfferPage = () => {
 								<h1>{offer.name}</h1>
 								{(userInfo.is_staff || Number(userInfo.id) === offer.author.id) && (
 									<>
-										<button className="edit-button" onClick={() => showModal(<NewOffer offer={offer} />)}><EditIcon/></button>
+										<button className="edit-button" onClick={editOffer}><EditIcon/></button>
 										<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)}><RemoveIcon/></button>
 									</>
 								)}

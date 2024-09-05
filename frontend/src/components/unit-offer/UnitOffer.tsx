@@ -3,8 +3,8 @@ import Keyword from "components/keyword/Keyword";
 import { Link } from "react-router-dom";
 import { Offer } from "types/offer";
 import { htmlToPlainText } from "utils/htmlToPlainText";
-import { ReactComponent as FileIcon } from "images/file-icon.svg";
-import { ReactComponent as Chevron } from "images/chevron.svg";
+import FileIcon from "images/file-icon.svg?react";
+import Chevron from "images/chevron.svg?react";
 import React, { Suspense } from "react";
 
 const Tooltip = React.lazy(() => import('components/tooltip/Tooltip'));

@@ -1,0 +1,49 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - production
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install WireGuard
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wireguard
+
+      - name: Set up WireGuard VPN
+        run: |
+          echo "[Interface]
+          PrivateKey = ${{ secrets.WG_PRIVATE_KEY }}
+          Address = ${{ secrets.WG_INTERFACE_ADDRESS }}
+          
+          [Peer]
+          PublicKey = ${{ secrets.WG_PUBLIC_KEY }}
+          Endpoint = ${{ secrets.WG_ENDPOINT }}
+          AllowedIPs = ${{ secrets.WG_ALLOWED_IPS }}" | sudo tee /etc/wireguard/wg0.conf > /dev/null
+
+          sudo wg-quick up wg0
+
+      - name: Deploy via SSH over WireGuard VPN
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          port: 22
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          password: ${{ secrets.PRODUCTION_PASSWORD }}
+          script: |
+            cd ujepsoft
+            echo ${{ secrets.PRODUCTION_SUDO_PASSWORD }} | sudo -S git pull origin production
+            sudo git pull origin production
+            sudo ~/ujepsoft/deploy.sh
+
+      - name: Close WireGuard VPN
+        run: sudo wg-quick down wg0

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: http://localhost:8080/sitemap.xml
+Sitemap: https://ujepsoft.ujep.cz/sitemap.xml

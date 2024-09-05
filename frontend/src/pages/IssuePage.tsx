@@ -5,12 +5,10 @@ import Images from "components/images/Images";
 import Label from "components/label/Label";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
-import NewComment from "components/new-comment/NewComment";
-import NewIssue from "components/new-issue/NewIssue";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
@@ -18,9 +16,14 @@ import { RootState } from "redux/store";
 import { FullIssue } from "types/issue";
 import axiosRequest from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
-import { ReactComponent as DoneIcon } from "../images/done-icon.svg";
-import { ReactComponent as EditIcon } from "../images/edit-icon.svg";
+import DoneIcon from "images/done-icon.svg?react";
+import EditIcon from "images/edit-icon.svg?react";
 import useWindowSize from "utils/useWindowSize";
+import { Helmet } from "react-helmet-async";
+import { websiteUrl } from "utils/const";
+
+const NewIssue = lazy(() => import('components/new-issue/NewIssue'));
+const NewComment = lazy(() => import('components/new-comment/NewComment'));
 
 const IssuePage = () => {
 	const navigate = useNavigate();
@@ -79,8 +82,19 @@ const IssuePage = () => {
 		navigate("/issues");
 	};
 
+	const editIssue = () => {
+		showModal(
+			<Suspense fallback={<LoadingScreen modal />}>
+				<NewIssue issue={issue} />
+			</Suspense>
+		);
+	};
+
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<div className="issue-page">
 				{loading ? (
@@ -92,7 +106,7 @@ const IssuePage = () => {
 								<h1>{issue.title}</h1>
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
-										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <button className="edit-button" onClick={() => showModal(<NewIssue issue={issue} />)}><EditIcon/></button>}
+										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <button className="edit-button" onClick={editIssue}><EditIcon/></button>}
 										{issue.state !== "closed" ? <button className="done-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}><DoneIcon/> </button>: <span className="closed">(uzavřené)</span>}
 									</>
 								)}
@@ -135,7 +149,9 @@ const IssuePage = () => {
 									return <Comment key={comment.id} issueId={issue.id} {...comment} />;
 								})}
 						</section>
-						<NewComment issueId={issue.id} />
+						<Suspense fallback={<LoadingScreen upper/>}>
+							<NewComment issueId={issue.id} />
+						</Suspense>
 					</>
 				)}
 			</div>

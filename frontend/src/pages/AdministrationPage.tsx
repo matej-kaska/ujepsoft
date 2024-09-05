@@ -15,8 +15,10 @@ import { Repo } from "types/repo";
 import axiosRequest from "utils/axios";
 import { urlGithubSchema } from "utils/validationSchemas";
 import { object } from "yup";
-import { ReactComponent as RemoveIcon } from "../images/remove-icon.svg";
+import RemoveIcon from "images/remove-icon.svg?react";
 import useWindowSize from "utils/useWindowSize";
+import { Helmet } from "react-helmet-async";
+import { websiteUrl } from "utils/const";
 
 type AddRepoForm = {
 	url: string;
@@ -104,6 +106,9 @@ const AdministrationPage = () => {
 
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<section className="administration-page">
 				<header>

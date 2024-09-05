@@ -23,8 +23,8 @@ import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import { ReactComponent as CloseIcon } from "images/close.svg";
-import { ReactComponent as Check } from "images/check.svg";
+import CloseIcon from "images/close.svg?react";
+import Check from "images/check.svg?react";
 import LazyDropdown from "components/new-issue/LazyDropdown";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));

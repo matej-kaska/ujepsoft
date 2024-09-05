@@ -2,12 +2,11 @@ import Login from "components/authetication/Login";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
-import NewOffer from "components/new-offer/NewOffer";
 import ChangePassword from "components/password-reset/ChangePassword";
 import UnitOffer from "components/unit-offer/UnitOffer";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
@@ -15,6 +14,10 @@ import { RootState } from "redux/store";
 import { Offer } from "types/offer";
 import axiosRequest from "utils/axios";
 import { getOffersRowAmount } from "utils/getUnitsRowAmount";
+import { Helmet } from "react-helmet-async";
+import { websiteUrl } from "utils/const";
+
+const NewOffer = lazy(() => import("components/new-offer/NewOffer"));
 
 type OffersResponse = {
 	next: string;
@@ -82,8 +85,19 @@ const HomePage = () => {
 		if (registration) showModal(<Login token={registration} />);
 	}, [loaded]);
 
+	const createOffer = () => {
+		showModal(
+			<Suspense fallback={<LoadingScreen modal />}>
+				<NewOffer />
+			</Suspense>
+		);
+	};
+
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<div className="homepage">
 				<header>
@@ -96,7 +110,7 @@ const HomePage = () => {
 						spolupráci mezi studenty a personálem.
 					</p>
 					{userInfo?.id && (
-						<Button color="accent" onClick={() => showModal(<NewOffer />)}>
+						<Button color="accent" onClick={createOffer}>
 							+ Přidat nabídku
 						</Button>
 					)}

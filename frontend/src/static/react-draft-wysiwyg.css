@@ -400,7 +400,6 @@
 .wrapperClassName {
   border: 1px solid #827D7D;
   border-radius: 4px;
-  overflow: auto;
 }
 .rdw-editor-main {
   padding: 0px 12px;

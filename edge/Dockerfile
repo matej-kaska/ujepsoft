@@ -1,9 +1,10 @@
-FROM bitnami/nginx:1.26.0
+FROM alpine
+RUN apk add brotli nginx nginx-mod-http-brotli curl
 
-USER root
+COPY ujepsoft.conf /etc/nginx/http.d/default.conf
 
-RUN apt-get update && \
-    apt-get install -y curl=7.88.1-10+deb12u5 --no-install-recommends
+CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8000
 
 HEALTHCHECK --interval=30m --timeout=10s \
     CMD curl -f http://localhost:8000 || exit 1

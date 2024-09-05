@@ -10,11 +10,11 @@ import { removeUser } from "redux/authSlice";
 import { RootState, store } from "redux/store";
 import { clearAxiosAuthorization } from "utils/axios";
 import useWindowSize from "utils/useWindowSize";
-import { ReactComponent as OfferIcon } from "images/offer-icon.svg";
-import { ReactComponent as IssueIcon } from "images/issue-icon.svg";
-import { ReactComponent as GuideIcon } from "images/guide-icon.svg";
-import { ReactComponent as AdminIcon } from "images/admin-icon.svg";
-import { ReactComponent as LogoutIcon } from "images/logout-icon.svg";
+import OfferIcon from "images/offer-icon.svg?react";
+import IssueIcon from "images/issue-icon.svg?react";
+import GuideIcon from "images/guide-icon.svg?react";
+import AdminIcon from "images/admin-icon.svg?react";
+import LogoutIcon from "images/logout-icon.svg?react";
 
 const Navbar = () => {
 	const navigate = useNavigate();

@@ -8,7 +8,7 @@ import { confirmPasswordSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import { useModal } from "../../contexts/ModalProvider";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import { ReactComponent as CloseIcon } from "images/close.svg";
+import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	password: string;

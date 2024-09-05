@@ -1,4 +1,4 @@
-FROM python:alpine3.19
+FROM python:3-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -8,7 +8,7 @@ WORKDIR /backend
 
 COPY requirements.txt .
 
-RUN apk --no-cache add curl=8.5.0-r0 && \
+RUN apk --no-cache add curl && \
   pip install --no-cache-dir -r requirements.txt
 
 # Then copy the rest of the app

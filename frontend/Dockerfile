@@ -1,24 +1,24 @@
 # Build stage
-FROM node:20.8.0-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci && npx update-browserslist-db@latest && rm -rf ./node_modules/.cache
-
-# Install curl for health checking
-RUN apk update && apk --no-cache add curl=8.5.0-r0
+RUN npm ci && npx update-browserslist-db@latest -y && rm -rf ./node_modules/.cache
 
 COPY . .
 
 # Runtime stage
-FROM node:20.8.0-alpine
+FROM node:20-alpine
 
 # Create the app directory and change ownership upfront
 WORKDIR /app
 
 COPY --from=builder /app .
+
+# Install curl for health checking
+RUN apk update && apk --no-cache add curl
 
 EXPOSE 3000
 

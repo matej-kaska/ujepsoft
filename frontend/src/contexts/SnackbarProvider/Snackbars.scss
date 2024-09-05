@@ -33,4 +33,6 @@
 
 .success-snackbar, .error-snackbar {
   cursor: pointer;
+  left: 50%;
+  transform: translateX(-50%);
 }

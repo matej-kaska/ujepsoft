@@ -99,7 +99,9 @@ services:
 
   ## NGINX
   edge:
-    build: edge
+    build:
+      context: edge
+      dockerfile: Dockerfile
     container_name: ujepsoft-edge
     ports:
       - '8080:8080'

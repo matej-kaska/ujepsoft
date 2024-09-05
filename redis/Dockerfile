@@ -1,3 +1,4 @@
+# Last 3-Clause BSD License Version - Maybe switch to Valkey?
 FROM bitnami/redis:7.2.4
 
 USER root

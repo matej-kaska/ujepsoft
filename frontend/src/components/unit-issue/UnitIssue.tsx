@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Issue } from "types/issue";
 import { htmlToPlainText } from "utils/htmlToPlainText";
 import { removeFooterFromBody } from "utils/plainTextToHtml";
-import { ReactComponent as Chevron } from "images/chevron.svg";
+import Chevron from "images/chevron.svg?react";
 
 type UnitIssueProps = {
 	issue: Issue;

@@ -1,4 +1,4 @@
-import { ReactComponent as Chevron } from "images/chevron.svg";
+import Chevron from "images/chevron.svg?react";
 import { Menu, Transition } from "@headlessui/react";
 import { ButtonHTMLAttributes, Fragment, PropsWithChildren, ReactNode } from "react";
 

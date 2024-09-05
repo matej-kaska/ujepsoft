@@ -13,7 +13,7 @@ import axiosRequest from "utils/axios";
 import { emailSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import Register from "./Register";
-import { ReactComponent as CloseIcon } from "images/close.svg";
+import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	email: string;

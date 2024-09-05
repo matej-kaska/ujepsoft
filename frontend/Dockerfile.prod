@@ -1,14 +1,14 @@
 # Build stage
-FROM node:20.8.0-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY . .
 
-RUN npm install && npx update-browserslist-db@latest && npm run build
+RUN npm install && npx update-browserslist-db@latest -y && npm run build
 
 # Runtime stage
-FROM nginx:1.25.5-alpine
+FROM nginx:1.27-alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 

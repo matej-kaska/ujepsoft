@@ -2,11 +2,11 @@ import axios from "axios";
 import Button from "components/buttons/Button";
 import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
-import NewIssue from "components/new-issue/NewIssue";
 import UnitIssue from "components/unit-issue/UnitIssue";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
@@ -14,7 +14,10 @@ import { setShowClosedIssues } from "redux/settingsSlice";
 import { RootState } from "redux/store";
 import { Issue } from "types/issue";
 import axiosRequest from "utils/axios";
+import { websiteUrl } from "utils/const";
 import useWindowSize from "utils/useWindowSize";
+
+const NewIssue = lazy(() => import('components/new-issue/NewIssue'));
 
 type IssuesResponse = {
 	next: string;
@@ -91,8 +94,19 @@ const IssuesPage = () => {
 		setLoading(false);
 	};
 
+	const createIssue = () => {
+		showModal(
+			<Suspense fallback={<LoadingScreen modal />}>
+				<NewIssue />
+			</Suspense>
+		);
+	};
+
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<div className="issues-page">
 				<header>
@@ -107,7 +121,7 @@ const IssuesPage = () => {
 							</label>
 							<span className="text">{isMobile ? "Otevřené" : "Nezobrazovat uzavřené"}</span>
 						</div>
-						<Button color="accent" onClick={() => showModal(<NewIssue />)}>
+						<Button color="accent" onClick={createIssue}>
 							+ Přidat issue
 						</Button>
 						<div className="spacer" />

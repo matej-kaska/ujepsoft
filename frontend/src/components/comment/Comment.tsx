@@ -1,18 +1,21 @@
-import EditComment from "components/edit-comment/EditComment";
 import Files from "components/files/Files";
 import GeneralModal from "components/general-modal/GeneralModal";
 import Images from "components/images/Images";
+import LoadingScreen from "components/loading-screen/LoadingScreen";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { ReactComponent as EditIcon } from "images/edit-icon.svg";
-import { ReactComponent as RemoveIcon } from "images/remove-icon.svg";
+import EditIcon from "images/edit-icon.svg?react";
+import RemoveIcon from "images/remove-icon.svg?react";
+import { lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
 import { RootState } from "redux/store";
 import { Comment as TComment } from "types/issue";
 import axiosRequest from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
+
+const EditComment = lazy(() => import("components/edit-comment/EditComment"));
 
 type CommentProps = TComment & {
 	issueId: number;
@@ -36,13 +39,21 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 		dispatch(setReload("issuepage"));
 	};
 
+	const handleEditComment = () => {
+		showModal(
+			<Suspense fallback={<LoadingScreen modal />}>
+				<EditComment id={id} issueId={issueId} body={body} files={files} />
+			</Suspense>
+		);
+	};
+
 	return (
 		<div className="comment">
 			<div className="comment-header">
 				<ProfileBadge name={author} profilePicture={author_profile_pic} authorUjepsoft={author_ujepsoft} />
 				{((userInfo.is_staff && author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === author_ujepsoft) && (
 					<>
-						<button className="edit-button" onClick={() => showModal(<EditComment id={id} issueId={issueId} body={body} files={files} />)}><EditIcon/></button>
+						<button className="edit-button" onClick={handleEditComment}><EditIcon/></button>
 						<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}><RemoveIcon/></button>
 					</>
 				)}

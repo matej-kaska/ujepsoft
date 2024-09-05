@@ -1,5 +1,5 @@
 import { Attachment } from "types/offer";
-import { ReactComponent as FileIcon } from "images/file-icon.svg";
+import FileIcon from "images/file-icon.svg?react";
 
 type AttachmentProps = {
 	attachment: Attachment;

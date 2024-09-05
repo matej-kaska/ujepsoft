@@ -7,6 +7,8 @@ import LookAtIssues from "components/guides/LookAtIssues";
 import ScreenshotGuide from "components/guides/ScreenshotGuide";
 import ScreenshotGuideMacOS from "components/guides/ScreenshotGuideMacOS";
 import Navbar from "components/navbar/Navbar";
+import { Helmet } from "react-helmet-async";
+import { websiteUrl } from "utils/const";
 
 const GuidePage = () => {
 	const guides = new Array<JSX.Element>();
@@ -21,6 +23,9 @@ const GuidePage = () => {
 
 	return (
 		<>
+			<Helmet>
+				<link rel="canonical" href={websiteUrl + "/"} />
+			</Helmet>
 			<Navbar />
 			<section className="guide-page">
 				<header>

@@ -17,9 +17,9 @@ import { Attachment, Offer } from "types/offer";
 import { descriptionSchema, offerKeywordsSchema, offerNameSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import { useModal } from "../../contexts/ModalProvider";
-import { ReactComponent as CloseIcon } from "../../images/close.svg";
-import axiosRequest from "../../utils/axios";
+import { useModal } from "contexts/ModalProvider";
+import CloseIcon from "images/close.svg?react";
+import axiosRequest from "utils/axios";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 

@@ -1,4 +1,4 @@
-import { ReactComponent as SadFace } from "images/sad-face.svg";
+import SadFace from "images/sad-face.svg?react";
 
 const SomethingWentWrong = () => (
 	<div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
