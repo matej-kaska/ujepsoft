@@ -17,7 +17,7 @@ class SQLTestViewSet(APIView):
 
     def get(self, request):
         unit = generics.get_object_or_404(User, pk=1)
-        if (unit.email == "ujep@ujep.cz"):
+        if (unit.email == "ujepsoft@ujep.cz"):
             return JsonResponse({"message": "SQL is connected!"})
         else:
             return JsonResponse({"message": "Error"})

@@ -1,6 +1,7 @@
 from datetime import timedelta
 import os
 import random
+import re
 import string
 from django.shortcuts import get_object_or_404
 
@@ -99,11 +100,10 @@ class RegisterView(APIView):
         "cz": "Neplatný e-mail"
       }, status=400)
     
-    # TODO: REMOVE @gmail.com on production
-    if not (email.endswith("@ujep.cz") or email.endswith("@gmail.com")):
+    if re.match('^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$'):
       return Response({
-        "en": "This e-mail doesn't have @ujep.cz domain",
-        "cz": "Tento e-mail nemá doménu @ujep.cz"
+        "en": "This e-mail doesn't have @ujep.cz domain (except students)",
+        "cz": "Tento e-mail nemá doménu @ujep.cz (mimo students)"
       }, status=400)
 
     # Check if email is taken
@@ -210,11 +210,10 @@ class RequestPasswordResetView(APIView):
         "cz": "Neplatný email"
       }, status=400)
     
-    # TODO: REMOVE @gmail.com on production
-    if not (email.endswith("@ujep.cz") or email.endswith("@gmail.com")):
+    if re.match('^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$'):
       return Response({
-        "en": "This e-mail doesn't have @ujep.cz domain",
-        "cz": "Tento e-mail nemá doménu @ujep.cz"
+        "en": "This e-mail doesn't have @ujep.cz domain (except students)",
+        "cz": "Tento e-mail nemá doménu @ujep.cz (mimo students)"
       }, status=400)
 
     user = get_object_or_404(User, email=email)

@@ -41,13 +41,12 @@ const Register = () => {
 	});
 
 	const handleRegister = async (data: Form) => {
-		// TODO: DELETE THIS on Production
-		if (!(data.email.endsWith("@ujep.cz") || data.email.endsWith("@gmail.com"))) {
+		if (data.email.match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(?!students\.)(([^@.]+\.)*ujep\.cz)$/)) {
 			setError("email", {
 				type: "server",
-				message: "Tento e-mail nemá doménu @ujep.cz",
+				message: "Tento e-mail nemá doménu @ujep.cz (mimo students)",
 			});
-			openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz!");
+			openErrorSnackbar("Tento e-mail nemá doménu @ujep.cz! (mimo students)");
 			return;
 		}
 		const response = await axiosRequest("POST", "/api/users/register", {
@@ -64,7 +63,7 @@ const Register = () => {
 			} else if (response.message.en.includes("Invalid email")) {
 				setError("email", {
 					type: "server",
-					message: "Tento e-mail nemá doménu @ujep.cz",
+					message: "Tento e-mail nemá doménu @ujep.cz (mimo students)",
 				});
 			} else {
 				setError("apiError", {
