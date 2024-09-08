@@ -68,21 +68,21 @@ const Navbar = () => {
 			<div className="bottom-wrapper">
 				<ul>
 					<li>
-						<Link to={"/"}>{isMobile ? <OfferIcon/> : "Nabídky"}</Link>
+						<Link to={"/"} aria-label="Nabídky">{isMobile ? <OfferIcon/> : "Nabídky"}</Link>
 					</li>
 					<li>
-						<Link to={"/issues"} onClick={handleLinkClick}>
+						<Link to={"/issues"} onClick={handleLinkClick} aria-label="Problémy/Úkoly (Issues)">
 							{isMobile ? <IssueIcon/> : "Problémy/Úkoly (Issues)"}
 						</Link>
 					</li>
 					<li>
-						<Link to={"/guides"} onClick={handleLinkClick}>
+						<Link to={"/guides"} onClick={handleLinkClick} aria-label="Návody">
 							{isMobile ? <GuideIcon/> : "Návody"}
 						</Link>
 					</li>
 					{userInfo.is_staff && (
 						<li>
-							<Link to={"/repo-administration"} onClick={handleLinkClick}>
+							<Link to={"/repo-administration"} onClick={handleLinkClick} aria-label="Administrace">
 								{isMobile ? <AdminIcon/> : "Administrace"}
 							</Link>
 						</li>
@@ -92,12 +92,14 @@ const Navbar = () => {
 					{userInfo.id ? (
 						<>
 							{!isNarrow && <span>Jste přihlášen jako {userInfo.email}</span>}
-							<Button onClick={handleLogout} color="accent" className="logout-button">
+							<Button onClick={handleLogout} color="accent" className="logout-button" aria-label="Odhlásit se">
 								{isMobile ? <LogoutIcon/> : "Odhlásit se"}
 							</Button>
 						</>
 					) : (
-						<Button onClick={() => showModal(<Login />)} className="login-button">Přihlásit se</Button>
+						<Button onClick={() => showModal(<Login />)} className="login-button" aria-label="Přihlásit se">
+							Přihlásit se
+						</Button>
 					)}
 				</div>
 			</div>
