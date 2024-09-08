@@ -225,7 +225,6 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 							toolbarClassName="toolbarClassName"
 							wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
 							editorClassName={"editorClassName"}
-							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
 							toolbar={{
 								options: ["inline", "fontSize", "list", "emoji", "remove", "history"],
 								inline: { options: ["bold", "italic", "underline", "strikethrough"] },

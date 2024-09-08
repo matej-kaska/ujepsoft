@@ -9,7 +9,7 @@
 #root {
   width: 100%;
   min-height: 100vh;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Arial";
   display: flex;
   flex-direction: column;
   min-width: 18.75rem;
@@ -245,7 +245,7 @@
 
         div {
           span, strong, i, del {
-            font-family: 'Roboto' !important;
+            font-family: 'Arial' !important;
           }
         }
 

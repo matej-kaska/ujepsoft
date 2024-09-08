@@ -156,7 +156,6 @@ const EditComment = ({ body, id, issueId, files: existingFiles }: EditCommentPro
 							toolbarClassName="toolbarClassName"
 							wrapperClassName={`wrapperClassName ${errors.body ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
 							editorClassName={"editorClassName"}
-							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
 							toolbar={{
 								options: ["inline", "blockType", "list", "emoji", "remove", "history"],
 								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
