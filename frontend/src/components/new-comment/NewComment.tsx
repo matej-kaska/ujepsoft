@@ -102,7 +102,6 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 					toolbarClassName="toolbarClassName"
 					wrapperClassName={`wrapperClassName ${errors.comment ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
 					editorClassName={"editorClassName"}
-					editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
 					toolbar={{
 						options: ["inline", "blockType", "list", "emoji", "remove", "history"],
 						inline: { options: ["bold", "italic", "underline", "strikethrough"] },

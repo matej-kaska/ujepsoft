@@ -289,7 +289,6 @@ const NewIssue = ({ issue }: NewIssueProps) => {
 							toolbarClassName="toolbarClassName"
 							wrapperClassName={`wrapperClassName ${errors.description ? "border-red-600" : ""} ${focusDescription ? "focused" : ""}`}
 							editorClassName={"editorClassName"}
-							editorStyle={{ fontFamily: "Plus Jakarta Sans" }}
 							toolbar={{
 								options: ["inline", "blockType", "list", "emoji", "remove", "history"],
 								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
