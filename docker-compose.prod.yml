@@ -82,14 +82,15 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile.prod
+      args:
+        VITE_WEBSITE_URL: https://ujepsoft.ujep.cz
+        VITE_GITHUB_USERNAME: matej-kaska # TODO: CHANGE THIS ON PRODUCTION
     container_name: ujepsoft-frontend-prod
     depends_on:
       - backend
       - redis
     environment:
       - NODE_ENV=production
-      - VITE_WEBSITE_URL=https://ujepsoft.ujep.cz
-      - VITE_GITHUB_USERNAME=matej-kaska # TODO: CHANGE THIS ON PRODUCTION
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
