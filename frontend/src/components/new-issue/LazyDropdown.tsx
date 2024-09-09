@@ -1,9 +1,16 @@
 import React, { Suspense, startTransition } from 'react';
-import Dropdown from 'components/dropdown/Dropdown';
 import { RepoSelect } from 'types/repo';
 import { FullIssue } from 'types/issue';
 
-const LaziedDropdown = React.lazy(() => import("components/dropdown/Dropdown"));
+const LaziedDropdown = React.lazy(async () => {
+  const module = await import("components/dropdown/Dropdown");
+  return { default: module.default };
+});
+
+const LaziedDropdownItem = React.lazy(async () => {
+  const module = await import("components/dropdown/Dropdown");
+  return { default: module.default.Item };
+});
 
 type LazyDropdownProps = {
   selectValue: number;
@@ -33,9 +40,9 @@ const LazyDropdown = ({ selectValue, repos, errors, hoverSelect, issue, setSelec
       >
         {repos.map((repo: RepoSelect, index: number) => {
           return (
-            <Dropdown.Item key={index} onClick={() => handleSelect(repo.id)}>
+            <LaziedDropdownItem key={index} onClick={() => handleSelect(repo.id)}>
               {repo.name}
-            </Dropdown.Item>
+            </LaziedDropdownItem>
           );
         })}
       </LaziedDropdown>

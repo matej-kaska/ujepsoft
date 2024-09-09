@@ -121,7 +121,7 @@ class RegisterView(APIView):
       password=make_password(password),
     )
 
-    url_base = os.environ.get("DJANGO_URL_BASE", "http://localhost:8080/")
+    url_base = os.environ.get("DJANGO_BASE_URL" + "/", "http://localhost:8080/")
     registration_link = f"{url_base}?registration={registration_code.code}"
 
     template_args = {
@@ -223,7 +223,7 @@ class RequestPasswordResetView(APIView):
       code=code,
     )
 
-    url_base = os.environ.get("DJANGO_URL_BASE", "http://localhost:8080/")
+    url_base = os.environ.get("DJANGO_BASE_URL" + "/", "http://localhost:8080/")
     reset_link = f"{url_base}?token={reset_code.code}"
 
     template_args = {
