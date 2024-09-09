@@ -43,10 +43,8 @@ services:
     volumes:
       - ./backend:/backend
     environment:
+      - DJANGO_BASE_URL=http://localhost:8080
       - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16,192.168.1.2
-      - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8080
-      - DJANGO_MEDIA_URL=http://localhost:8080/backend/media/
-      - DJANGO_STATIC_URL=http://localhost:8080/backend/static/
       - DJANGO_DB_NAME=ujepsoft
       - DJANGO_DB_USER=postgres
       - DJANGO_DB_PASSWORD=postgres
@@ -54,7 +52,6 @@ services:
       - DJANGO_DB_PORT=5432
       - DJANGO_REDIS_LOCATION=redis://redis:6379/1
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - DJANGO_BASE_URL=http://localhost:8080/
       - DJANGO_EMAIL_HOST=smtp.office365.com
       - DJANGO_EMAIL_PORT=587
       - DJANGO_EMAIL_USE_TLS=true
@@ -89,6 +86,7 @@ services:
       - redis
     environment:
       - NODE_ENV=development
+      - VITE_WEBSITE_URL=https://localhost:8080
       - VITE_GITHUB_USERNAME=matej-kaska
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]

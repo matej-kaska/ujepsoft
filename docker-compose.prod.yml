@@ -48,10 +48,8 @@ services:
       - ./backend:/backend
     environment:
       - DJANGO_PRODUCTION=true
-      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16,backend
-      - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8080
-      - DJANGO_MEDIA_URL=http://localhost:8080/backend/media/
-      - DJANGO_STATIC_URL=http://localhost:8080/backend/static/
+      - DJANGO_BASE_URL=https://ujepsoft.ujep.cz
+      - DJANGO_ALLOWED_HOSTS=localhost,webapp,10.0.0.16,backend,ujepsoft.ujep.cz
       - DJANGO_DB_NAME=ujepsoft
       - DJANGO_DB_USER=postgres
       - DJANGO_DB_PASSWORD=postgres # TODO: CHANGE THIS ON PRODUCTION @{POSTGRES_PASSWORD}
@@ -59,7 +57,6 @@ services:
       - DJANGO_DB_PORT=5432
       - DJANGO_REDIS_LOCATION=redis://redis:6379/1
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - DJANGO_BASE_URL=http://localhost:8080/
       - DJANGO_EMAIL_HOST=smtp.office365.com
       - DJANGO_EMAIL_PORT=587
       - DJANGO_EMAIL_USE_TLS=true
@@ -68,7 +65,7 @@ services:
       - DJANGO_EMAIL_FROM=ujepsoft@hotmail.com
       - DJANGO_SECRET=${DJANGO_SECRET}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - GITHUB_USERNAME=matej-kaska
+      - GITHUB_USERNAME=matej-kaska # TODO: CHANGE THIS ON PRODUCTION
       - REDIS-TIMEOUT=15 # TODO: CHANGE THIS ON PRODUCTION
       - MAX_FILE_SIZE=134217728 # 128 MB
       - MAX_TOTAL_FILES_SIZE=536870912 # 512 MB
@@ -91,7 +88,8 @@ services:
       - redis
     environment:
       - NODE_ENV=production
-      - VITE_GITHUB_USERNAME=matej-kaska
+      - VITE_WEBSITE_URL=https://ujepsoft.ujep.cz
+      - VITE_GITHUB_USERNAME=matej-kaska # TODO: CHANGE THIS ON PRODUCTION
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3000" ]
