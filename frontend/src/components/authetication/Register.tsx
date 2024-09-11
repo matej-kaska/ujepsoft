@@ -97,7 +97,7 @@ const Register = () => {
 				<input id="gdpr" type="checkbox" {...register("gdpr")} />
 				<label htmlFor="gdpr">
 					Souhlasím se{" "}
-					<Link to={"/gdpr"} target="_blank" rel="noopener noreferrer">
+					<Link to={"https://www.ujep.cz/cs/zasady-zpracovani-osobnich-udaju"} target="_blank" rel="noopener noreferrer">
 						zpracováním osobních údajů
 					</Link>
 				</label>
