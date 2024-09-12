@@ -156,6 +156,12 @@ class IssueCreate(APIView):
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if len(request.FILES.getlist('files')) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
     if not Repo.objects.filter(pk=repo).exists():
       return Response({
         "en": "Repository not found",
@@ -386,6 +392,9 @@ class IssueDetail(APIView):
           "cz": "Velikost souboru překračuje maximální limit 128 MB"
         }, status=status.HTTP_400_BAD_REQUEST)
       total_files_size += uploaded_file.size
+      
+    for existing_file in existing_files:
+      total_files_size += IssueFile.objects.get(id=existing_file).file.size
 
     if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
       return Response({
@@ -393,12 +402,18 @@ class IssueDetail(APIView):
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if len(request.FILES.getlist('files')) + len(existing_files) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
     issue_files = []
     # Delete non Existing files
     for file in IssueFile.objects.filter(issue=issue):
       file_found = False
       for existing_file in existing_files:
-        if file.name == existing_file:
+        if file.id == existing_file:
           file_found = True
           issue_files.append(file)
           break
@@ -499,6 +514,12 @@ class IssueAddComment(APIView):
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(request.FILES.getlist('files')) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
 
     # Upload new files
     comment_files = []
@@ -586,10 +607,19 @@ class EditComment(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
       total_files_size += uploaded_file.size
 
+    for existing_file in existing_files:
+      total_files_size += CommentFile.objects.get(id=existing_file).file.size
+
     if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
       return Response({
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(request.FILES.getlist('files')) + len(existing_files) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
       }, status=status.HTTP_400_BAD_REQUEST)
     
     # Delete non Existing files
@@ -597,7 +627,7 @@ class EditComment(APIView):
     for file in CommentFile.objects.filter(comment=comment):
       file_found = False
       for existing_file in existing_files:
-        if file.name == existing_file:
+        if file.id == existing_file:
           file_found = True
           comment_files.append(file)
           break

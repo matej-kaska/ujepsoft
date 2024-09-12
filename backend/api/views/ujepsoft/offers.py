@@ -60,6 +60,12 @@ class OfferUpload(APIView):
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
       }, status=status.HTTP_400_BAD_REQUEST)
     
+    if len(request.FILES.getlist('files')) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
     of = Offer.objects.create(
       name=name,
       description=description,
@@ -155,10 +161,19 @@ class OfferDetail(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
       total_files_size += uploaded_file.size
 
+    for existing_file in existing_files:
+      total_files_size += OfferFile.objects.get(id=existing_file).file.size
+
     if total_files_size > int(os.environ.get("MAX_TOTAL_FILES_SIZE", 536870912)):
       return Response({
         "en": "Total files size exceeds the maximum limit of 512 MB",
         "cz": "Celková velikost souborů překračuje maximální limit 512 MB"
+      }, status=status.HTTP_400_BAD_REQUEST)
+    
+    if len(request.FILES.getlist('files')) + len(existing_files) > 49:
+      return Response({
+        "en": "Maximum of 50 files can be uploaded",
+        "cz": "Maximum 50 souborů může být nahráno"
       }, status=status.HTTP_400_BAD_REQUEST)
     
     offer.name = name
@@ -178,7 +193,7 @@ class OfferDetail(APIView):
     for file in OfferFile.objects.filter(offer=offer):
       file_found = False
       for existing_file in existing_files:
-        if file.name == existing_file:
+        if file.id == existing_file:
           file_found = True
           break
       if not file_found:

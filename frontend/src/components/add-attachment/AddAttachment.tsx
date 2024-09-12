@@ -37,11 +37,15 @@ const AddAttachment = ({ files, setFiles, uploadedFiles, setUploadedFiles, updat
 		for (const file of files) {
 			totalSize += file.size;
 		}
+		for (const file of uploadedFiles || []) {
+			totalSize += file.size;
+		}
 		if (totalSize + file.size > 536870912) {
 			openErrorSnackbar("Soubory nesmí být větší než 512 MB!");
 			return false;
 		}
-		if (files.length > 49) {
+		const totalFiles = files.length + (uploadedFiles?.length || 0);
+		if (totalFiles > 49) {
 			openErrorSnackbar("Nesmíte nahrát více jak 50 souborů");
 			return false;
 		}

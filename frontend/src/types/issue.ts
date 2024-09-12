@@ -16,9 +16,11 @@ export type Issue = {
 };
 
 export type Attachment = {
+	id: number;
 	name: string;
 	file: string;
 	file_type: "image" | "file";
+	size: number;
 };
 
 type Repo = {
