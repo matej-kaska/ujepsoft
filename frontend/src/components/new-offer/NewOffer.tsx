@@ -142,10 +142,10 @@ const NewOffer = ({ offer }: NewOfferProps) => {
 			formData.append("files", file);
 		}
 
-		let newUploadedFiles: string[] = [];
+		let newUploadedFiles: number[] = [];
 
 		for (const uploadedFile of uploadedFiles) {
-			newUploadedFiles = [...newUploadedFiles, uploadedFile.name];
+			newUploadedFiles = [...newUploadedFiles, uploadedFile.id];
 		}
 
 		formData.append("existingFiles", JSON.stringify(newUploadedFiles));

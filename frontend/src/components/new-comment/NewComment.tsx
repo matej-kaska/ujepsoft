@@ -15,6 +15,7 @@ import axiosRequest from "utils/axios";
 import { commentSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
+import LoadingScreen from "components/loading-screen/LoadingScreen";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 
@@ -35,6 +36,7 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 	const [files, setFiles] = useState<File[]>([]);
 	const [commentFocus, setCommentFocus] = useState<boolean>(false);
 	const [validate, setValidate] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		const editorElement = document.querySelector(".public-DraftEditor-content");
@@ -74,9 +76,10 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 		for (const file of files) {
 			formData.append("files", file);
 		}
-
+		setLoading(true);
 		const response = await axiosRequest("POST", `/api/issue/${issueId}/comment/new`, formData);
 		if (!response.success) {
+			setLoading(false);
 			openErrorSnackbar(response.message.cz);
 			setError("apiError", {
 				type: "server",
@@ -91,42 +94,49 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 		setValue("comment", "");
 		setFiles([]);
 		setValidate(false);
+		setLoading(false);
 	};
 
 	return (
 		<form className="new-comment" onSubmit={handleSubmit(handlePostComment)}>
-			<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
-				<WysiwygEditor
-					stripPastedStyles={true}
-					editorState={commentEditorState}
-					toolbarClassName="toolbarClassName"
-					wrapperClassName={`wrapperClassName ${errors.comment ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
-					editorClassName={"editorClassName"}
-					toolbar={{
-						options: ["inline", "blockType", "list", "emoji", "remove", "history"],
-						inline: { options: ["bold", "italic", "underline", "strikethrough"] },
-					}}
-					localization={{ locale: "en", translations: editorLabels }}
-					onEditorStateChange={(newState: any) => {
-						let hasAtomicValue = false;
-						for (const element of newState.getCurrentContent().blockMap) {
-							if (element.type === "atomic") hasAtomicValue = true;
-						}
-						if (hasAtomicValue) {
-							alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
-							return;
-						}
-						const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
-						if (text.length > 8191) return alert("Komentář nesmí být delší než 8191 raw znaků!");
-						setCommentEditorState(newState);
-						if (validate) setValue("comment", text, { shouldValidate: true });
-						else setValue("comment", text);
-					}}
-				/>
-			</Suspense>
-			<p className={`${errors.comment ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.comment?.message}!</p>
-			<AddAttachment files={files} setFiles={setFiles} />
-			<Button type="submit">+ Přidat komentář</Button>
+			{loading ?
+				<LoadingScreen upper />
+			:
+				<>
+					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
+						<WysiwygEditor
+							stripPastedStyles={true}
+							editorState={commentEditorState}
+							toolbarClassName="toolbarClassName"
+							wrapperClassName={`wrapperClassName ${errors.comment ? "border-red-600" : ""} ${commentFocus ? "focused" : ""}`}
+							editorClassName={"editorClassName"}
+							toolbar={{
+								options: ["inline", "blockType", "list", "emoji", "remove", "history"],
+								inline: { options: ["bold", "italic", "underline", "strikethrough"] },
+							}}
+							localization={{ locale: "en", translations: editorLabels }}
+							onEditorStateChange={(newState: any) => {
+								let hasAtomicValue = false;
+								for (const element of newState.getCurrentContent().blockMap) {
+									if (element.type === "atomic") hasAtomicValue = true;
+								}
+								if (hasAtomicValue) {
+									alert("Používáte nepodporované znaky. Zkopírujte text do poznámkového bloku a obsah znovu zkopírujte a vložte!");
+									return;
+								}
+								const text = draftToHtml(convertToRaw(newState.getCurrentContent()));
+								if (text.length > 8191) return alert("Komentář nesmí být delší než 8191 raw znaků!");
+								setCommentEditorState(newState);
+								if (validate) setValue("comment", text, { shouldValidate: true });
+								else setValue("comment", text);
+							}}
+						/>
+					</Suspense>
+					<p className={`${errors.comment ? "visible" : "invisible"} ml-0.5 text-sm text-red-600`}>{errors.comment?.message}!</p>
+					<AddAttachment files={files} setFiles={setFiles} />
+					<Button type="submit">+ Přidat komentář</Button>
+				</>
+			}
 		</form>
 	);
 };

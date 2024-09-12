@@ -8,14 +8,28 @@ class KeywordSerializer(serializers.ModelSerializer):
     fields = ['name']
 
 class FileSerializer(serializers.ModelSerializer):
+  size = serializers.SerializerMethodField()
+
   class Meta:
     model = OfferFile
-    fields = ['name', 'file', 'file_type']
+    fields = ['id', 'name', 'file', 'file_type', 'size']
+
+  def get_size(self, obj):
+    if not obj.file:
+      return 0
+    return obj.file.size
 
 class FileIssueSerializer(serializers.ModelSerializer):
+  size = serializers.SerializerMethodField()
+
   class Meta:
     model = IssueFile
-    fields = ['name', 'file', 'file_type', 'remote_url']
+    fields = ['id', 'name', 'file', 'file_type', 'remote_url', 'size']
+
+  def get_size(self, obj):
+    if not obj.file:
+      return 0
+    return obj.file.size
 
 class OfferSerializer(serializers.ModelSerializer):
   keywords = serializers.SerializerMethodField()
