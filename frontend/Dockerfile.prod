@@ -20,7 +20,7 @@ RUN find /app/dist -type f -exec brotli -Z {} \;
 RUN find /app/src/images -type f -exec brotli -Z {} \;
 
 # Runtime stage
-FROM alpine
+FROM alpine:3
 
 RUN apk add brotli nginx nginx-mod-http-brotli
 
