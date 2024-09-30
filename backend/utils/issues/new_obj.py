@@ -185,7 +185,7 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for file in files:
     try:
-      IssueFile.objects.get(name=file[0], issue=updating_issue)
+      IssueFile.objects.get(name=file[0], issue=updating_issue, remote_url=file[1])
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
         name=remove_file_extenstion_from_name(file[0]),
@@ -196,7 +196,7 @@ def update_issue(issue_pk, new_issue, user, repo):
 
   for image in images:
     try:
-      IssueFile.objects.get(name=image[0], issue=updating_issue)
+      IssueFile.objects.get(name=image[0], issue=updating_issue, remote_url=image[1])
     except IssueFile.DoesNotExist:
       IssueFile.objects.create(
         name=remove_file_extenstion_from_name(image[0]),
@@ -267,7 +267,7 @@ def update_comment(comment, associated_issue):
 
   for file in files:
     try:
-      CommentFile.objects.get(name=file[0], comment=new_comment)
+      CommentFile.objects.get(name=file[0], comment=new_comment, remote_url=file[1])
     except CommentFile.DoesNotExist:
       CommentFile.objects.create(
         name=remove_file_extenstion_from_name(file[0]),
@@ -278,7 +278,7 @@ def update_comment(comment, associated_issue):
 
   for image in images:
     try:
-      CommentFile.objects.get(name=image[0], comment=new_comment)
+      CommentFile.objects.get(name=image[0], comment=new_comment, remote_url=image[1])
     except CommentFile.DoesNotExist:
       CommentFile.objects.create(
         name=remove_file_extenstion_from_name(image[0]),
