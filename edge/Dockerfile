@@ -1,5 +1,5 @@
-FROM alpine
-RUN apk add brotli nginx nginx-mod-http-brotli curl
+FROM alpine:3
+RUN apk add --no-cache brotli nginx nginx-mod-http-brotli curl
 
 COPY ujepsoft.conf /etc/nginx/http.d/default.conf
 

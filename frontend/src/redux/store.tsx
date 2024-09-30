@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { persistStore } from "redux-persist";
 import authReducer from "./authSlice";
 import errorReducer, { errorHandlingMiddleware } from "./errorSlice";
 import modalReducer from "./modalSlice";
@@ -29,5 +28,3 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
-
-export const persistedStore = persistStore(store);
