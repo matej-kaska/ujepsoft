@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
 
 class User(AbstractUser):
-  profile_image = models.ImageField(upload_to='profile_images', blank=True)
 
   username = None
   email = models.EmailField(unique=True)
