@@ -31,7 +31,7 @@ Aplikace běží na `localhost:8080` a je plně kontejnerizována pomocí Docker
 
 1. Naklonujte repozitář:
     ```bash
-    git clone https://github.com/vase-repo/ujep-soft.git
+    git clone https://github.com/matej-kaska/ujepsoft.git
     ```
 
 2. V root adresáři projektu spusťte příkaz pro sestavení Docker kontejnerů:
