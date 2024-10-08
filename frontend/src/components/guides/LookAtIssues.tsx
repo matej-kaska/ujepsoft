@@ -23,7 +23,7 @@ const LookAtIssues = () => {
 							kterého se tento Issue týká.
 						</ul>
 						<ul>
-							<strong>3</strong> &rarr; Autor Issue.
+							<strong>3</strong> &rarr; Autor.
 						</ul>
 						<ul>
 							<strong>4</strong> &rarr; Označení Issue - chyba/vylepšení/otázka.
