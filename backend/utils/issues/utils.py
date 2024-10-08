@@ -55,7 +55,7 @@ def get_ujepsoft_author(description: str) -> str:
   h2_start = last_p_content.find('<h2>') + len('<h2>')
   h2_end = last_p_content.find('</h2>')
   h2_content = last_p_content[h2_start:h2_end]
-  return h2_content.replace("Autor Issue: ", "") if "Autor Issue: " in h2_content else ""
+  return h2_content.replace("Autor: ", "") if "Autor: " in h2_content else ""
 
 def extract_files_from_github(body):
     """
@@ -118,7 +118,7 @@ def add_ujepsoft_author(description: str, author: str) -> str:
   """
   if not description:
     return ""
-  description = description + f"<h2>Autor Issue: {author}</h2>\n"
+  description = description + f"<h2>Autor: {author}</h2>\n"
   description = description + "<h3>Tento Issue byl vygenerován pomocí aplikace UJEP Soft</h3>\n"
   return description
 
