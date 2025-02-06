@@ -1,4 +1,4 @@
-FROM redis:alpine
+FROM redis:latest
 
 USER root
 
