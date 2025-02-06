@@ -22,6 +22,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+      - name: Install NPM dependencies
+        run: |
+          cd frontend
+          npm install
       - name: Run Biome on frontend
         run: |
           cd frontend 
