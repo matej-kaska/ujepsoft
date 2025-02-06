@@ -21,6 +21,7 @@ const errorSlice = createSlice({
 
 export const { setError } = errorSlice.actions;
 
+/** biome-ignore lint/complexity/noBannedTypes: Easy typing */
 export const errorHandlingMiddleware: Middleware<{}, any, Dispatch> = (storeAPI) => (next) => (action) => {
 	try {
 		return next(action);

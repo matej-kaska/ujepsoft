@@ -171,7 +171,9 @@ jobs:
           images=$(docker-compose config | grep 'image:' | awk '{print $2}' | sort | uniq)
           backend_base_image=$(grep '^FROM' backend/Dockerfile | awk '{print $2}' | sort | uniq)
           frontend_base_image=$(grep '^FROM' frontend/Dockerfile | awk '{print $2}' | sort | uniq)
-          images="$images $backend_base_image $frontend_base_image"
+          redis_base_image=$(grep '^FROM' redis/Dockerfile | awk '{print $2}' | sort | uniq)
+          edge_base_image=$(grep '^FROM' edge/Dockerfile | awk '{print $2}' | sort | uniq)
+          images="$images $backend_base_image $frontend_base_image $redis_base_image $edge_base_image"
           for image in $images; do
             echo "Scanning $image"
             trivy image $image || true
