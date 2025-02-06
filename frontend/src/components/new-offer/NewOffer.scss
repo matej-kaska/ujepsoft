@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .new-offer {
   display: flex;
   justify-content: left;
@@ -83,7 +85,7 @@
         }
   
         .keyword-tag {
-          background-color: $color-lightaccent;
+          background-color: var.$color-lightaccent;
           line-height: 1.5rem;
           height: 1.5rem;
           padding: 0.25rem 0.375rem 0.25rem 0.5rem;

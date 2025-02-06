@@ -6,16 +6,16 @@ import ChangePassword from "components/password-reset/ChangePassword";
 import UnitOffer from "components/unit-offer/UnitOffer";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
-import { Offer } from "types/offer";
+import type { RootState } from "redux/store";
+import type { Offer } from "types/offer";
 import axiosRequest from "utils/axios";
-import { getOffersRowAmount } from "utils/getUnitsRowAmount";
-import { Helmet } from "react-helmet-async";
 import { websiteUrl } from "utils/const";
+import { getOffersRowAmount } from "utils/getUnitsRowAmount";
 
 const NewOffer = lazy(() => import("components/new-offer/NewOffer"));
 
@@ -50,10 +50,7 @@ const HomePage = () => {
 	const getOffers = async () => {
 		setLoading(true);
 		const pageAmount = getOffersRowAmount() * 2;
-		const response = await axiosRequest<OffersResponse>(
-			"GET",
-			`/api/offer/list?page-size=${pageAmount}`,
-		);
+		const response = await axiosRequest<OffersResponse>("GET", `/api/offer/list?page-size=${pageAmount}`);
 		if (!response.success) {
 			openErrorSnackbar(response.message.cz);
 			console.error("Error loading offers:", response.message.cz);
@@ -89,26 +86,20 @@ const HomePage = () => {
 		showModal(
 			<Suspense fallback={<LoadingScreen modal />}>
 				<NewOffer />
-			</Suspense>
+			</Suspense>,
 		);
 	};
 
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/"} />
+				<link rel="canonical" href={`${websiteUrl}/`} />
 			</Helmet>
 			<Navbar />
 			<div className="homepage">
 				<header>
 					<h1>Nabídky pro vývoj softwaru na UJEP</h1>
-					<p>
-						Personál UJEP má možnost navrhovat softwarové projekty, které jsou
-						zapotřebí vyvinout. Studenti mohou na tyto nabídky reagovat a
-						zapojit se do vývoje posíláním svých nápadů na uvedený e-mail. Jedná
-						se o skvělou příležitost k získání praktických zkušeností a
-						spolupráci mezi studenty a personálem.
-					</p>
+					<p>Personál UJEP má možnost navrhovat softwarové projekty, které jsou zapotřebí vyvinout. Studenti mohou na tyto nabídky reagovat a zapojit se do vývoje posíláním svých nápadů na uvedený e-mail. Jedná se o skvělou příležitost k získání praktických zkušeností a spolupráci mezi studenty a personálem.</p>
 					{userInfo?.id && (
 						<Button color="accent" onClick={createOffer}>
 							+ Přidat nabídku
@@ -116,9 +107,7 @@ const HomePage = () => {
 					)}
 				</header>
 				{offers.length === 0 && !loading ? (
-					<span className="mt-4 text-gray-600 italic no-issues">
-						Nejsou zde žádné nabídky
-					</span>
+					<span className="mt-4 text-gray-600 italic no-issues">Nejsou zde žádné nabídky</span>
 				) : (
 					<section className="offer-container">
 						{offers.map((offer: Offer, index: number) => (

@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 ARG VITE_WEBSITE_URL
 ARG VITE_GITHUB_USERNAME
@@ -24,6 +24,9 @@ FROM alpine:3
 
 RUN apk add --no-cache brotli nginx nginx-mod-http-brotli
 
+RUN mkdir -p /var/cache/nginx /var/run/nginx /var/log/nginx /usr/share/nginx/html \
+  && chown -R nginx:nginx /var/cache/nginx /var/run/nginx /var/log/nginx /usr/share/nginx/html
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 COPY --from=builder /app/src/images /usr/share/nginx/html/src/images
@@ -32,7 +35,9 @@ COPY nginx.conf /etc/nginx/http.d/default.conf
 
 EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+USER nginx
 
 HEALTHCHECK --interval=30m --timeout=10s \
   CMD curl -f http://localhost:3000 || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -3,18 +3,18 @@ import Button from "components/buttons/Button";
 import { useAuth } from "contexts/AuthProvider";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import AdminIcon from "images/admin-icon.svg?react";
+import GuideIcon from "images/guide-icon.svg?react";
+import IssueIcon from "images/issue-icon.svg?react";
+import LogoutIcon from "images/logout-icon.svg?react";
+import OfferIcon from "images/offer-icon.svg?react";
 import { useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "redux/authSlice";
-import { RootState, store } from "redux/store";
+import { type RootState, store } from "redux/store";
 import { clearAxiosAuthorization } from "utils/axios";
 import useWindowSize from "utils/useWindowSize";
-import OfferIcon from "images/offer-icon.svg?react";
-import IssueIcon from "images/issue-icon.svg?react";
-import GuideIcon from "images/guide-icon.svg?react";
-import AdminIcon from "images/admin-icon.svg?react";
-import LogoutIcon from "images/logout-icon.svg?react";
 
 const Navbar = () => {
 	const navigate = useNavigate();
@@ -57,33 +57,35 @@ const Navbar = () => {
 				<Link to={"/"}>
 					<h1>UJEP SOFT</h1>
 				</Link>
-				{!isMobile &&
+				{!isMobile && (
 					<div className="img-wrapper">
 						<Link to={"https://ujep.cz/"}>
 							<img src="/src/images/ujep-full-logo.webp" alt="UJEP logo" />
 						</Link>
 					</div>
-				}
+				)}
 			</header>
 			<div className="bottom-wrapper">
 				<ul>
 					<li>
-						<Link to={"/"} aria-label="Nabídky">{isMobile ? <OfferIcon/> : "Nabídky"}</Link>
+						<Link to={"/"} aria-label="Nabídky">
+							{isMobile ? <OfferIcon /> : "Nabídky"}
+						</Link>
 					</li>
 					<li>
 						<Link to={"/issues"} onClick={handleLinkClick} aria-label="Problémy/Úkoly (Issues)">
-							{isMobile ? <IssueIcon/> : "Problémy/Úkoly (Issues)"}
+							{isMobile ? <IssueIcon /> : "Problémy/Úkoly (Issues)"}
 						</Link>
 					</li>
 					<li>
 						<Link to={"/guides"} onClick={handleLinkClick} aria-label="Návody">
-							{isMobile ? <GuideIcon/> : "Návody"}
+							{isMobile ? <GuideIcon /> : "Návody"}
 						</Link>
 					</li>
 					{userInfo.is_staff && (
 						<li>
 							<Link to={"/repo-administration"} onClick={handleLinkClick} aria-label="Administrace">
-								{isMobile ? <AdminIcon/> : "Administrace"}
+								{isMobile ? <AdminIcon /> : "Administrace"}
 							</Link>
 						</li>
 					)}
@@ -93,7 +95,7 @@ const Navbar = () => {
 						<>
 							{!isNarrow && <span>Jste přihlášen jako {userInfo.email}</span>}
 							<Button onClick={handleLogout} color="accent" className="logout-button" aria-label="Odhlásit se">
-								{isMobile ? <LogoutIcon/> : "Odhlásit se"}
+								{isMobile ? <LogoutIcon /> : "Odhlásit se"}
 							</Button>
 						</>
 					) : (

@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Login from "components/authetication/Login";
 import Button from "components/buttons/Button";
+import CloseIcon from "images/close.svg?react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axiosRequest from "utils/axios";
@@ -8,7 +9,6 @@ import { confirmPasswordSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import { useModal } from "../../contexts/ModalProvider";
 import { useSnackbar } from "../../contexts/SnackbarProvider";
-import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	password: string;

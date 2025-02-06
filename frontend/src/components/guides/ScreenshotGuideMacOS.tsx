@@ -9,15 +9,15 @@ const ScreenshotGuideMacOS = () => {
 			{open && (
 				<ol>
 					<li>
-						Stiskněte <strong>Command (⌘) + Shift + 4</strong>
+						Stiskněte <strong>Command (⌘) + Shift + 4</strong>.
 					</li>
-					<li>Kurzor se změní na křížek</li>
-					<li>Klikněte a táhněte pro výběr oblasti, kterou chcete zachytit</li>
+					<li>Kurzor se změní na křížek.</li>
+					<li>Klikněte a táhněte pro výběr oblasti, kterou chcete zachytit.</li>
 					<div className="image">
-					<img src="/src/images/guides/screenshotmacos.webp" alt="screenshot" />
+						<img src="/src/images/guides/screenshotmacos.webp" alt="screenshot" />
 					</div>
-					<li>Uvolněte tlačítko myši pro pořízení snímku</li>
-					<li>Snímek obrazovky bude ve výchozím nastavení uložen na vaší ploše</li>
+					<li>Uvolněte tlačítko myši pro pořízení snímku.</li>
+					<li>Snímek obrazovky bude ve výchozím nastavení uložen na vaší ploše.</li>
 				</ol>
 			)}
 		</div>

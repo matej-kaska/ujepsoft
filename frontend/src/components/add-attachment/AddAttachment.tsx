@@ -1,6 +1,6 @@
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { Attachment } from "types/issue";
 import CloseIcon from "images/close.svg?react";
+import type { Attachment } from "types/issue";
 
 type AddAttachmentProps = {
 	files: File[];

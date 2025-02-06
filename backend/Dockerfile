@@ -11,7 +11,6 @@ COPY requirements.txt .
 RUN apk --no-cache add curl && \
   pip install --no-cache-dir -r requirements.txt
 
-# Then copy the rest of the app
 COPY . .
 
 EXPOSE 8000

@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .guide {
   display: flex;
   flex-direction: column;
@@ -6,7 +8,7 @@
   width: 100%;
   
   &.open {
-    background-color: $color-lightgray;
+    background-color: var.$color-lightgray;
   }
 
   h2 {
@@ -19,7 +21,7 @@
     padding-inline: 1rem;
 
     &:hover {
-      background-color: $color-lightgray;
+      background-color: var.$color-lightgray;
     }
   }
 
@@ -46,7 +48,7 @@
   }
 
   .image {
-    border: 1px solid $color-darkgray;
+    border: 1px solid var.$color-darkgray;
     padding-inline: 1rem;
     padding-block: 0.5rem;
     border-radius: 0.5rem;

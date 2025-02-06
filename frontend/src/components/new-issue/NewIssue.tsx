@@ -13,19 +13,19 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
+import type { RootState } from "redux/store";
 import { editorLabels } from "static/wysiwyg";
-import { FullIssue } from "types/issue";
-import { Attachment } from "types/offer";
-import { RepoSelect } from "types/repo";
+import type { FullIssue } from "types/issue";
+import type { Attachment } from "types/offer";
+import type { RepoSelect } from "types/repo";
 import axiosRequest from "utils/axios";
 import { timeout } from "utils/timeout";
 import { descriptionSchema, labelsSchema, offerNameSchema, repoSelectSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import "/src/static/react-draft-wysiwyg.css";
-import CloseIcon from "images/close.svg?react";
-import Check from "images/check.svg?react";
 import LazyDropdown from "components/new-issue/LazyDropdown";
+import Check from "images/check.svg?react";
+import CloseIcon from "images/close.svg?react";
 
 const WysiwygEditor = React.lazy(() => import("react-draft-wysiwyg").then((module) => ({ default: module.Editor })));
 

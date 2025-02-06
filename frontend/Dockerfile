@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -9,15 +9,12 @@ RUN npm ci && npx update-browserslist-db@latest -y && rm -rf ./node_modules/.cac
 
 COPY . .
 
-# Runtime stage
-FROM node:20-alpine
+FROM node:22-alpine
 
-# Create the app directory and change ownership upfront
 WORKDIR /app
 
 COPY --from=builder /app .
 
-# Install curl for health checking
 RUN apk update && apk --no-cache add curl
 
 EXPOSE 3000

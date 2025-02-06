@@ -1,16 +1,19 @@
+@use 'sass:color';
+@use '../../variables' as var;
+
 .attachment {
   display: flex;
   border-radius: 0.375rem;
   align-items: center;
-  border: 1px solid $color-darkgray;
+  border: 1px solid color-darkgray;
   padding: 0.75rem 0.5rem;
   width: fit-content;
   cursor: pointer;
   user-select: none;
 
   &:hover {
-    border-color: darken($color-darkgray, 10%);
-    background-color: darken(white, 5%);
+    border-color: color.adjust(var.$color-darkgray, $lightness: -10%);
+    background-color: color.adjust(white, $lightness: -5%);
   }
 
   svg {

@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .login {
     display: flex;
     justify-content: left;
@@ -35,7 +37,7 @@
                 width: 0.813rem;
                 height: 0.813rem;
                 margin-right: 0.375rem;
-                accent-color: $color-primary;
+                accent-color: var.$color-primary;
                 cursor: pointer;
             }
     

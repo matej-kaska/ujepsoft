@@ -6,13 +6,21 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /backend
 
+RUN addgroup -S appgroup && adduser -S -G appgroup appuser
+
 COPY . .
+
+RUN chmod +x /backend/entrypoint.prod.sh && \
+    chmod +x /backend/manage.py && \
+    chown -R appuser:appgroup /backend
 
 # Install dependencies
 RUN apk --no-cache add curl && \
   pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
+
+USER appuser
 
 ENTRYPOINT ["/backend/entrypoint.prod.sh"]
 CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "backend.wsgi:application"]

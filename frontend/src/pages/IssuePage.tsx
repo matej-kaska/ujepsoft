@@ -8,22 +8,22 @@ import Navbar from "components/navbar/Navbar";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
+import DoneIcon from "images/done-icon.svg?react";
+import EditIcon from "images/edit-icon.svg?react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
-import { FullIssue } from "types/issue";
+import type { RootState } from "redux/store";
+import type { FullIssue } from "types/issue";
 import axiosRequest from "utils/axios";
-import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
-import DoneIcon from "images/done-icon.svg?react";
-import EditIcon from "images/edit-icon.svg?react";
-import useWindowSize from "utils/useWindowSize";
-import { Helmet } from "react-helmet-async";
 import { websiteUrl } from "utils/const";
+import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
+import useWindowSize from "utils/useWindowSize";
 
-const NewIssue = lazy(() => import('components/new-issue/NewIssue'));
-const NewComment = lazy(() => import('components/new-comment/NewComment'));
+const NewIssue = lazy(() => import("components/new-issue/NewIssue"));
+const NewComment = lazy(() => import("components/new-comment/NewComment"));
 
 const IssuePage = () => {
 	const navigate = useNavigate();
@@ -86,14 +86,14 @@ const IssuePage = () => {
 		showModal(
 			<Suspense fallback={<LoadingScreen modal />}>
 				<NewIssue issue={issue} />
-			</Suspense>
+			</Suspense>,
 		);
 	};
 
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/issue/" + id} />
+				<link rel="canonical" href={`${websiteUrl}/issue/${id}`} />
 			</Helmet>
 			<Navbar />
 			<div className="issue-page">
@@ -106,8 +106,18 @@ const IssuePage = () => {
 								<h1>{issue.title}</h1>
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
-										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && <button className="edit-button" onClick={editIssue}><EditIcon/></button>}
-										{issue.state !== "closed" ? <button className="done-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}><DoneIcon/> </button>: <span className="closed">(uzavřené)</span>}
+										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
+											<button className="edit-button" type="button" onClick={editIssue}>
+												<EditIcon />
+											</button>
+										)}
+										{issue.state !== "closed" ? (
+											<button className="done-button" type="button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}>
+												<DoneIcon />{" "}
+											</button>
+										) : (
+											<span className="closed">(uzavřené)</span>
+										)}
 									</>
 								)}
 							</div>
@@ -125,11 +135,7 @@ const IssuePage = () => {
 						)}
 						<div className="dates">
 							<span>Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>
-							{isMobile ?
-								<span>Aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
-							:
-								<span>Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
-							}
+							{isMobile ? <span>Aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span> : <span>Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>}
 						</div>
 						<section className="description-wrapper">
 							<h2>Popis Issue:</h2>
@@ -149,7 +155,7 @@ const IssuePage = () => {
 									return <Comment key={comment.id} issueId={issue.id} {...comment} />;
 								})}
 						</section>
-						<Suspense fallback={<LoadingScreen upper/>}>
+						<Suspense fallback={<LoadingScreen upper />}>
 							<NewComment issueId={issue.id} />
 						</Suspense>
 					</>

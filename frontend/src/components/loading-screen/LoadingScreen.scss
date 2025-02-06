@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .loading-screen {
   display: flex;
   justify-content: center;
@@ -21,7 +23,7 @@
   .loader {
     width: 3rem;
     height: 3rem;
-    border: 0.313rem solid $color-primary;
+    border: 0.313rem solid var.$color-primary;
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

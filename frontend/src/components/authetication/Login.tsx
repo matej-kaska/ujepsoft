@@ -4,16 +4,16 @@ import LoadingScreen from "components/loading-screen/LoadingScreen";
 import PasswordReset from "components/password-reset/PasswordReset";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import CloseIcon from "images/close.svg?react";
 import { useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setToken, setUser } from "redux/authSlice";
-import { TUserInfo } from "types/userInfo";
+import type { TUserInfo } from "types/userInfo";
 import axiosRequest from "utils/axios";
 import { emailSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import Register from "./Register";
-import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	email: string;

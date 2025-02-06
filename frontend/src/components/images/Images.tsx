@@ -1,4 +1,4 @@
-import { Attachment as FileProps } from "types/offer";
+import type { Attachment as FileProps } from "types/offer";
 
 const Images = ({ images }: { images: FileProps[] }) => {
 	if (!images || images.length === 0) return null;

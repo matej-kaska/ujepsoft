@@ -5,19 +5,19 @@ import Navbar from "components/navbar/Navbar";
 import UnitIssue from "components/unit-issue/UnitIssue";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
 import { setShowClosedIssues } from "redux/settingsSlice";
-import { RootState } from "redux/store";
-import { Issue } from "types/issue";
+import type { RootState } from "redux/store";
+import type { Issue } from "types/issue";
 import axiosRequest from "utils/axios";
 import { websiteUrl } from "utils/const";
 import useWindowSize from "utils/useWindowSize";
 
-const NewIssue = lazy(() => import('components/new-issue/NewIssue'));
+const NewIssue = lazy(() => import("components/new-issue/NewIssue"));
 
 type IssuesResponse = {
 	next: string;
@@ -37,7 +37,7 @@ const IssuesPage = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const cancelTokenSource = useRef(axios.CancelToken.source());
 	const [isMobile, setIsMobile] = useState<boolean>(false);
-	
+
 	useLayoutEffect(() => {
 		getIssues();
 		return () => cancelTokenSource.current.cancel("Component unmounted or state changed");
@@ -49,7 +49,7 @@ const IssuesPage = () => {
 			return;
 		}
 		setIsMobile(true);
-	}, [windowSize[0]])
+	}, [windowSize[0]]);
 
 	useEffect(() => {
 		if (!reload.location || reload.location !== "issues") return;
@@ -98,14 +98,14 @@ const IssuesPage = () => {
 		showModal(
 			<Suspense fallback={<LoadingScreen modal />}>
 				<NewIssue />
-			</Suspense>
+			</Suspense>,
 		);
 	};
 
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/issues"} />
+				<link rel="canonical" href={`${websiteUrl}/issues`} />
 			</Helmet>
 			<Navbar />
 			<div className="issues-page">

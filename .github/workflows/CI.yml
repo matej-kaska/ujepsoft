@@ -18,12 +18,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          version: latest
+          node-version: '20'
+      - name: Install NPM dependencies
+        run: |
+          cd frontend
+          npm install
       - name: Run Biome on frontend
-        run: npx biome ci --config-path=.\ .
+        run: |
+          cd frontend
+          npx biome check .
 
   backend-lint:
     name: Backend lint
@@ -40,8 +46,8 @@ jobs:
       - name: Run ruff on backend
         run: ruff check ./backend
 
-  test:
-    name: Django run tests
+  test_dev:
+    name: Docker dev build
     runs-on: ubuntu-latest
     services:
       docker:
@@ -64,9 +70,37 @@ jobs:
         REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
         DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
       run: |
-        docker compose -f docker-compose.yml up -d postgresql redis
+        docker compose -f docker-compose.yml up -d postgresql redis frontend edge
         docker compose -f docker-compose.yml run backend ./manage.py test
         docker compose -f docker-compose.yml down
+
+  test_prod:
+    name: Docker prod build
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+        ports:
+          - 2376:2376
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build the Docker Compose stack
+      run: docker compose -f docker-compose.prod.yml build
+
+    - name: Run tests
+      env:
+        REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+        DJANGO_SECRET: ${{ secrets.DJANGO_SECRET }}
+      run: |
+        docker compose -f docker-compose.prod.yml up -d postgresql redis frontend edge
+        docker compose -f docker-compose.prod.yml run backend ./manage.py test
+        docker compose -f docker-compose.prod.yml down
 
   frontend-audit:
     name: Frontend audit
@@ -137,7 +171,9 @@ jobs:
           images=$(docker-compose config | grep 'image:' | awk '{print $2}' | sort | uniq)
           backend_base_image=$(grep '^FROM' backend/Dockerfile | awk '{print $2}' | sort | uniq)
           frontend_base_image=$(grep '^FROM' frontend/Dockerfile | awk '{print $2}' | sort | uniq)
-          images="$images $backend_base_image $frontend_base_image"
+          redis_base_image=$(grep '^FROM' redis/Dockerfile | awk '{print $2}' | sort | uniq)
+          edge_base_image=$(grep '^FROM' edge/Dockerfile | awk '{print $2}' | sort | uniq)
+          images="$images $backend_base_image $frontend_base_image $redis_base_image $edge_base_image"
           for image in $images; do
             echo "Scanning $image"
             trivy image $image || true

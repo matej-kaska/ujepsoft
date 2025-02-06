@@ -108,15 +108,15 @@ class IssueFile(models.Model):
   def __str__(self):
     return repr(self)
   
+  def __repr__(self):
+    return f"[{self.pk}] {self.name}"
+  
   def save(self, *args, **kwargs):
     if self.remote_url:
       self.file = None
     else:
       self.remote_url = ""
     super(IssueFile, self).save(*args, **kwargs)
-  
-  def __repr__(self):
-    return f"[{self.pk}] {self.name}"
   
 class CommentFile(models.Model):
   name = models.CharField(max_length=255)
@@ -128,12 +128,12 @@ class CommentFile(models.Model):
   def __str__(self):
     return repr(self)
   
+  def __repr__(self):
+    return f"[{self.pk}] {self.name}"
+
   def save(self, *args, **kwargs):
     if self.remote_url:
       self.file = None
     else:
       self.remote_url = ""
     super(CommentFile, self).save(*args, **kwargs)
-  
-  def __repr__(self):
-    return f"[{self.pk}] {self.name}"

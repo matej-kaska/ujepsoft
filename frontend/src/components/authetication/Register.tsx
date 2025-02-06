@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "components/buttons/Button";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import CloseIcon from "images/close.svg?react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -9,7 +10,6 @@ import axiosRequest from "utils/axios";
 import { confirmPasswordSchema, emailSchema, gdprSchema, passwordSchema } from "utils/validationSchemas";
 import { object } from "yup";
 import Login from "./Login";
-import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	email: string;
