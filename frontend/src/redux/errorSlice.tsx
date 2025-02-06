@@ -1,4 +1,4 @@
-import { type Action, type Dispatch, type Middleware, type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type Dispatch, type Middleware, type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { GlobalErrorService } from "utils/ErrorHandling";
 
 type ErrorState = {
@@ -21,7 +21,7 @@ const errorSlice = createSlice({
 
 export const { setError } = errorSlice.actions;
 
-export const errorHandlingMiddleware: Middleware = (storeAPI) => (next: Dispatch) => (action: Action) => {
+export const errorHandlingMiddleware: Middleware<{}, any, Dispatch> = (storeAPI) => (next) => (action) => {
 	try {
 		return next(action);
 	} catch (err: any) {
