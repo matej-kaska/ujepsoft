@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .images-wrapper {
   display: flex;
   justify-content: center;
@@ -22,7 +24,7 @@
       display: flex;
       justify-content: center;
       flex-direction: column;
-      border: 1px solid $color-darkgray;
+      border: 1px solid var.$color-darkgray;
       padding-inline: 1rem;
       padding-block: 0.5rem;
       border-radius: 0.5rem;

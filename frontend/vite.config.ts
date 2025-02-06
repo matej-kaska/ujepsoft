@@ -4,16 +4,18 @@ import sassGlobImports from "vite-plugin-sass-glob-import";
 import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+const ReactCompilerConfig = {
+  target: '18'
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(
-		{
-			babel: {
-				plugins:
-					["babel-plugin-react-compiler"]
-			}
+	plugins: [react({
+		babel: {
+			plugins:
+				[["babel-plugin-react-compiler", ReactCompilerConfig]]
 		}
-	), svgr(), tsconfigPaths(), sassGlobImports()],
+	}), svgr(), tsconfigPaths(), sassGlobImports()],
 	server: {
 		host: true,
 		port: 3000,

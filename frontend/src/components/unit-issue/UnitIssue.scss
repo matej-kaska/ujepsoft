@@ -1,5 +1,7 @@
+@use '../../variables' as var;
+
 .unit-issue {
-  border: solid 1px $color-darkgray;
+  border: solid 1px var.$color-darkgray;
   border-radius: 1.75rem;
   max-width: unset;
   min-width: 47.75rem;

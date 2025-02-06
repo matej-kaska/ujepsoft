@@ -1,29 +1,32 @@
+@use 'sass:color';
+@use '../../variables' as var;
+
 .button {
   display: flex;
   align-items: center;
 
   // Color variants
   &.primary {
-    background-color: $color-primary;
+    background-color: var.$color-primary;
     color: white;
     &:hover {
-      background-color: darken($color-primary, 10%);
+      background-color: color.adjust(var.$color-primary, $lightness: -10%);
     }
   }
 
   &.secondary {
-    background-color: $color-primary;
+    background-color: var.$color-primary;
     color: white;
     &:hover {
-      background-color: darken($color-primary, 10%);
+      background-color: color.adjust(var.$color-primary, $lightness: -10%);
     }
   }
 
   &.accent {
-    background-color: $color-accent;
+    background-color: var.$color-accent;
     color: white;
     &:hover {
-      background-color: darken($color-accent, 10%);
+      background-color: color.adjust(var.$color-accent, $lightness: -10%);
     }
   }
 

@@ -1,3 +1,5 @@
+@use '../../variables' as var;
+
 .navbar {
   width: 100%;
   display: flex;
@@ -53,8 +55,8 @@
     align-items: center;
     flex-direction: row;
     padding-inline: 2rem;
-    border-block: 1px solid $color-darkgray;
-    background-color: $color-lightgray;
+    border-block: 1px solid var.$color-darkgray;
+    background-color: var.$color-lightgray;
 
     ul {
       display: flex;

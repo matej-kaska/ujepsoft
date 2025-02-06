@@ -1,3 +1,6 @@
+@use 'sass:color';
+@use '../../variables' as var;
+
 .new-issue {
   display: flex;
   justify-content: left;
@@ -146,7 +149,7 @@
           margin-top: unset;
           border-radius: 0.625rem;
           margin-right: 0.25rem;
-          accent-color: $color-primary;
+          accent-color: var.$color-primary;
           cursor: pointer;
           appearance: none;
           border: 1px solid gray;
@@ -157,16 +160,16 @@
 
           &:checked {
             z-index: 0;
-            border-color: $color-primary;
-            background-color: $color-primary;
+            border-color: var.$color-primary;
+            background-color: var.$color-primary;
 
             &:hover {
-              background-color: darken($color-primary, 10%);
+              background-color: color.adjust(var.$color-primary, $lightness: -10%);
             }
           }
 
           &:hover {
-            background-color: darken(white, 10%);
+            background-color: color.adjust(white, $lightness: -10%);
           }
 
           &.error {

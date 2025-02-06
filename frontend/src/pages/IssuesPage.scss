@@ -1,3 +1,5 @@
+@use '../variables' as var;
+
 .issues-page {
   background-color: white;
   display: flex;
@@ -93,11 +95,11 @@
           }
           
           input:checked + .slider {
-            background-color: $color-primary;
+            background-color: var.$color-primary;
           }
           
           input:focus + .slider {
-            box-shadow: 0 0 1px $color-primary;
+            box-shadow: 0 0 1px var.$color-primary;
           }
           
           input:checked + .slider:before {

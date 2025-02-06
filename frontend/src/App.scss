@@ -1,10 +1,9 @@
+@use 'components/**/*';
+@use 'pages/**/*';
+@use 'contexts/**/*';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "_variables";
-@import 'components/**/*.scss';
-@import 'pages/**/*.scss';
-@import 'contexts/**/*.scss';
 
 #root {
   width: 100%;
