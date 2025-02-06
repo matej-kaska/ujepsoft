@@ -23,7 +23,9 @@ jobs:
         with:
           node-version: '20'
       - name: Run Biome on frontend
-        run: npx biome check --config-path=.\ .
+        run: |
+          cd frontend 
+          npx biome check --config-path=.\ .
 
   backend-lint:
     name: Backend lint
