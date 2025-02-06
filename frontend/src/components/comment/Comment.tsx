@@ -53,10 +53,10 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 				<ProfileBadge name={author} profilePicture={author_profile_pic} authorUjepsoft={author_ujepsoft} />
 				{((userInfo.is_staff && author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === author_ujepsoft) && (
 					<>
-						<button className="edit-button" onClick={handleEditComment}>
+						<button type="button" className="edit-button" onClick={handleEditComment}>
 							<EditIcon />
 						</button>
-						<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}>
+						<button type="button" className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}>
 							<RemoveIcon />
 						</button>
 					</>

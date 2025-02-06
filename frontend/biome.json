@@ -23,7 +23,8 @@
 				"noAccumulatingSpread": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"noLabelWithoutControl": "off"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "off"

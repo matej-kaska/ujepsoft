@@ -107,12 +107,12 @@ const IssuePage = () => {
 								{(userInfo.is_staff || userInfo.email === issue.author_ujepsoft) && (
 									<>
 										{((userInfo.is_staff && issue.author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === issue.author_ujepsoft) && (
-											<button className="edit-button" onClick={editIssue}>
+											<button className="edit-button" type="button" onClick={editIssue}>
 												<EditIcon />
 											</button>
 										)}
 										{issue.state !== "closed" ? (
-											<button className="done-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}>
+											<button className="done-button" type="button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete uzavřít issue?"} actionOnClick={removeIssue} submitText={"Uzavřít"} />)}>
 												<DoneIcon />{" "}
 											</button>
 										) : (
