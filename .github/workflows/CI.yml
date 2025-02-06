@@ -29,7 +29,6 @@ jobs:
       - name: Run Biome on frontend
         run: |
           cd frontend
-          ls
           npx biome check .
 
   backend-lint:
