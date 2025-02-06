@@ -28,7 +28,8 @@ jobs:
           npm install
       - name: Run Biome on frontend
         run: |
-          cd frontend 
+          cd frontend
+          ls
           npx biome check --config-path=.\ .
 
   backend-lint:
