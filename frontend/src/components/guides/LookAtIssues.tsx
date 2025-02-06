@@ -52,7 +52,7 @@ const LookAtIssues = () => {
 							<strong>2</strong> &rarr; Uzavření Issue - pokud je daný problém vyřešen.
 						</ul>
 						<ul>
-							<strong>2</strong> &rarr; Přidané soubory k Issue.
+							<strong>3</strong> &rarr; Přidané soubory k Issue.
 						</ul>
 					</div>
 				</ol>
