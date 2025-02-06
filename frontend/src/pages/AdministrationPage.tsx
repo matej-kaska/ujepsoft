@@ -6,19 +6,19 @@ import Navbar from "components/navbar/Navbar";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import RemoveIcon from "images/remove-icon.svg?react";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "redux/store";
-import { Repo } from "types/repo";
+import type { RootState } from "redux/store";
+import type { Repo } from "types/repo";
 import axiosRequest from "utils/axios";
+import { websiteUrl } from "utils/const";
+import useWindowSize from "utils/useWindowSize";
 import { urlGithubSchema } from "utils/validationSchemas";
 import { object } from "yup";
-import RemoveIcon from "images/remove-icon.svg?react";
-import useWindowSize from "utils/useWindowSize";
-import { Helmet } from "react-helmet-async";
-import { websiteUrl } from "utils/const";
 
 type AddRepoForm = {
 	url: string;
@@ -107,22 +107,20 @@ const AdministrationPage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/repo-administration"} />
+				<link rel="canonical" href={`${websiteUrl}/repo-administration`} />
 			</Helmet>
 			<Navbar />
 			<section className="administration-page">
 				<header>
 					<h1>Administrace UJEP SOFT</h1>
-					<p>
-						Sekce Administrace slouží pro správu repozitářů, které lze přidávat a odebírat. Repozitáře se objeví pouze pokud je personál UJEP collaborantem.
-					</p>
+					<p>Sekce Administrace slouží pro správu repozitářů, které lze přidávat a odebírat. Repozitáře se objeví pouze pokud je personál UJEP collaborantem.</p>
 				</header>
 				<section className="repos-wrapper">
 					<form className="add-new" onSubmit={handleSubmit(addRepo)}>
 						<h2>Přidat nový repozitář</h2>
 						<span className="no-private">Repozitář nesmí být privátní!</span>
 						<div className="input-wrapper">
-							<input type="text" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)}/>
+							<input type="text" {...register("url")} onChange={() => successfullySubmitted && setSuccessfullySubmitted(false)} />
 							<Button className="add-button" type="submit">
 								+ Přidat
 							</Button>
@@ -131,18 +129,12 @@ const AdministrationPage = () => {
 							{loadingAdd ? (
 								<>
 									<LoadingScreen />
-									<p className="loading-p">
-										Přidávání repozitáře do databáze...
-									</p>
+									<p className="loading-p">Přidávání repozitáře do databáze...</p>
 								</>
 							) : (
 								<>
-									<p className={`${errors.url || errors.apiError ? "visible" : "invisible"} text-sm text-red-600`}>
-										{errors.url ? errors.url.message : errors.apiError?.message}!
-									</p>
-									<p className={`${successfullySubmitted ? "visible" : "invisible"} text-sm text-green-600 success`}>
-										Repozitář byl úspěšně přidán do databáze!
-									</p>
+									<p className={`${errors.url || errors.apiError ? "visible" : "invisible"} text-sm text-red-600`}>{errors.url ? errors.url.message : errors.apiError?.message}!</p>
+									<p className={`${successfullySubmitted ? "visible" : "invisible"} text-sm text-green-600 success`}>Repozitář byl úspěšně přidán do databáze!</p>
 								</>
 							)}
 						</div>
@@ -153,38 +145,22 @@ const AdministrationPage = () => {
 							{loading ? (
 								<div className="flex flex-row items-center">
 									<LoadingScreen upper />
-									<span className="ml-3 text-gray-600 italic">
-										Načítání repozitářů a zjišťování statusu collaboranta
-									</span>
+									<span className="ml-3 text-gray-600 italic">Načítání repozitářů a zjišťování statusu collaboranta</span>
 								</div>
 							) : (
 								<>
-									{loadedRepos && loadedRepos.length === 0 && (
-										<li className="ml-0.5 text-gray-600 italic">
-											Žádné repozitáře nebyly nalezeny
-										</li>
-									)}
+									{loadedRepos && loadedRepos.length === 0 && <li className="ml-0.5 text-gray-600 italic">Žádné repozitáře nebyly nalezeny</li>}
 									{loadedRepos?.map((repo, index) => (
 										<li key={index} className="repo">
-											{!isNarrow && (
-												<ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic}/>
-											)}
+											{!isNarrow && <ProfileBadge name={repo.author} profilePicture={repo.author_profile_pic} />}
 											<span className="repo-name">{repo.name}</span>
 											{!isNarrow && (
 												<Link to={repo.url} target="_blank" rel="noopener noreferrer">
 													URL odkaz
 												</Link>
 											)}
-											<RemoveIcon className="remove-icon" onClick={() =>showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)}/>)}/>
-											{!repo.collaborant && (
-												<span className="text-red-700">
-													{!isNarrow ? 
-														"UJEP není collaborantem repozitáře!"
-													:
-														"Nejste collaborant!"
-													}
-												</span>
-											)}
+											<RemoveIcon className="remove-icon" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat repozitář z databáze?"} actionOnClick={() => removeRepo(repo.id)} />)} />
+											{!repo.collaborant && <span className="text-red-700">{!isNarrow ? "UJEP není collaborantem repozitáře!" : "Nejste collaborant!"}</span>}
 										</li>
 									))}
 								</>

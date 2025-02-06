@@ -1,11 +1,11 @@
 import Button from "components/buttons/Button";
 import Label from "components/label/Label";
 import ProfileBadge from "components/profile-badge/ProfileBadge";
+import Chevron from "images/chevron.svg?react";
 import { Link } from "react-router-dom";
-import { Issue } from "types/issue";
+import type { Issue } from "types/issue";
 import { htmlToPlainText } from "utils/htmlToPlainText";
 import { removeFooterFromBody } from "utils/plainTextToHtml";
-import Chevron from "images/chevron.svg?react";
 
 type UnitIssueProps = {
 	issue: Issue;
@@ -32,17 +32,17 @@ const UnitIssue = ({ issue, isMobile }: UnitIssueProps) => {
 			)}
 			<p className="unit-description">{issue.body && htmlToPlainText(removeFooterFromBody(issue.body))}</p>
 			<div className="unit-footer">
-				{!isMobile ?
+				{!isMobile ? (
 					<>
 						<span className="unit-comments">Počet komentářů: {issue.comments_count}</span>
 						<span className="unit-date">Vytvořeno: {new Date(issue.created_at).toLocaleDateString("cs-CZ")}</span>
 						<span className="unit-date ml-4">Naposledy aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
 					</>
-				:
+				) : (
 					<span className="unit-date">Aktualizováno: {new Date(issue.updated_at).toLocaleDateString("cs-CZ")}</span>
-				}
+				)}
 				<Link to={`/issue/${issue.id}`}>
-					<Button icon={<Chevron/>} iconPosition="right">
+					<Button icon={<Chevron />} iconPosition="right">
 						Zobrazit
 					</Button>
 				</Link>

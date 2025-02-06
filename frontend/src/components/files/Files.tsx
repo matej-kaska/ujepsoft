@@ -1,7 +1,7 @@
 import Attachment from "components/attachment/Attachment";
-import { useState } from "react";
-import { Attachment as FileProps } from "types/offer";
 import Arrow from "images/arrow.svg?react";
+import { useState } from "react";
+import type { Attachment as FileProps } from "types/offer";
 
 type FilesProps = {
 	files: FileProps[];

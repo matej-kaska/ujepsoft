@@ -9,7 +9,7 @@ import React, { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
+import type { RootState } from "redux/store";
 import { editorLabels } from "static/wysiwyg";
 import axiosRequest from "utils/axios";
 import { commentSchema } from "utils/validationSchemas";
@@ -99,9 +99,9 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 
 	return (
 		<form className="new-comment" onSubmit={handleSubmit(handlePostComment)}>
-			{loading ?
+			{loading ? (
 				<LoadingScreen upper />
-			:
+			) : (
 				<>
 					<Suspense fallback={<div className="editorClassName">Načítám Editor...</div>}>
 						<WysiwygEditor
@@ -136,7 +136,7 @@ const NewComment = ({ issueId }: NewCommentProps) => {
 					<AddAttachment files={files} setFiles={setFiles} />
 					<Button type="submit">+ Přidat komentář</Button>
 				</>
-			}
+			)}
 		</form>
 	);
 };

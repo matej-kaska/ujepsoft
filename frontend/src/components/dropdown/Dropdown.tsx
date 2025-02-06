@@ -1,6 +1,6 @@
-import Chevron from "images/chevron.svg?react";
 import { Menu, Transition } from "@headlessui/react";
-import { ButtonHTMLAttributes, Fragment, PropsWithChildren, ReactNode } from "react";
+import Chevron from "images/chevron.svg?react";
+import { type ButtonHTMLAttributes, Fragment, type PropsWithChildren, type ReactNode } from "react";
 
 type DropdownProps = PropsWithChildren<any> & {
 	label?: string | ReactNode;
@@ -34,11 +34,13 @@ const Dropdown = ({ label, disabled, upPlacement, className, noArrow, defaultCla
 							{preLabel}
 							{svg}
 							{label}
-							{noArrow ? null : <Chevron className={`mr-2 h-3 transition transform ease-out ${open ? (upPlacement ? "rotate-90" : "-rotate-90") : (upPlacement ? "-rotate-90" : "rotate-90")}`}/>}
+							{noArrow ? null : <Chevron className={`mr-2 h-3 transition transform ease-out ${open ? (upPlacement ? "rotate-90" : "-rotate-90") : upPlacement ? "-rotate-90" : "rotate-90"}`} />}
 						</Menu.Button>
 
 						<Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-							<Menu.Items static className={`${upPlacement ? "bottom-[50px] origin-bottom" : ""} ${menuClasses} absolute flex flex-col mt-2 w-max rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 select-none ${menuMiddle ? "left-[50%] translate-x-[-50%]" : ""}`}>{children}</Menu.Items>
+							<Menu.Items static className={`${upPlacement ? "bottom-[50px] origin-bottom" : ""} ${menuClasses} absolute flex flex-col mt-2 w-max rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 select-none ${menuMiddle ? "left-[50%] translate-x-[-50%]" : ""}`}>
+								{children}
+							</Menu.Items>
 						</Transition>
 					</>
 				)}

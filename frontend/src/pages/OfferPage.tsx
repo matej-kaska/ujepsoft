@@ -6,18 +6,18 @@ import LoadingScreen from "components/loading-screen/LoadingScreen";
 import Navbar from "components/navbar/Navbar";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
+import EditIcon from "images/edit-icon.svg?react";
+import RemoveIcon from "images/remove-icon.svg?react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
-import { Offer } from "types/offer";
+import type { RootState } from "redux/store";
+import type { Offer } from "types/offer";
 import axiosRequest from "utils/axios";
-import { formatDescription } from "utils/plainTextToHtml";
-import EditIcon from "images/edit-icon.svg?react";
-import RemoveIcon from "images/remove-icon.svg?react";
-import { Helmet } from "react-helmet-async";
 import { websiteUrl } from "utils/const";
+import { formatDescription } from "utils/plainTextToHtml";
 
 const NewOffer = lazy(() => import("components/new-offer/NewOffer"));
 
@@ -71,14 +71,14 @@ const OfferPage = () => {
 		showModal(
 			<Suspense fallback={<LoadingScreen modal />}>
 				<NewOffer offer={offer} />
-			</Suspense>
+			</Suspense>,
 		);
 	};
 
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/offer/" + id} />
+				<link rel="canonical" href={`${websiteUrl}/offer/${id}`} />
 			</Helmet>
 			<Navbar />
 			<div className="offer-page">
@@ -91,8 +91,12 @@ const OfferPage = () => {
 								<h1>{offer.name}</h1>
 								{(userInfo.is_staff || Number(userInfo.id) === offer.author.id) && (
 									<>
-										<button className="edit-button" onClick={editOffer}><EditIcon/></button>
-										<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)}><RemoveIcon/></button>
+										<button className="edit-button" onClick={editOffer}>
+											<EditIcon />
+										</button>
+										<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat nabídku?"} actionOnClick={removeOffer} />)}>
+											<RemoveIcon />
+										</button>
 									</>
 								)}
 							</div>

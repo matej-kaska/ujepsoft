@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useModal } from "contexts/ModalProvider";
 import Button from "components/buttons/Button";
+import { useModal } from "contexts/ModalProvider";
+import { useState } from "react";
 
 export interface GeneralModalProps {
 	text: string;

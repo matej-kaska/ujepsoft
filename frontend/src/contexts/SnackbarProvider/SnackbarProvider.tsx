@@ -1,6 +1,6 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { type ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "redux/store";
+import type { RootState } from "redux/store";
 import { closeSnackbar as closeReduxSnackbar } from "../../redux/snackbarSlice";
 import ErrorSnackbar from "./ErrorSnackbar";
 import SuccessSnackbar from "./SuccessSnackbar";

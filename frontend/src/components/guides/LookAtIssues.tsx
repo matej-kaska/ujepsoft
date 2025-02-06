@@ -5,9 +5,7 @@ const LookAtIssues = () => {
 
 	return (
 		<div className={`guide lists ${open ? "open" : ""}`}>
-			<h2 onClick={() => setOpen(!open)}>
-				Jak se orientovat v Issues?
-			</h2>
+			<h2 onClick={() => setOpen(!open)}>Jak se orientovat v Issues?</h2>
 			{open && (
 				<ol>
 					<li>
@@ -19,8 +17,7 @@ const LookAtIssues = () => {
 							<strong>1</strong> &rarr; Název Issue.
 						</ul>
 						<ul>
-							<strong>2</strong> &rarr; Jméno vlastníka + název repozitáře,
-							kterého se tento Issue týká.
+							<strong>2</strong> &rarr; Jméno vlastníka + název repozitáře, kterého se tento Issue týká.
 						</ul>
 						<ul>
 							<strong>3</strong> &rarr; Autor.
@@ -38,18 +35,14 @@ const LookAtIssues = () => {
 							<strong>7</strong> &rarr; Datum vytvoření Issue.
 						</ul>
 						<ul>
-							<strong>8</strong> &rarr; Datum poslední aktualizace této
-							Issue.
+							<strong>8</strong> &rarr; Datum poslední aktualizace této Issue.
 						</ul>
 						<ul>
-							<strong>9</strong> &rarr; Tlačítko pro zobrazení detailních
-							informací o Issue.
+							<strong>9</strong> &rarr; Tlačítko pro zobrazení detailních informací o Issue.
 						</ul>
 					</div>
 					<td>&nbsp;</td>
-					<li>
-						Po rozkliknutí nadpisu nebo tlačítko pro zobrazení Issue se zobrazí detailní informace.
-					</li>
+					<li>Po rozkliknutí nadpisu nebo tlačítko pro zobrazení Issue se zobrazí detailní informace.</li>
 					<div className="image">
 						<img src="/src/images/guides/editissue2.webp" alt="editissue2" />
 						<ul>

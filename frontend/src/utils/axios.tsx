@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import Login from "../components/authetication/Login";
 import { removeUser } from "../redux/authSlice";
 import { openModal } from "../redux/modalSlice";

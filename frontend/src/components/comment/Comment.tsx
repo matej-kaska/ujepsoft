@@ -7,11 +7,11 @@ import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
 import EditIcon from "images/edit-icon.svg?react";
 import RemoveIcon from "images/remove-icon.svg?react";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setReload } from "redux/reloadSlice";
-import { RootState } from "redux/store";
-import { Comment as TComment } from "types/issue";
+import type { RootState } from "redux/store";
+import type { Comment as TComment } from "types/issue";
 import axiosRequest from "utils/axios";
 import { formatDescription, removeFooterFromBody } from "utils/plainTextToHtml";
 
@@ -43,7 +43,7 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 		showModal(
 			<Suspense fallback={<LoadingScreen modal />}>
 				<EditComment id={id} issueId={issueId} body={body} files={files} />
-			</Suspense>
+			</Suspense>,
 		);
 	};
 
@@ -53,8 +53,12 @@ const Comment = ({ author, author_profile_pic, author_ujepsoft, body, created_at
 				<ProfileBadge name={author} profilePicture={author_profile_pic} authorUjepsoft={author_ujepsoft} />
 				{((userInfo.is_staff && author === import.meta.env.VITE_GITHUB_USERNAME) || userInfo.email === author_ujepsoft) && (
 					<>
-						<button className="edit-button" onClick={handleEditComment}><EditIcon/></button>
-						<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}><RemoveIcon/></button>
+						<button className="edit-button" onClick={handleEditComment}>
+							<EditIcon />
+						</button>
+						<button className="remove-button" onClick={() => showModal(<GeneralModal text={"Opravdu chcete smazat komentář?"} actionOnClick={removeComment} submitText={"Smazat"} />)}>
+							<RemoveIcon />
+						</button>
 					</>
 				)}
 			</div>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { TUserInfo, blankUserInfo } from "../types/userInfo";
+import { type TUserInfo, blankUserInfo } from "../types/userInfo";
 
 type SetUserAction = {
 	type: string;

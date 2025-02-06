@@ -8,15 +8,15 @@ export const emailSchema = string()
 	.required("Toto pole je povinné")
 	.email("E-mail není ve validním formátu")
 	.matches(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "E-mail není ve validním formátu")
-	.test("e-mail validation", "E-mail musí mít doménu @ujep.cz (mimo students)", value => {
-      if (!value) return false;
-			if (!value.endsWith("ujep.cz")) return false;
+	.test("e-mail validation", "E-mail musí mít doménu @ujep.cz (mimo students)", (value) => {
+		if (!value) return false;
+		if (!value.endsWith("ujep.cz")) return false;
 
-      const isForbidden = forbiddenPatterns.test(value);
-			if (isForbidden) return false;
+		const isForbidden = forbiddenPatterns.test(value);
+		if (isForbidden) return false;
 
-			const isAllowed = allowedPatterns.test(value);
-      return isAllowed;
+		const isAllowed = allowedPatterns.test(value);
+		return isAllowed;
 	})
 	.max(320, "E-mail není ve validním formátu");
 

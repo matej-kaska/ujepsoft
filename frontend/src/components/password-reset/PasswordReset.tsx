@@ -3,11 +3,11 @@ import Login from "components/authetication/Login";
 import Button from "components/buttons/Button";
 import { useModal } from "contexts/ModalProvider";
 import { useSnackbar } from "contexts/SnackbarProvider";
+import CloseIcon from "images/close.svg?react";
 import { useForm } from "react-hook-form";
 import axiosRequest from "utils/axios";
 import { emailSchema } from "utils/validationSchemas";
 import { object } from "yup";
-import CloseIcon from "images/close.svg?react";
 
 type Form = {
 	email: string;

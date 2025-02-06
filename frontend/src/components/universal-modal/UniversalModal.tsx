@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useModal } from "../../contexts/ModalProvider";
 import useWindowSize from "../../utils/useWindowSize";
 

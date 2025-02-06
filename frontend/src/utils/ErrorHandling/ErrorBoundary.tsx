@@ -1,6 +1,6 @@
-import { Component, ErrorInfo, ReactNode } from "react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 import { connect } from "react-redux";
-import { RootState } from "../../redux/store";
+import type { RootState } from "../../redux/store";
 import GlobalErrorService from "./GlobalErrorService";
 import SomethingWentWrong from "./SomethingWentWrong";
 

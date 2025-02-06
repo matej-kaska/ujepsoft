@@ -1,13 +1,13 @@
 import Button from "components/buttons/Button";
 import Keyword from "components/keyword/Keyword";
-import { Link } from "react-router-dom";
-import { Offer } from "types/offer";
-import { htmlToPlainText } from "utils/htmlToPlainText";
-import FileIcon from "images/file-icon.svg?react";
 import Chevron from "images/chevron.svg?react";
+import FileIcon from "images/file-icon.svg?react";
 import React, { Suspense } from "react";
+import { Link } from "react-router-dom";
+import type { Offer } from "types/offer";
+import { htmlToPlainText } from "utils/htmlToPlainText";
 
-const Tooltip = React.lazy(() => import('components/tooltip/Tooltip'));
+const Tooltip = React.lazy(() => import("components/tooltip/Tooltip"));
 
 type UnitOfferProps = {
 	offer: Offer;
@@ -28,14 +28,20 @@ const UnitOffer = ({ offer }: UnitOfferProps) => {
 			<p className="unit-description">{htmlToPlainText(offer.description)}</p>
 			<div className="unit-footer">
 				{offer.files.length > 0 && (
-					<Suspense fallback={<div className="loading-tooltip"><FileIcon/></div>}>
+					<Suspense
+						fallback={
+							<div className="loading-tooltip">
+								<FileIcon />
+							</div>
+						}
+					>
 						<Tooltip text={`Nabídka obsahuje ${offer.files.length} ${offer.files.length === 1 ? "přílohu" : offer.files.length > 4 ? "příloh" : "přílohy"}`}>
-							<FileIcon/>
+							<FileIcon />
 						</Tooltip>
 					</Suspense>
 				)}
 				<Link to={`/offer/${offer.id}`}>
-					<Button icon={<Chevron/>} iconPosition="right">
+					<Button icon={<Chevron />} iconPosition="right">
 						Zobrazit
 					</Button>
 				</Link>

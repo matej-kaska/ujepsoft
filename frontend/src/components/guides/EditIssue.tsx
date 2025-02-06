@@ -15,9 +15,7 @@ const EditIssue = () => {
 						<img src="/src/images/guides/editissue.webp" alt="editissue" />
 					</div>
 					<td>&nbsp;</td>
-					<li>
-						Po rozkliknutí se vám zobrazí bližší informace o Issue.
-					</li>
+					<li>Po rozkliknutí se vám zobrazí bližší informace o Issue.</li>
 					<div className="image">
 						<img src="/src/images/guides/editissue2.webp" alt="editissue2" />
 						<ul>

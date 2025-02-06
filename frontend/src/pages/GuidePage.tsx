@@ -16,7 +16,7 @@ const GuidePage = () => {
 	guides.push(<CreateOfferGuide />);
 	guides.push(<CreateIssueGuide />);
 	guides.push(<LookAtIssues />);
-	guides.push(<EditIssue />)
+	guides.push(<EditIssue />);
 	guides.push(<AddComment />);
 	guides.push(<ScreenshotGuide />);
 	guides.push(<ScreenshotGuideMacOS />);
@@ -24,7 +24,7 @@ const GuidePage = () => {
 	return (
 		<>
 			<Helmet>
-				<link rel="canonical" href={websiteUrl + "/guides"} />
+				<link rel="canonical" href={`${websiteUrl}/guides`} />
 			</Helmet>
 			<Navbar />
 			<section className="guide-page">

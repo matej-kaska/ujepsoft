@@ -6,7 +6,7 @@ import { removeUser } from "../redux/authSlice";
 import { openModal } from "../redux/modalSlice";
 import { navigate } from "../redux/navigateSlice";
 import { openErrorSnackbar } from "../redux/snackbarSlice";
-import { RootState, store } from "../redux/store";
+import { type RootState, store } from "../redux/store";
 
 type ProtectedRouteProps = {
 	userIsNeeded?: boolean;

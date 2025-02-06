@@ -1,4 +1,4 @@
-import { Action, Dispatch, Middleware, PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type Action, type Dispatch, type Middleware, type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { GlobalErrorService } from "utils/ErrorHandling";
 
 type ErrorState = {

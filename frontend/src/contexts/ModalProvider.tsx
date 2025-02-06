@@ -1,6 +1,6 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { type ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "redux/store";
+import type { RootState } from "redux/store";
 import UniversalModal from "../components/universal-modal/UniversalModal";
 import { closeModal as closeReduxModal } from "../redux/modalSlice";
 
